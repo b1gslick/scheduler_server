@@ -1,0 +1,21 @@
+[package]
+name = "activities-scheduler-server"
+version = "0.1.0"
+edition = "2021"
+autors = ["s_timokhin"]
+default-run = "scheduler-service"
+
+[[bin]]
+name = "scheduler-service"
+
+[dependencies]
+actix-web = "4.3.1"
+actix-rt = "2.7.0"
+# data serilization library
+serde = { version = "1.0.110", features = ["derive"]}
+chrono = {version = "0.4.11", features = ["serde"]}
+dotenv = "0.15.0"
+sqlx = {version = "0.6.2", default_features = false, features = ["postgres", "runtime-tokio-native-tls", "macros", "chrono"]}
+
+openssl = {version = "0.10.41", features = ["vendored"]}
+serde_json = "1.0"
