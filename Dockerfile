@@ -1,9 +1,9 @@
-FROM rust:1.70.0
+FROM rust:latest
 
-COPY . /app
+COPY ./ ./
 
-WORKDIR /app
+RUN cargo build --release
 
-RUN cargo build 
+CMD ["./target/release/activities-scheduler-server"]
 
-CMD ["./target/debug/scheduler-service"]
+EXPOSE 8080
