@@ -1,7 +1,7 @@
 use warp::filters::{body::BodyDeserializeError, cors::CorsForbidden};
 use warp::{http::StatusCode, reject::Reject, Rejection, Reply};
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum Error {
     ParseError(std::num::ParseIntError),
     MissingParameters,
