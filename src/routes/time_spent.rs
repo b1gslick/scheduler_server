@@ -1,6 +1,5 @@
 pub mod time_spent {
 
-    use crate::routes::activities::activities::update_activities;
     use crate::store::store::Store;
     use crate::types::activities::ActivityId;
     use crate::types::time_spent::{NewTimeSpent, TimeSpent, TimeSpentId};
@@ -8,37 +7,55 @@ pub mod time_spent {
     use tracing::info;
     use warp::http::StatusCode;
 
+    pub async fn get_tine_spen_by_id(
+        id: u32,
+        store: Store,
+    ) -> Result<impl warp::Reply, warp::Rejection> {
+        info!("get tine spen by id {}", id);
+        let timespent: Vec<TimeSpent> = store
+            .time_spent
+            .read()
+            .await
+            .values()
+            .cloned()
+            .filter(|s| s.id.0.parse::<u32>().unwrap() == id)
+            .collect();
+        if !timespent.is_empty() {
+            Ok(warp::reply::with_status(
+                format!("activity was found {:?}", timespent.clone()),
+                StatusCode::OK,
+            ))
+        } else {
+            Err(warp::reject::custom(Error::TimeSpentNotFound))
+        }
+    }
+
     pub async fn add_time_spent(
         store: Store,
         new_time_spent: NewTimeSpent,
     ) -> Result<impl warp::Reply, warp::Rejection> {
-        info!("add time spent");
-        let timespent = TimeSpent {
-            id: TimeSpentId(get_next_time_spent_id(store.clone()).await.to_string()),
-            time: new_time_spent.time,
-            activity_id: ActivityId(new_time_spent.activity_id.0.to_string()),
-        };
+        info!("find activity for time spent");
+        match store.activities.read().await.get(&ActivityId(
+            new_time_spent.activity_id.0.clone().to_string(),
+        )) {
+            Some(_) => {
+                info!("add time spent");
+                let timespent = TimeSpent {
+                    id: TimeSpentId(get_next_time_spent_id(store.clone()).await.to_string()),
+                    time: new_time_spent.time,
+                    activity_id: ActivityId(new_time_spent.activity_id.0.to_string()),
+                };
 
-        match store
-            .activities
-            .write()
-            .await
-            .get_mut(&ActivityId(timespent.activity_id.0.clone()))
-        {
-            Some(a) => {
-                let time = a.time - timespent.time;
-                let mut new_value = a.clone();
-                new_value.time = time;
-                let _ = update_activities(a.id.0.clone(), store.clone(), new_value.clone()).await;
-                info!("activity id was find");
                 store
                     .time_spent
                     .write()
                     .await
-                    .insert(timespent.id.clone(), timespent);
-                Ok(warp::reply::with_status("Time added", StatusCode::OK))
+                    .insert(timespent.id.clone(), timespent.clone());
+                Ok(warp::reply::with_status(
+                    format!("Time added wit id {:?}", timespent.id.0.clone()),
+                    StatusCode::OK,
+                ))
             }
-
             None => return Err(warp::reject::custom(Error::ActivitiesNotFound)),
         }
     }

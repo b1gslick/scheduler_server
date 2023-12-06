@@ -107,6 +107,20 @@ async fn main() {
                   id = %uuid::Uuid::new_v4(),
             )
         }));
+    let get_time_spent = warp::get()
+        .and(warp::path("time_spent"))
+        .and(warp::path::param::<u32>())
+        .and(warp::path::end())
+        .and(store_filter.clone())
+        .and_then(get_tine_spen_by_id)
+        .with(warp::trace(|info| {
+            tracing::info_span!(
+                  "get_time_spent request",
+                  method = %info.method(),
+                  path = %info.path(),
+                  id = %uuid::Uuid::new_v4(),
+            )
+        }));
 
     let deleted_activities = warp::delete()
         .and(warp::path("activities"))
@@ -128,6 +142,7 @@ async fn main() {
         .or(update_activities)
         .or(add_time_spent)
         .or(deleted_activities)
+        .or(get_time_spent)
         .with(cors)
         .with(warp::trace::request())
         .recover(return_error);

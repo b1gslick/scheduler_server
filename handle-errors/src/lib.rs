@@ -6,6 +6,7 @@ pub enum Error {
     ParseError(std::num::ParseIntError),
     MissingParameters,
     ActivitiesNotFound,
+    TimeSpentNotFound,
 }
 
 impl std::fmt::Display for Error {
@@ -16,6 +17,7 @@ impl std::fmt::Display for Error {
             }
             Error::MissingParameters => write!(f, "Missing parameter"),
             Error::ActivitiesNotFound => write!(f, "Activities not Found"),
+            Error::TimeSpentNotFound => write!(f, "Time spent not Found"),
         }
     }
 }
