@@ -49,7 +49,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
-          images: t1mon1106/web_scraper
+          images: t1mon1106/scheduler
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
