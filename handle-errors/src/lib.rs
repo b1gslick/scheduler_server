@@ -1,31 +1,46 @@
-use warp::filters::{body::BodyDeserializeError, cors::CorsForbidden};
-use warp::{http::StatusCode, reject::Reject, Rejection, Reply};
+use warp::{
+    filters::{body::BodyDeserializeError, cors::CorsForbidden},
+    http::StatusCode,
+    reject::Reject,
+    Rejection, Reply,
+};
 
-#[derive(Debug, PartialEq, Eq)]
+use tracing::{event, instrument, Level};
+
+#[derive(Debug)]
 pub enum Error {
     ParseError(std::num::ParseIntError),
     MissingParameters,
-    ActivitiesNotFound,
     TimeSpentNotFound,
+    DatabaseQueryError,
 }
 
 impl std::fmt::Display for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        match *self {
+        match &self {
             Error::ParseError(ref err) => {
                 write!(f, "Cannot parse parameter: {}", err)
             }
             Error::MissingParameters => write!(f, "Missing parameter"),
-            Error::ActivitiesNotFound => write!(f, "Activities not Found"),
             Error::TimeSpentNotFound => write!(f, "Time spent not Found"),
+            Error::DatabaseQueryError => {
+                write!(f, "Cannot update. invalid data.")
+            }
         }
     }
 }
 
 impl Reject for Error {}
 
+#[instrument]
 pub async fn return_error(r: Rejection) -> Result<impl Reply, Rejection> {
-    if let Some(error) = r.find::<Error>() {
+    if let Some(crate::Error::DatabaseQueryError) = r.find() {
+        event!(Level::ERROR, "Database query error");
+        Ok(warp::reply::with_status(
+            crate::Error::DatabaseQueryError.to_string(),
+            StatusCode::UNPROCESSABLE_ENTITY,
+        ))
+    } else if let Some(error) = r.find::<Error>() {
         Ok(warp::reply::with_status(
             error.to_string(),
             StatusCode::RANGE_NOT_SATISFIABLE,

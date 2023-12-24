@@ -20,7 +20,7 @@ Connection: keep-alive
 Content-Type: application/json; charset=utf-8
 User-Agent: VRC
 
-# query
+# que 
 GET /time_spent/1
 
 #body

@@ -23,3 +23,10 @@ handle-errors = { path = "handle-errors" }
 # config
 clap = { version = "4.4.8", features = ["derive"] }
 config = { version = "0.13.4", features = ["toml"] }
+
+# db
+sqlx = { version = "0.7.3", features = [
+  "runtime-tokio-rustls",
+  "migrate",
+  "postgres",
+] }

@@ -26,5 +26,5 @@ POST /time_spent
 #body
 {
   "time": 10,
-  "activity_id": "3"
+  "activity_id": 3
 }

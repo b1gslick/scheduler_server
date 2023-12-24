@@ -1,18 +1,25 @@
-FROM rust:1.74.1-slim-bullseye as builder
-# 1. Create a new empty shell project
-RUN USER=root cargo new --bin activities-scheduler-server
-WORKDIR /scheduler
+ARG RUST_VERSION=1.74.1
+ARG APP_NAME=activities-scheduler-server
+FROM rust:${RUST_VERSION}-slim-bullseye AS build
+ARG APP_NAME
+WORKDIR /app
 
-COPY ./ ./
+RUN --mount=type=bind,source=src,target=src \
+  --mount=type=bind,source=handle-errors,target=handle-errors \
+  --mount=type=bind,source=Cargo.toml,target=Cargo.toml \
+  --mount=type=bind,source=Cargo.lock,target=Cargo.lock \
+  --mount=type=cache,target=/app/target/ \
+  --mount=type=cache,target=/usr/local/cargo/registry/ \
+  --mount=type=bind,source=migrations,target=migrations \
+  <<EOF
+set -e
+cargo build --locked --release
+cp ./target/release/$APP_NAME /bin/server
+EOF
 
-RUN cargo build --release
+FROM debian:bullseye-slim AS final
 
-FROM debian:bookworm-slim
-
-RUN apt-get update; apt-get clean
-
-# Install wget.
-RUN \
+RUN apt-get update && \
   apt-get install -y wget && \
   apt-get install -y openssl && \
   apt-get install -y gnupg && \
@@ -24,7 +31,24 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
 # Install Chrome.
 RUN apt-get update && apt-get -y install google-chrome-stable
 
-COPY --from=builder ./scheduler/target/release/activities-scheduler-server .
-COPY ./setup.toml .
+# create simple user
+ARG UID=10001
+RUN adduser \
+  --disabled-password \
+  --gecos "" \
+  --home "/nonexistent" \
+  --shell "/sbin/nologin" \
+  --no-create-home \
+  --uid "${UID}" \
+  appuser
+USER appuser
 
-CMD ["./activities-scheduler-server"]
+# copy binaries
+COPY --from=build /bin/server /bin/
+# copy configuration file
+COPY ./setup.toml ./setup.toml
+
+# expose port
+EXPOSE 8080
+
+CMD ["/bin/server"]
