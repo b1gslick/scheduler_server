@@ -1,5 +1,4 @@
-FROM rust:bookworm as builder
-
+FROM rust:1.74.1-slim-bullseye as builder
 # 1. Create a new empty shell project
 RUN USER=root cargo new --bin activities-scheduler-server
 WORKDIR /scheduler

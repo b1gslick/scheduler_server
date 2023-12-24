@@ -31,7 +31,6 @@ jobs:
         run: cargo test
 
   push_to_registry:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
     needs: [test]
@@ -49,7 +48,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
-          images: t1mon1106/web_scraper
+          images: t1mon1106/scheduler
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
