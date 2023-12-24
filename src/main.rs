@@ -1,5 +1,5 @@
 use crate::routes::activities::activities::*;
-use crate::routes::time_spent::time_spent::*;
+use crate::routes::time_spent::time_s::*;
 use crate::store::store::Store;
 use clap::Parser;
 use config::Config;

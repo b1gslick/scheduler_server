@@ -1,4 +1,4 @@
-pub mod time_spent {
+pub mod time_s {
 
     use crate::store::store::Store;
     use crate::types::activities::ActivityId;

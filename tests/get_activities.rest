@@ -1,0 +1,28 @@
+# host 
+# https://httpbin:443
+http://localhost:8080
+
+# curl options
+# --silent
+# include reponse headers
+--include
+# to ignore ssl when working with localhost
+# --insecure
+# to read a header(s) from a file. File fromat should be like:
+# Header-Name: Header-Value
+# e.g Authorization: YOUR_AUTH_TOKEN_HERE
+# -H @/path/to/file.txt
+#
+# headers
+Acept: application/json;
+Connection: keep-alive
+Content-Type: application/json; charset=utf-8
+User-Agent: VRC
+
+# query
+GET /activities
+
+#body
+# {
+#   "test": 123
+# }

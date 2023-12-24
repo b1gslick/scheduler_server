@@ -65,8 +65,8 @@ pub mod activities {
     ) -> Result<impl warp::Reply, warp::Rejection> {
         info!("delete activities");
         match store.activities.write().await.remove(&ActivityId(id)) {
-            Some(_) => return Ok(warp::reply::with_status("Activity deleted", StatusCode::OK)),
-            None => return Err(warp::reject::custom(Error::ActivitiesNotFound)),
+            Some(_) => Ok(warp::reply::with_status("Activity deleted", StatusCode::OK)),
+            None => Err(warp::reject::custom(Error::ActivitiesNotFound)),
         }
     }
 }
