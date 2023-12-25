@@ -54,18 +54,20 @@ pub mod store {
             }
         }
         pub async fn add_activity(self, new_activity: NewActivity) -> Result<Activity, Error> {
-            match sqlx::query("INSERT INTO activities (title, contenct, time) VALUES($1, $2, $3)")
-                .bind(new_activity.title)
-                .bind(new_activity.content)
-                .bind(new_activity.time)
-                .map(|row: PgRow| Activity {
-                    id: ActivityId(row.get("id")),
-                    title: row.get("title"),
-                    content: row.get("content"),
-                    time: row.get("time"),
-                })
-                .fetch_one(&self.connection)
-                .await
+            match sqlx::query(
+                r#"INSERT INTO activities (title, content, time) VALUES ($1, $2, $3) RETURNING id, title, content, time"#,
+            )
+            .bind(new_activity.title)
+            .bind(new_activity.content)
+            .bind(new_activity.time)
+            .map(|row: PgRow| Activity {
+                id: ActivityId(row.get("id")),
+                title: row.get("title"),
+                content: row.get("content"),
+                time: row.get("time"),
+            })
+            .fetch_one(&self.connection)
+            .await
             {
                 Ok(activity) => Ok(activity),
 
@@ -84,7 +86,7 @@ pub mod store {
                 "UPDATE activities
             SET title = $1, content = $2, time = $3
             WHERE id = $4
-            RETURING id, title, content, tags",
+            RETURNING id, title, content, time",
             )
             .bind(activity.title)
             .bind(activity.content)
@@ -123,16 +125,18 @@ pub mod store {
             &self,
             new_time_spent: NewTimeSpent,
         ) -> Result<TimeSpent, Error> {
-            match sqlx::query("INSERT INTO time_spent (time, activity_id) VALUES ($1, $2)")
-                .bind(new_time_spent.time)
-                .bind(new_time_spent.activity_id.0)
-                .map(|row: PgRow| TimeSpent {
-                    id: TimeSpentId(row.get("id")),
-                    time: row.get("time"),
-                    activity_id: ActivityId(row.get("activity_id")),
-                })
-                .fetch_one(&self.connection)
-                .await
+            match sqlx::query(
+                r#"INSERT INTO time_spent (time, activity_id) VALUES ($1, $2) RETURNING id, time, activity_id"#,
+            )
+            .bind(new_time_spent.time)
+            .bind(new_time_spent.activity_id.0)
+            .map(|row: PgRow| TimeSpent {
+                id: TimeSpentId(row.get("id")),
+                time: row.get("time"),
+                activity_id: ActivityId(row.get("activity_id")),
+            })
+            .fetch_one(&self.connection)
+            .await
             {
                 Ok(time_spent) => Ok(time_spent),
 

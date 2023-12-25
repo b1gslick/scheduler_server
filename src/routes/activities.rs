@@ -37,6 +37,7 @@ pub mod activities {
     ) -> Result<impl warp::Reply, warp::Rejection> {
         info!("add activity");
         if let Err(e) = store.add_activity(new_activity.clone()).await {
+            info!("Add activity not added{:?}", new_activity.clone());
             return Err(warp::reject::custom(e));
         }
 
@@ -56,6 +57,7 @@ pub mod activities {
             Ok(res) => res,
             Err(e) => return Err(warp::reject::custom(e)),
         };
+        info!("Update completed with {:?}", &res);
         Ok(warp::reply::json(&res))
     }
 
