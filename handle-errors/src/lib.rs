@@ -1,3 +1,4 @@
+use sqlx;
 use warp::{
     filters::{body::BodyDeserializeError, cors::CorsForbidden},
     http::StatusCode,
@@ -12,7 +13,7 @@ pub enum Error {
     ParseError(std::num::ParseIntError),
     MissingParameters,
     TimeSpentNotFound,
-    DatabaseQueryError,
+    DatabaseQueryError(sqlx::Error),
 }
 
 impl std::fmt::Display for Error {
@@ -23,7 +24,7 @@ impl std::fmt::Display for Error {
             }
             Error::MissingParameters => write!(f, "Missing parameter"),
             Error::TimeSpentNotFound => write!(f, "Time spent not Found"),
-            Error::DatabaseQueryError => {
+            Error::DatabaseQueryError(_) => {
                 write!(f, "Cannot update. invalid data.")
             }
         }
@@ -32,14 +33,32 @@ impl std::fmt::Display for Error {
 
 impl Reject for Error {}
 
+const DUPLICATE_KEY: u32 = 23505;
+
 #[instrument]
 pub async fn return_error(r: Rejection) -> Result<impl Reply, Rejection> {
-    if let Some(crate::Error::DatabaseQueryError) = r.find() {
+    if let Some(crate::Error::DatabaseQueryError(e)) = r.find() {
         event!(Level::ERROR, "Database query error");
-        Ok(warp::reply::with_status(
-            crate::Error::DatabaseQueryError.to_string(),
-            StatusCode::UNPROCESSABLE_ENTITY,
-        ))
+
+        match e {
+            sqlx::Error::Database(err) => {
+                if err.code().unwrap().parse::<u32>().unwrap() == DUPLICATE_KEY {
+                    Ok(warp::reply::with_status(
+                        "Account already exsists".to_string(),
+                        StatusCode::UNPROCESSABLE_ENTITY,
+                    ))
+                } else {
+                    Ok(warp::reply::with_status(
+                        "Cannot update data".to_string(),
+                        StatusCode::UNPROCESSABLE_ENTITY,
+                    ))
+                }
+            }
+            _ => Ok(warp::reply::with_status(
+                "Cannot update data".to_string(),
+                StatusCode::UNPROCESSABLE_ENTITY,
+            )),
+        }
     } else if let Some(error) = r.find::<Error>() {
         Ok(warp::reply::with_status(
             error.to_string(),

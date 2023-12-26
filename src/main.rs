@@ -17,6 +17,8 @@ struct Args {
     log_level: String,
     /// Web server port
     port: u16,
+    /// url to database
+    db_url: String,
 }
 
 #[tokio::main]
@@ -34,8 +36,12 @@ async fn main() {
         )
     });
 
-    let store =
-        Store::new("postgres://scheduler:scheduler@postgres_container:5432/schedulerdb").await;
+    let db_string = format!(
+        "postgres://scheduler:scheduler@{}:5432/schedulerdb",
+        config.db_url
+    );
+
+    let store = Store::new(&db_string).await;
     sqlx::migrate!()
         .run(&store.clone().connection)
         .await
@@ -142,12 +148,20 @@ async fn main() {
             )
         }));
 
+    let registration = warp::post()
+        .and(warp::path("registration"))
+        .and(warp::path::end())
+        .and(store_filter.clone())
+        .and(warp::body::json())
+        .and_then(routes::authentication::register);
+
     let routes = get_activities
         .or(add_activity)
         .or(update_activities)
         .or(add_time_spent)
         .or(deleted_activities)
         .or(get_time_spent)
+        .or(registration)
         .with(cors)
         .with(warp::trace::request())
         .recover(return_error);
