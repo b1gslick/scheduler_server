@@ -1,2 +1,4 @@
 log_level = "debug"
 port = 8080
+db_url = "localhost"
+# db_url = "postgres_container"

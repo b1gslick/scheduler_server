@@ -1,3 +1,8 @@
+CREATE TABLE IF NOT EXISTS accounts (
+   id serial NOT NULL,
+   email VARCHAR(255) NOT NULL PRIMARY KEY,
+   password VARCHAR(255) NOT NULL
+);
 CREATE TABLE IF NOT EXISTS activities (
     id serial PRIMARY KEY,
     title VARCHAR (255) NOT NULL,

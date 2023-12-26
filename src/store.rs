@@ -5,6 +5,7 @@ pub mod store {
     use sqlx::Row;
 
     use crate::types::{
+        account::Account,
         activities::{Activity, ActivityId, NewActivity},
         time_spent::{NewTimeSpent, TimeSpent, TimeSpentId},
     };
@@ -34,7 +35,7 @@ pub mod store {
             limit: Option<i32>,
             offset: i32,
         ) -> Result<Vec<Activity>, Error> {
-            match sqlx::query("SELECT * from activities LIMIT $1 OFFSET $2")
+            match sqlx::query(r#"SELECT * from activities LIMIT $1 OFFSET $2"#)
                 .bind(limit)
                 .bind(offset)
                 .map(|row: PgRow| Activity {
@@ -49,7 +50,7 @@ pub mod store {
                 Ok(activities) => Ok(activities),
                 Err(e) => {
                     error!("Can't get activitues with {:?}", e);
-                    Err(Error::DatabaseQueryError)
+                    Err(Error::DatabaseQueryError(e))
                 }
             }
         }
@@ -73,7 +74,7 @@ pub mod store {
 
                 Err(e) => {
                     error!("Can't add activity with {:?}", e);
-                    Err(Error::DatabaseQueryError)
+                    Err(Error::DatabaseQueryError(e))
                 }
             }
         }
@@ -83,10 +84,10 @@ pub mod store {
             activity_id: i32,
         ) -> Result<Activity, Error> {
             match sqlx::query(
-                "UPDATE activities
+                r#"UPDATE activities
             SET title = $1, content = $2, time = $3
             WHERE id = $4
-            RETURNING id, title, content, time",
+            RETURNING id, title, content, time"#,
             )
             .bind(activity.title)
             .bind(activity.content)
@@ -104,12 +105,12 @@ pub mod store {
                 Ok(activity) => Ok(activity),
                 Err(e) => {
                     error!("Can't update activity with {:?}", e);
-                    Err(Error::DatabaseQueryError)
+                    Err(Error::DatabaseQueryError(e))
                 }
             }
         }
         pub async fn delete_activity(&self, activity_id: i32) -> Result<bool, Error> {
-            match sqlx::query("DELETE FROM activities WHERE id = $1")
+            match sqlx::query(r#"DELETE FROM activities WHERE id = $1"#)
                 .bind(activity_id)
                 .execute(&self.connection)
                 .await
@@ -117,7 +118,7 @@ pub mod store {
                 Ok(_) => Ok(true),
                 Err(e) => {
                     error!("Can't delete activity with {:?}", e);
-                    Err(Error::DatabaseQueryError)
+                    Err(Error::DatabaseQueryError(e))
                 }
             }
         }
@@ -142,28 +143,54 @@ pub mod store {
 
                 Err(e) => {
                     error!("Can't add time spent with {:?}", e);
-                    Err(Error::DatabaseQueryError)
+                    Err(Error::DatabaseQueryError(e))
                 }
             }
         }
 
         pub async fn get_time_spent_by_id(&self, id: i32) -> Result<TimeSpent, Error> {
-            match sqlx::query("SELECT * from time_spent WHERE id = $1")
-                .bind(id)
-                .map(|row: PgRow| TimeSpent {
-                    id: TimeSpentId(row.get("id")),
-                    time: row.get("time"),
-                    activity_id: ActivityId(row.get("activity_id")),
-                })
-                .fetch_one(&self.connection)
-                .await
+            match sqlx::query(
+                r#"SELECT * from time_spent WHERE id = $1"#,
+            )
+            .bind(id)
+            .map(|row: PgRow| TimeSpent {
+                id: TimeSpentId(row.get("id")),
+                time: row.get("time"),
+                activity_id: ActivityId(row.get("activity_id")),
+            })
+            .fetch_one(&self.connection)
+            .await
             {
                 Ok(time_spent) => Ok(time_spent),
                 Err(e) => {
                     error!("Can't get time spent with {:?}", e);
-                    Err(Error::DatabaseQueryError)
+                    Err(Error::DatabaseQueryError(e))
                 }
             }
+        }
+        pub async fn add_account(self, account: Account) -> Result<bool, Error> {
+            match sqlx::query(r#"INSERT INTO accounts (email, password) VALUES ($1, $2) RETURNING id, email, password"#)
+                .bind(account.email)
+                .bind(account.password)
+                .execute(&self.connection)
+                .await {
+                    Ok(_) => Ok(true),
+                    Err(error) => {
+                        tracing::event!(
+                            tracing::Level::ERROR, code = error.as_database_error()
+                            .unwrap()
+                            .code()
+                            .unwrap()
+                            .parse::<i32>()
+                            .unwrap(),
+                            db_message = error.as_database_error()
+                            .unwrap()
+                            .constraint()
+                            .unwrap()
+                        );
+                    Err(Error::DatabaseQueryError(error))
+                    }
+                }
         }
     }
 }
