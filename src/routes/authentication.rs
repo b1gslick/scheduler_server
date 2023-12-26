@@ -2,13 +2,13 @@ use argon2::{self, Config};
 use rand::Rng;
 use warp::http::StatusCode;
 
-    use tracing::{info, instrument};
 use crate::types::account::Account;
 use crate::Store;
+use tracing::{info, instrument};
 
 pub async fn register(store: Store, account: Account) -> Result<impl warp::Reply, warp::Rejection> {
     // let hashed_password = hash_password(account.password.as_bytes());
-    let hashed_password = account.password
+    let hashed_password = account.password;
     let account = Account {
         id: account.id,
         email: account.email,
