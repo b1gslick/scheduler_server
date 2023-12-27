@@ -6,6 +6,7 @@ use warp::{
     Rejection, Reply,
 };
 
+use argon2::Error as ArgonError;
 use tracing::{event, instrument, Level};
 
 #[derive(Debug)]
@@ -14,6 +15,9 @@ pub enum Error {
     MissingParameters,
     TimeSpentNotFound,
     DatabaseQueryError(sqlx::Error),
+    WrongPassword,
+    ArgonLibraryError(ArgonError),
+    CannotDecryptionToken,
 }
 
 impl std::fmt::Display for Error {
@@ -26,6 +30,15 @@ impl std::fmt::Display for Error {
             Error::TimeSpentNotFound => write!(f, "Time spent not Found"),
             Error::DatabaseQueryError(_) => {
                 write!(f, "Cannot update. invalid data.")
+            }
+            Error::WrongPassword => {
+                write!(f, "Wrong password")
+            }
+            Error::ArgonLibraryError(_) => {
+                write!(f, "Cannot verifiy password")
+            }
+            Error::CannotDecryptionToken => {
+                write!(f, "Cannot decrypt token provide")
             }
         }
     }
@@ -73,6 +86,18 @@ pub async fn return_error(r: Rejection) -> Result<impl Reply, Rejection> {
         Ok(warp::reply::with_status(
             error.to_string(),
             StatusCode::UNPROCESSABLE_ENTITY,
+        ))
+    } else if let Some(crate::Error::WrongPassword) = r.find() {
+        event!(Level::ERROR, "Entered wrong password");
+        Ok(warp::reply::with_status(
+            "Wrong E-Mail/Password combination".to_string(),
+            StatusCode::UNAUTHORIZED,
+        ))
+    } else if let Some(crate::Error::CannotDecryptionToken) = r.find() {
+        event!(Level::ERROR, "Can't decryption provided token");
+        Ok(warp::reply::with_status(
+            "Not authorized".to_string(),
+            StatusCode::NETWORK_AUTHENTICATION_REQUIRED,
         ))
     } else {
         Ok(warp::reply::with_status(

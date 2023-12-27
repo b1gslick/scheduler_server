@@ -4,6 +4,11 @@ FROM rust:${RUST_VERSION}-slim-bullseye AS build
 ARG APP_NAME
 WORKDIR /app
 
+RUN apt-get update && \
+  apt-get install -y pkg-config make g++ libssl-dev && \
+  rustup target add x86_64-unknown-linux-gnu
+
+
 RUN --mount=type=bind,source=src,target=src \
   --mount=type=bind,source=handle-errors,target=handle-errors \
   --mount=type=bind,source=Cargo.toml,target=Cargo.toml \
@@ -13,23 +18,11 @@ RUN --mount=type=bind,source=src,target=src \
   --mount=type=bind,source=migrations,target=migrations \
   <<EOF
 set -e
-cargo build --locked --release
-cp ./target/release/$APP_NAME /bin/server
+cargo build --locked --release --target x86_64-unknown-linux-gnu
+cp ./target/x86_64-unknown-linux-gnu/release/$APP_NAME /bin/server
 EOF
 
 FROM debian:bullseye-slim AS final
-
-RUN apt-get update && \
-  apt-get install -y wget && \
-  apt-get install -y openssl && \
-  apt-get install -y gnupg && \
-  apt-get install -y gcc
-# Set the Chrome repo.
-RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-  && echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list
-
-# Install Chrome.
-RUN apt-get update && apt-get -y install google-chrome-stable
 
 # create simple user
 ARG UID=10001

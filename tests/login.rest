@@ -21,10 +21,10 @@ Content-Type: application/json; charset=utf-8
 User-Agent: VRC
 
 # query
-POST /registration
+POST /login
 
 #body
 {
-  "email": "test2@test1.iv",
+  "email": "test2@test.iv",
   "password": "passfdsfsf"
 }
