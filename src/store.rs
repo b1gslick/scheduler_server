@@ -5,7 +5,7 @@ pub mod store {
     use sqlx::Row;
 
     use crate::types::{
-        account::Account,
+        account::{Account, AccountID},
         activities::{Activity, ActivityId, NewActivity},
         time_spent::{NewTimeSpent, TimeSpent, TimeSpentId},
     };
@@ -149,17 +149,15 @@ pub mod store {
         }
 
         pub async fn get_time_spent_by_id(&self, id: i32) -> Result<TimeSpent, Error> {
-            match sqlx::query(
-                r#"SELECT * from time_spent WHERE id = $1"#,
-            )
-            .bind(id)
-            .map(|row: PgRow| TimeSpent {
-                id: TimeSpentId(row.get("id")),
-                time: row.get("time"),
-                activity_id: ActivityId(row.get("activity_id")),
-            })
-            .fetch_one(&self.connection)
-            .await
+            match sqlx::query(r#"SELECT * from time_spent WHERE id = $1"#)
+                .bind(id)
+                .map(|row: PgRow| TimeSpent {
+                    id: TimeSpentId(row.get("id")),
+                    time: row.get("time"),
+                    activity_id: ActivityId(row.get("activity_id")),
+                })
+                .fetch_one(&self.connection)
+                .await
             {
                 Ok(time_spent) => Ok(time_spent),
                 Err(e) => {
@@ -191,6 +189,24 @@ pub mod store {
                     Err(Error::DatabaseQueryError(error))
                     }
                 }
+        }
+        pub async fn get_account(self, email: String) -> Result<Account, Error> {
+            match sqlx::query(r#"SELECT *  from accounts where email = $1"#)
+                .bind(email)
+                .map(|row: PgRow| Account {
+                    id: Some(AccountID(row.get("id"))),
+                    email: row.get("email"),
+                    password: row.get("password"),
+                })
+                .fetch_one(&self.connection)
+                .await
+            {
+                Ok(account) => Ok(account),
+                Err(error) => {
+                    tracing::event!(tracing::Level::ERROR, "{:?}", error);
+                    Err(Error::DatabaseQueryError(error))
+                }
+            }
         }
     }
 }
