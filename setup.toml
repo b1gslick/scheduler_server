@@ -1,5 +1,0 @@
-log_level = "debug"
-port = 8080
-database_host = "postgres_container"
-database_port = 5432
-database_name = "schedulerdb"

@@ -2,13 +2,12 @@
 use argon2::{self, Config};
 use chrono::prelude::*;
 use rand::Rng;
-use std::future;
+use std::{env, future};
 use warp::http::StatusCode;
 use warp::Filter;
 
+use crate::store::Store;
 use crate::types::account::{Account, AccountID, Session};
-use crate::Store;
-// use tracing::{info, instrument};
 
 pub async fn register(store: Store, account: Account) -> Result<impl warp::Reply, warp::Rejection> {
     // let hashed_password = hash_password(account.password.as_bytes());
@@ -61,9 +60,10 @@ fn verify_password(hash: &str, password: &str) -> Result<bool, argon2::Error> {
 fn issue_token(account_id: AccountID) -> String {
     let current_date_time = Utc::now();
     let dt = current_date_time + chrono::Duration::days(1);
+    let key = env::var("PASETO_KEY").unwrap();
 
     paseto::tokens::PasetoBuilder::new()
-        .set_encryption_key(&Vec::from("RANDOM WORDS WINTER MACINTOSH PC".as_bytes()))
+        .set_encryption_key(&Vec::from(key.as_bytes()))
         .set_expiration(&dt)
         .set_not_before(&Utc::now())
         .set_claim("account_id", serde_json::json!(account_id))
@@ -71,10 +71,11 @@ fn issue_token(account_id: AccountID) -> String {
         .expect("Failed to construct paseto token w/ builder!")
 }
 pub fn verify_token(token: String) -> Result<Session, handle_errors::Error> {
+    let key = env::var("PASETO_KEY").unwrap();
     let token = paseto::tokens::validate_local_token(
         &token,
         None,
-        &"RANDOM WORDS WINTER MACINTOSH PC".as_bytes(),
+        key.as_bytes(),
         &paseto::tokens::TimeBackend::Chrono,
     )
     .map_err(|_| handle_errors::Error::CannotDecryptionToken)?;

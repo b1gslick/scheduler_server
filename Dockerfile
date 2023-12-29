@@ -1,13 +1,20 @@
 ARG RUST_VERSION=1.74.1
 ARG APP_NAME=activities-scheduler-server
+ARG TARGET=x86_64-unknown-linux-musl
 FROM rust:${RUST_VERSION}-slim-bullseye AS build
 ARG APP_NAME
+ARG TARGET
 WORKDIR /app
 
 RUN apt-get update && \
-  apt-get install -y pkg-config make g++ libssl-dev && \
-  rustup target add x86_64-unknown-linux-gnu
+  apt-get install -y pkg-config make g++ libssl-dev musl-tools musl-dev build-essential gcc-x86-64-linux-gnu && \
+  rustup target add ${TARGET}
 
+# For a musl build on M1 Macs, these ENV variables have to be set
+ENV RUSTFLAGS='-C linker=x86_64-linux-gnu-gcc'
+ENV CC='gcc'
+ENV CC_x86_64_unknown_linux_musl=x86_64-linux-gnu-gcc
+ENV CC_x86_64-unknown-linux-musl=x86_64-linux-gnu-gcc
 
 RUN --mount=type=bind,source=src,target=src \
   --mount=type=bind,source=handle-errors,target=handle-errors \
@@ -18,8 +25,8 @@ RUN --mount=type=bind,source=src,target=src \
   --mount=type=bind,source=migrations,target=migrations \
   <<EOF
 set -e
-cargo build --locked --release --target x86_64-unknown-linux-gnu
-cp ./target/x86_64-unknown-linux-gnu/release/$APP_NAME /bin/server
+cargo build --locked --release --target ${TARGET}
+cp ./target/${TARGET}/release/${APP_NAME} /bin/server
 EOF
 
 FROM debian:bullseye-slim AS final
@@ -39,7 +46,7 @@ USER appuser
 # copy binaries
 COPY --from=build /bin/server /bin/
 # copy configuration file
-COPY ./setup.toml ./setup.toml
+COPY .env ./.env
 
 # expose port
 EXPOSE 8080

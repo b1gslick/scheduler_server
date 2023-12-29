@@ -12,6 +12,7 @@ use tracing::{event, instrument, Level};
 #[derive(Debug)]
 pub enum Error {
     ParseError(std::num::ParseIntError),
+    MigrationError(sqlx::migrate::MigrateError),
     MissingParameters,
     TimeSpentNotFound,
     DatabaseQueryError(sqlx::Error),
@@ -28,6 +29,7 @@ impl std::fmt::Display for Error {
                 write!(f, "Cannot parse parameter: {}", err)
             }
             Error::Unauthorized => write!(f, "No permission to change the underlying resource"),
+            Error::MigrationError(_) => write!(f, "Cannot migrate data"),
             Error::MissingParameters => write!(f, "Missing parameter"),
             Error::TimeSpentNotFound => write!(f, "Time spent not Found"),
             Error::DatabaseQueryError(_) => {

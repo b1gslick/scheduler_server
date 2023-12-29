@@ -3,6 +3,30 @@ name = "activities-scheduler-server"
 version = "0.1.0"
 edition = "2021"
 
+[profile.dev]
+opt-level = 0
+debug = true
+split-debuginfo = '...' # Platform-specific.
+debug-assertions = true
+overflow-checks = true
+lto = false
+panic = 'unwind'
+incremental = true
+codegen-units = 256
+rpath = false
+
+[profile.release]
+opt-level = 3
+debug = false
+split-debuginfo = '...'  # Platform-specific.
+debug-assertions = false
+overflow-checks = false
+lto = false
+panic = 'unwind'
+incremental = false
+codegen-units = 16
+rpath = false
+
 [dependencies]
 tokio = { version = "1.34.0", features = ["full"] }
 warp = { version = "0.3.6" }
@@ -22,7 +46,8 @@ handle-errors = { path = "handle-errors" }
 
 # config
 clap = { version = "4.4.8", features = ["derive"] }
-config = { version = "0.13.4", features = ["toml"] }
+proc-macro2 = "1.0.71"
+dotenv = { version = "0.15.0" }
 
 # db
 sqlx = { version = "0.7.3", features = [
@@ -38,6 +63,7 @@ rand = { version = "0.8.5" }
 rust-argon2 = { version = "2.0.0" }
 paseto = { version = "2.0.2" }
 openssl-sys = "0.9.98"
+openssl = { version = "0.10.62", features = ["vendored"] }
 
 # time 
 chrono = { version = "0.4.31" }
