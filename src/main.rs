@@ -18,11 +18,15 @@ struct Args {
     /// Web server port
     port: u16,
     /// url to database
-    db_url: String,
+    database_host: String,
+    /// database port
+    database_port: String,
+    /// database name
+    database_name: String,
 }
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), sqlx::Error> {
     let config = Config::builder()
         .add_source(config::File::with_name("setup"))
         .build()
@@ -37,9 +41,12 @@ async fn main() {
     });
 
     let db_string = format!(
-        "postgres://scheduler:scheduler@{}:5432/schedulerdb",
-        config.db_url
+        "postgres://scheduler:scheduler@{}:{}/{}",
+        config.database_host,
+        config.database_port,
+        config.database_name,
     );
+
 
     let store = Store::new(&db_string).await;
     sqlx::migrate!()
@@ -63,90 +70,48 @@ async fn main() {
         .and(warp::path::end())
         .and(warp::query())
         .and(store_filter.clone())
-        .and_then(get_activities)
-        .with(warp::trace(|info| {
-            tracing::info_span!(
-                  "get_activities request",
-                  method = %info.method(),
-                  path = %info.path(),
-                  id = %uuid::Uuid::new_v4(),
-            )
-        }));
+        .and_then(get_activities);
 
     let add_activity = warp::post()
         .and(warp::path("activities"))
         .and(warp::path::end())
+        .and(routes::authentication::auth())
         .and(store_filter.clone())
         .and(warp::body::json())
-        .and_then(add_activity)
-        .with(warp::trace(|info| {
-            tracing::info_span!(
-                  "add_activity request",
-                  method = %info.method(),
-                  path = %info.path(),
-                  id = %uuid::Uuid::new_v4(),
-            )
-        }));
+        .and_then(add_activity);
 
     let update_activities = warp::put()
         .and(warp::path("activities"))
         .and(warp::path::param::<i32>())
         .and(warp::path::end())
+        .and(routes::authentication::auth())
         .and(store_filter.clone())
         .and(warp::body::json())
-        .and_then(update_activities)
-        .with(warp::trace(|info| {
-            tracing::info_span!(
-                  "update_activities request",
-                  method = %info.method(),
-                  path = %info.path(),
-                  id = %uuid::Uuid::new_v4(),
-            )
-        }));
+        .and_then(update_activities);
 
     let add_time_spent = warp::post()
         .and(warp::path("time_spent"))
         .and(warp::path::end())
+        .and(routes::authentication::auth())
         .and(store_filter.clone())
         .and(warp::body::json())
-        .and_then(add_time_spent)
-        .with(warp::trace(|info| {
-            tracing::info_span!(
-                  "add_time_spent request",
-                  method = %info.method(),
-                  path = %info.path(),
-                  id = %uuid::Uuid::new_v4(),
-            )
-        }));
+        .and_then(add_time_spent);
+
     let get_time_spent = warp::get()
         .and(warp::path("time_spent"))
         .and(warp::path::param::<i32>())
         .and(warp::path::end())
+        .and(routes::authentication::auth())
         .and(store_filter.clone())
-        .and_then(get_tine_spen_by_id)
-        .with(warp::trace(|info| {
-            tracing::info_span!(
-                  "get_time_spent request",
-                  method = %info.method(),
-                  path = %info.path(),
-                  id = %uuid::Uuid::new_v4(),
-            )
-        }));
+        .and_then(get_tine_spen_by_id);
 
     let deleted_activities = warp::delete()
         .and(warp::path("activities"))
         .and(warp::path::param::<i32>())
         .and(warp::path::end())
+        .and(routes::authentication::auth())
         .and(store_filter.clone())
-        .and_then(deleted_activities)
-        .with(warp::trace(|info| {
-            tracing::info_span!(
-                  "deleted_activities request",
-                  method = %info.method(),
-                  path = %info.path(),
-                  id = %uuid::Uuid::new_v4(),
-            )
-        }));
+        .and_then(deleted_activities);
 
     let registration = warp::post()
         .and(warp::path("registration"))
@@ -176,4 +141,5 @@ async fn main() {
 
     // warp::serve(routes).run(([127, 0, 0, 1], config.port)).await;
     warp::serve(routes).run(([0, 0, 0, 0], config.port)).await;
+    Ok(())
 }

@@ -18,6 +18,7 @@ pub enum Error {
     WrongPassword,
     ArgonLibraryError(ArgonError),
     CannotDecryptionToken,
+    Unauthorized,
 }
 
 impl std::fmt::Display for Error {
@@ -26,6 +27,7 @@ impl std::fmt::Display for Error {
             Error::ParseError(ref err) => {
                 write!(f, "Cannot parse parameter: {}", err)
             }
+            Error::Unauthorized => write!(f, "No permission to change the underlying resource"),
             Error::MissingParameters => write!(f, "Missing parameter"),
             Error::TimeSpentNotFound => write!(f, "Time spent not Found"),
             Error::DatabaseQueryError(_) => {
@@ -91,6 +93,12 @@ pub async fn return_error(r: Rejection) -> Result<impl Reply, Rejection> {
         event!(Level::ERROR, "Entered wrong password");
         Ok(warp::reply::with_status(
             "Wrong E-Mail/Password combination".to_string(),
+            StatusCode::UNAUTHORIZED,
+        ))
+    } else if let Some(crate::Error::Unauthorized) = r.find() {
+        event!(Level::ERROR, "Not matching account id");
+        Ok(warp::reply::with_status(
+            "No permission to change underlying resource".to_string(),
             StatusCode::UNAUTHORIZED,
         ))
     } else if let Some(crate::Error::CannotDecryptionToken) = r.find() {
