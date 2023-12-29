@@ -15,7 +15,6 @@ pub mod store {
     pub struct Store {
         pub connection: PgPool,
     }
-
     impl Store {
         pub async fn new(db_url: &str) -> Self {
             let db_pool = match PgPoolOptions::new()
@@ -54,13 +53,18 @@ pub mod store {
                 }
             }
         }
-        pub async fn add_activity(self, new_activity: NewActivity) -> Result<Activity, Error> {
+        pub async fn add_activity(
+            self,
+            new_activity: NewActivity,
+            account_id: AccountID,
+        ) -> Result<Activity, Error> {
             match sqlx::query(
-                r#"INSERT INTO activities (title, content, time) VALUES ($1, $2, $3) RETURNING id, title, content, time"#,
+                r#"INSERT INTO activities (title, content, time, account_id) VALUES ($1, $2, $3, $4) RETURNING id, title, content, time"#,
             )
             .bind(new_activity.title)
             .bind(new_activity.content)
             .bind(new_activity.time)
+            .bind(account_id.0)
             .map(|row: PgRow| Activity {
                 id: ActivityId(row.get("id")),
                 title: row.get("title"),
@@ -82,17 +86,19 @@ pub mod store {
             self,
             activity: Activity,
             activity_id: i32,
+            account_id: AccountID,
         ) -> Result<Activity, Error> {
             match sqlx::query(
                 r#"UPDATE activities
             SET title = $1, content = $2, time = $3
-            WHERE id = $4
+            WHERE id = $4 and account_id =-$5
             RETURNING id, title, content, time"#,
             )
             .bind(activity.title)
             .bind(activity.content)
             .bind(activity.time)
             .bind(activity_id)
+            .bind(account_id.0)
             .map(|row: PgRow| Activity {
                 id: ActivityId(row.get("id")),
                 title: row.get("title"),
@@ -109,9 +115,14 @@ pub mod store {
                 }
             }
         }
-        pub async fn delete_activity(&self, activity_id: i32) -> Result<bool, Error> {
-            match sqlx::query(r#"DELETE FROM activities WHERE id = $1"#)
+        pub async fn delete_activity(
+            &self,
+            activity_id: i32,
+            account_id: AccountID,
+        ) -> Result<bool, Error> {
+            match sqlx::query(r#"DELETE FROM activities WHERE id = $1 and account_id = $2"#)
                 .bind(activity_id)
+                .bind(account_id.0)
                 .execute(&self.connection)
                 .await
             {
@@ -125,12 +136,14 @@ pub mod store {
         pub async fn add_time_spent(
             &self,
             new_time_spent: NewTimeSpent,
+            account_id: AccountID,
         ) -> Result<TimeSpent, Error> {
             match sqlx::query(
-                r#"INSERT INTO time_spent (time, activity_id) VALUES ($1, $2) RETURNING id, time, activity_id"#,
+                r#"INSERT INTO time_spent (time, activity_id, account_id) VALUES ($1, $2, $3) RETURNING id, time, activity_id"#,
             )
             .bind(new_time_spent.time)
             .bind(new_time_spent.activity_id.0)
+            .bind(account_id.0)
             .map(|row: PgRow| TimeSpent {
                 id: TimeSpentId(row.get("id")),
                 time: row.get("time"),
@@ -148,9 +161,14 @@ pub mod store {
             }
         }
 
-        pub async fn get_time_spent_by_id(&self, id: i32) -> Result<TimeSpent, Error> {
-            match sqlx::query(r#"SELECT * from time_spent WHERE id = $1"#)
+        pub async fn get_time_spent_by_id(
+            &self,
+            id: i32,
+            account_id: AccountID,
+        ) -> Result<TimeSpent, Error> {
+            match sqlx::query(r#"SELECT * from time_spent WHERE id = $1 and accound_id = $2"#)
                 .bind(id)
+                .bind(account_id.0)
                 .map(|row: PgRow| TimeSpent {
                     id: TimeSpentId(row.get("id")),
                     time: row.get("time"),
@@ -205,6 +223,24 @@ pub mod store {
                 Err(error) => {
                     tracing::event!(tracing::Level::ERROR, "{:?}", error);
                     Err(Error::DatabaseQueryError(error))
+                }
+            }
+        }
+        pub async fn is_activity_owner(
+            &self,
+            activity_id: i32,
+            account_id: &AccountID,
+        ) -> Result<bool, Error> {
+            match sqlx::query("SELECT * from activities where id = $1 and account_id = $2")
+                .bind(activity_id)
+                .bind(account_id.0)
+                .fetch_optional(&self.connection)
+                .await
+            {
+                Ok(activity) => Ok(activity.is_some()),
+                Err(e) => {
+                    tracing::event!(tracing::Level::ERROR, "{:?}", e);
+                    Err(Error::DatabaseQueryError(e))
                 }
             }
         }
