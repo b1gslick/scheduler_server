@@ -923,3 +923,26 @@
 2024-01-01 18:15:24.898 EET [59311] FATAL:  role "timon" does not exist
 2024-01-01 18:19:24.373 EET [58803] LOG:  checkpoint starting: time
 2024-01-01 18:19:25.719 EET [58803] LOG:  checkpoint complete: wrote 16 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=1.321 s, sync=0.008 s, total=1.347 s; sync files=20, longest=0.004 s, average=0.001 s; distance=34 kB, estimate=34 kB; lsn=0/28135E8, redo lsn=0/28135B0
+2024-01-02 13:53:11.603 EET [11443] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-01-02 13:53:11.630 EET [11443] LOG:  listening on IPv6 address "::1", port 5432
+2024-01-02 13:53:11.630 EET [11443] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-01-02 13:53:11.634 EET [11443] FATAL:  could not create lock file "/run/postgresql/.s.PGSQL.5432.lock": No such file or directory
+2024-01-02 13:53:11.639 EET [11443] LOG:  database system is shut down
+2024-01-02 13:53:49.511 EET [11650] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-01-02 13:53:49.514 EET [11650] LOG:  listening on IPv6 address "::1", port 5432
+2024-01-02 13:53:49.514 EET [11650] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-01-02 13:53:49.524 EET [11650] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2024-01-02 13:53:49.539 EET [11653] LOG:  database system was interrupted; last known up at 2024-01-01 18:19:25 EET
+2024-01-02 13:53:49.704 EET [11653] LOG:  database system was not properly shut down; automatic recovery in progress
+2024-01-02 13:53:49.714 EET [11653] LOG:  redo starts at 0/28135B0
+2024-01-02 13:53:49.714 EET [11653] LOG:  invalid record length at 0/2813698: expected at least 24, got 0
+2024-01-02 13:53:49.714 EET [11653] LOG:  redo done at 0/2813660 system usage: CPU: user: 0.00 s, system: 0.00 s, elapsed: 0.00 s
+2024-01-02 13:53:49.722 EET [11651] LOG:  checkpoint starting: end-of-recovery immediate wait
+2024-01-02 13:53:49.743 EET [11651] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.006 s, sync=0.002 s, total=0.023 s; sync files=2, longest=0.002 s, average=0.001 s; distance=0 kB, estimate=0 kB; lsn=0/2813698, redo lsn=0/2813698
+2024-01-02 13:53:49.752 EET [11650] LOG:  database system is ready to accept connections
+2024-01-02 13:53:49.927 EET [11659] ERROR:  database "test" already exists
+2024-01-02 13:53:49.927 EET [11659] STATEMENT:  CREATE DATABASE test OWNER username
+2024-01-02 13:55:19.501 EET [12083] FATAL:  role "timon" does not exist
+2024-01-02 13:55:19.520 EET [12088] FATAL:  role "timon" does not exist
+2024-01-02 13:58:49.841 EET [11651] LOG:  checkpoint starting: time
+2024-01-02 13:58:51.196 EET [11651] LOG:  checkpoint complete: wrote 14 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=1.311 s, sync=0.006 s, total=1.355 s; sync files=19, longest=0.004 s, average=0.001 s; distance=35 kB, estimate=35 kB; lsn=0/281C640, redo lsn=0/281C608

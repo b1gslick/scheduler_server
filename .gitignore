@@ -15,3 +15,4 @@ Cargo.lock
 *.pdb
 
 queries.yaml
+integration-tests/test_cluster/*
