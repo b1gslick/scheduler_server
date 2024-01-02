@@ -1,0 +1,925 @@
+2023-12-30 21:39:16.626 EET [90917] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2023-12-30 21:39:16.629 EET [90917] LOG:  listening on IPv6 address "::1", port 5432
+2023-12-30 21:39:16.629 EET [90917] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-12-30 21:39:16.631 EET [90917] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2023-12-30 21:39:16.641 EET [90920] LOG:  database system was shut down at 2023-12-30 21:38:59 EET
+2023-12-30 21:39:16.652 EET [90917] LOG:  database system is ready to accept connections
+2023-12-30 21:39:26.372 EET [90965] FATAL:  role "timon" does not exist
+2023-12-30 21:39:57.588 EET [90986] ERROR:  syntax error at or near "/" at character 9
+2023-12-30 21:39:57.588 EET [90986] STATEMENT:  show db
+	/db
+	create database test
+	create database test;
+2023-12-30 21:41:36.096 EET [90986] ERROR:  syntax error at or near "d" at character 1
+2023-12-30 21:41:36.096 EET [90986] STATEMENT:  d
+	create user username with encrypted password 'password';
+2023-12-30 21:42:16.967 EET [91726] ERROR:  syntax error at or near "/" at character 1
+2023-12-30 21:42:16.967 EET [91726] STATEMENT:  /dt
+	/d
+	create database test;
+2023-12-30 21:42:18.967 EET [91726] ERROR:  permission denied to create database
+2023-12-30 21:42:18.967 EET [91726] STATEMENT:  create database test;
+2023-12-30 21:42:27.088 EET [91726] ERROR:  unrecognized configuration parameter "db"
+2023-12-30 21:42:27.088 EET [91726] STATEMENT:  show db;
+2023-12-30 21:43:21.277 EET [91726] ERROR:  syntax error at or near "use" at character 1
+2023-12-30 21:43:21.277 EET [91726] STATEMENT:  use test;
+2023-12-30 21:43:25.659 EET [91726] ERROR:  syntax error at or near "use" at character 1
+2023-12-30 21:43:25.659 EET [91726] STATEMENT:  use db test;
+2023-12-30 21:44:16.712 EET [90918] LOG:  checkpoint starting: time
+2023-12-30 21:45:46.456 EET [92174] FATAL:  role "timon" does not exist
+2023-12-30 21:45:46.480 EET [92176] ERROR:  permission denied for schema public at character 29
+2023-12-30 21:45:46.480 EET [92176] STATEMENT:  
+	CREATE TABLE IF NOT EXISTS _sqlx_migrations (
+	    version BIGINT PRIMARY KEY,
+	    description TEXT NOT NULL,
+	    installed_on TIMESTAMPTZ NOT NULL DEFAULT now(),
+	    success BOOLEAN NOT NULL,
+	    checksum BYTEA NOT NULL,
+	    execution_time BIGINT NOT NULL
+	);
+	                
+2023-12-30 21:45:54.103 EET [90918] LOG:  checkpoint complete: wrote 973 buffers (5.9%); 0 WAL file(s) added, 0 removed, 0 recycled; write=97.355 s, sync=0.021 s, total=97.391 s; sync files=317, longest=0.003 s, average=0.001 s; distance=4524 kB, estimate=4524 kB; lsn=0/195AFE0, redo lsn=0/195AFA8
+2023-12-30 21:50:06.598 EET [92990] FATAL:  role "timon" does not exist
+2023-12-30 21:50:06.620 EET [92992] ERROR:  permission denied for schema public at character 29
+2023-12-30 21:50:06.620 EET [92992] STATEMENT:  
+	CREATE TABLE IF NOT EXISTS _sqlx_migrations (
+	    version BIGINT PRIMARY KEY,
+	    description TEXT NOT NULL,
+	    installed_on TIMESTAMPTZ NOT NULL DEFAULT now(),
+	    success BOOLEAN NOT NULL,
+	    checksum BYTEA NOT NULL,
+	    execution_time BIGINT NOT NULL
+	);
+	                
+2023-12-30 21:54:07.042 EET [93163] FATAL:  role "timon" does not exist
+2023-12-30 21:54:07.063 EET [93165] ERROR:  permission denied for schema public at character 29
+2023-12-30 21:54:07.063 EET [93165] STATEMENT:  
+	CREATE TABLE IF NOT EXISTS _sqlx_migrations (
+	    version BIGINT PRIMARY KEY,
+	    description TEXT NOT NULL,
+	    installed_on TIMESTAMPTZ NOT NULL DEFAULT now(),
+	    success BOOLEAN NOT NULL,
+	    checksum BYTEA NOT NULL,
+	    execution_time BIGINT NOT NULL
+	);
+	                
+2023-12-30 21:54:16.289 EET [90918] LOG:  checkpoint starting: time
+2023-12-30 21:54:17.135 EET [90918] LOG:  checkpoint complete: wrote 9 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.807 s, sync=0.023 s, total=0.846 s; sync files=9, longest=0.021 s, average=0.003 s; distance=5 kB, estimate=4072 kB; lsn=0/195C520, redo lsn=0/195C4E8
+2023-12-30 21:54:58.061 EET [90918] LOG:  checkpoint starting: immediate force wait
+2023-12-30 21:54:58.080 EET [90918] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.003 s, sync=0.003 s, total=0.019 s; sync files=3, longest=0.003 s, average=0.001 s; distance=1 kB, estimate=3665 kB; lsn=0/195CB40, redo lsn=0/195CB08
+2023-12-30 21:55:28.234 EET [93235] FATAL:  role "timon" does not exist
+2023-12-30 21:55:28.369 EET [93237] ERROR:  duplicate key value violates unique constraint "_sqlx_migrations_pkey"
+2023-12-30 21:55:28.369 EET [93237] DETAIL:  Key (version)=(20231226194208) already exists.
+2023-12-30 21:55:28.369 EET [93237] STATEMENT:  
+	    INSERT INTO _sqlx_migrations ( version, description, success, checksum, execution_time )
+	    VALUES ( $1, $2, TRUE, $3, -1 )
+	                
+2023-12-30 21:56:44.041 EET [93332] ERROR:  syntax error at or near "(" at character 33
+2023-12-30 21:56:44.041 EET [93332] STATEMENT:  ALTER SEQUENCE seq RESTART WITH (SELECT (max(id) + 1) FROM table);
+2023-12-30 21:58:31.027 EET [93332] ERROR:  relation "tablename" does not exist at character 56
+2023-12-30 21:58:31.027 EET [93332] STATEMENT:  SELECT setval('tablename_id_seq', (SELECT MAX(id) FROM tablename)+1);
+2023-12-30 21:58:50.002 EET [93332] ERROR:  relation "_sqlx_migrations" does not exist at character 56
+2023-12-30 21:58:50.002 EET [93332] STATEMENT:  SELECT setval('tablename_id_seq', (SELECT MAX(id) FROM _sqlx_migrations)+1);
+2023-12-30 21:59:58.138 EET [90918] LOG:  checkpoint starting: time
+2023-12-30 22:01:34.629 EET [90918] LOG:  checkpoint complete: wrote 957 buffers (5.8%); 1 WAL file(s) added, 0 removed, 0 recycled; write=96.167 s, sync=0.055 s, total=96.492 s; sync files=328, longest=0.015 s, average=0.001 s; distance=4402 kB, estimate=4402 kB; lsn=0/1DA9600, redo lsn=0/1DA95C8
+2023-12-30 22:06:12.151 EET [95260] FATAL:  role "timon" does not exist
+2023-12-30 22:07:49.971 EET [96110] FATAL:  role "timon" does not exist
+2023-12-30 22:09:26.027 EET [90917] LOG:  received fast shutdown request
+2023-12-30 22:09:26.034 EET [90917] LOG:  aborting any active transactions
+2023-12-30 22:09:26.044 EET [90917] LOG:  background worker "logical replication launcher" (PID 90923) exited with exit code 1
+2023-12-30 22:09:26.044 EET [90918] LOG:  shutting down
+2023-12-30 22:09:26.047 EET [90918] LOG:  checkpoint starting: shutdown immediate
+2023-12-30 22:09:26.062 EET [90918] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.003 s, total=0.019 s; sync files=3, longest=0.003 s, average=0.001 s; distance=0 kB, estimate=3962 kB; lsn=0/1DA96B0, redo lsn=0/1DA96B0
+2023-12-30 22:09:26.076 EET [90917] LOG:  database system is shut down
+2023-12-30 22:09:26.296 EET [96551] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2023-12-30 22:09:26.299 EET [96551] LOG:  listening on IPv6 address "::1", port 5432
+2023-12-30 22:09:26.299 EET [96551] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-12-30 22:09:26.301 EET [96551] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2023-12-30 22:09:26.316 EET [96554] LOG:  database system was shut down at 2023-12-30 22:09:26 EET
+2023-12-30 22:09:26.334 EET [96551] LOG:  database system is ready to accept connections
+2023-12-30 22:09:48.907 EET [96551] LOG:  received fast shutdown request
+2023-12-30 22:09:48.932 EET [96551] LOG:  aborting any active transactions
+2023-12-30 22:09:48.942 EET [96551] LOG:  background worker "logical replication launcher" (PID 96557) exited with exit code 1
+2023-12-30 22:09:48.942 EET [96552] LOG:  shutting down
+2023-12-30 22:09:48.946 EET [96552] LOG:  checkpoint starting: shutdown immediate
+2023-12-30 22:09:48.966 EET [96552] LOG:  checkpoint complete: wrote 5 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.006 s, sync=0.003 s, total=0.024 s; sync files=3, longest=0.003 s, average=0.001 s; distance=0 kB, estimate=0 kB; lsn=0/1DA9760, redo lsn=0/1DA9760
+2023-12-30 22:09:48.975 EET [96551] LOG:  database system is shut down
+2023-12-30 22:09:49.140 EET [96720] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2023-12-30 22:09:49.142 EET [96720] LOG:  listening on IPv6 address "::1", port 5432
+2023-12-30 22:09:49.142 EET [96720] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-12-30 22:09:49.145 EET [96720] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2023-12-30 22:09:49.155 EET [96723] LOG:  database system was shut down at 2023-12-30 22:09:48 EET
+2023-12-30 22:09:49.167 EET [96720] LOG:  database system is ready to accept connections
+2023-12-30 22:10:44.366 EET [97009] FATAL:  role "timon" does not exist
+2023-12-30 22:10:44.383 EET [97014] FATAL:  role "timon" does not exist
+2023-12-30 22:13:32.051 EET [96720] LOG:  received fast shutdown request
+2023-12-30 22:13:32.055 EET [96720] LOG:  aborting any active transactions
+2023-12-30 22:13:32.067 EET [96720] LOG:  background worker "logical replication launcher" (PID 96726) exited with exit code 1
+2023-12-30 22:13:32.067 EET [96721] LOG:  shutting down
+2023-12-30 22:13:32.070 EET [96721] LOG:  checkpoint starting: shutdown immediate
+2023-12-30 22:13:32.089 EET [96721] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.007 s, sync=0.002 s, total=0.022 s; sync files=2, longest=0.002 s, average=0.001 s; distance=0 kB, estimate=0 kB; lsn=0/1DA9810, redo lsn=0/1DA9810
+2023-12-30 22:13:32.100 EET [96720] LOG:  database system is shut down
+2023-12-30 22:13:32.334 EET [97785] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2023-12-30 22:13:32.337 EET [97785] LOG:  listening on IPv6 address "::1", port 5432
+2023-12-30 22:13:32.337 EET [97785] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-12-30 22:13:32.339 EET [97785] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2023-12-30 22:13:32.350 EET [97788] LOG:  database system was shut down at 2023-12-30 22:13:32 EET
+2023-12-30 22:13:32.363 EET [97785] LOG:  database system is ready to accept connections
+2023-12-30 22:16:09.898 EET [97785] LOG:  received fast shutdown request
+2023-12-30 22:16:09.902 EET [97785] LOG:  aborting any active transactions
+2023-12-30 22:16:09.906 EET [97785] LOG:  background worker "logical replication launcher" (PID 97791) exited with exit code 1
+2023-12-30 22:16:09.913 EET [97786] LOG:  shutting down
+2023-12-30 22:16:09.916 EET [97786] LOG:  checkpoint starting: shutdown immediate
+2023-12-30 22:16:09.935 EET [97786] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.006 s, sync=0.001 s, total=0.022 s; sync files=2, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=0 kB; lsn=0/1DA98C0, redo lsn=0/1DA98C0
+2023-12-30 22:16:09.943 EET [97785] LOG:  database system is shut down
+2023-12-30 22:16:10.128 EET [98025] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2023-12-30 22:16:10.130 EET [98025] LOG:  listening on IPv6 address "::1", port 5432
+2023-12-30 22:16:10.130 EET [98025] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-12-30 22:16:10.133 EET [98025] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2023-12-30 22:16:10.143 EET [98028] LOG:  database system was shut down at 2023-12-30 22:16:09 EET
+2023-12-30 22:16:10.155 EET [98025] LOG:  database system is ready to accept connections
+2023-12-30 22:17:03.644 EET [98313] FATAL:  role "timon" does not exist
+2023-12-30 22:17:03.664 EET [98318] FATAL:  role "timon" does not exist
+2023-12-30 22:17:28.565 EET [98433] FATAL:  role "timon" does not exist
+2023-12-30 22:21:10.241 EET [98026] LOG:  checkpoint starting: time
+2023-12-30 22:21:10.285 EET [98026] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.006 s, sync=0.003 s, total=0.045 s; sync files=2, longest=0.002 s, average=0.002 s; distance=0 kB, estimate=0 kB; lsn=0/1DA99A8, redo lsn=0/1DA9970
+2023-12-30 22:21:59.793 EET [98025] LOG:  received fast shutdown request
+2023-12-30 22:21:59.799 EET [98025] LOG:  aborting any active transactions
+2023-12-30 22:21:59.813 EET [98025] LOG:  background worker "logical replication launcher" (PID 98031) exited with exit code 1
+2023-12-30 22:21:59.813 EET [98026] LOG:  shutting down
+2023-12-30 22:21:59.817 EET [98026] LOG:  checkpoint starting: shutdown immediate
+2023-12-30 22:21:59.830 EET [98026] LOG:  checkpoint complete: wrote 0 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.017 s; sync files=0, longest=0.000 s, average=0.000 s; distance=0 kB, estimate=0 kB; lsn=0/1DA9A58, redo lsn=0/1DA9A58
+2023-12-30 22:21:59.841 EET [98025] LOG:  database system is shut down
+2023-12-30 22:22:00.111 EET [100149] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2023-12-30 22:22:00.116 EET [100149] LOG:  listening on IPv6 address "::1", port 5432
+2023-12-30 22:22:00.116 EET [100149] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-12-30 22:22:00.119 EET [100149] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2023-12-30 22:22:00.132 EET [100152] LOG:  database system was shut down at 2023-12-30 22:21:59 EET
+2023-12-30 22:22:00.149 EET [100149] LOG:  database system is ready to accept connections
+2023-12-30 22:22:01.815 EET [100169] FATAL:  role "timon" does not exist
+2023-12-30 22:22:01.841 EET [100174] FATAL:  role "timon" does not exist
+2023-12-30 22:22:27.417 EET [100150] LOG:  checkpoint starting: immediate force wait
+2023-12-30 22:22:27.439 EET [100150] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.007 s, sync=0.003 s, total=0.023 s; sync files=5, longest=0.003 s, average=0.001 s; distance=2 kB, estimate=2 kB; lsn=0/1DAA5C0, redo lsn=0/1DAA588
+2023-12-30 22:22:32.241 EET [100305] FATAL:  database "test" does not exist
+2023-12-30 22:22:39.305 EET [100149] LOG:  received fast shutdown request
+2023-12-30 22:22:39.333 EET [100149] LOG:  aborting any active transactions
+2023-12-30 22:22:39.350 EET [100149] LOG:  background worker "logical replication launcher" (PID 100155) exited with exit code 1
+2023-12-30 22:22:39.350 EET [100150] LOG:  shutting down
+2023-12-30 22:22:39.353 EET [100150] LOG:  checkpoint starting: shutdown immediate
+2023-12-30 22:22:39.370 EET [100150] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.004 s, sync=0.003 s, total=0.020 s; sync files=3, longest=0.003 s, average=0.001 s; distance=0 kB, estimate=2 kB; lsn=0/1DAA710, redo lsn=0/1DAA710
+2023-12-30 22:22:39.380 EET [100149] LOG:  database system is shut down
+2023-12-30 22:22:39.544 EET [100330] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2023-12-30 22:22:39.546 EET [100330] LOG:  listening on IPv6 address "::1", port 5432
+2023-12-30 22:22:39.546 EET [100330] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-12-30 22:22:39.548 EET [100330] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2023-12-30 22:22:39.558 EET [100333] LOG:  database system was shut down at 2023-12-30 22:22:39 EET
+2023-12-30 22:22:39.571 EET [100330] LOG:  database system is ready to accept connections
+2023-12-30 22:22:39.705 EET [100341] FATAL:  database "test" does not exist
+2023-12-30 22:23:06.893 EET [100495] ERROR:  syntax error at or near "to" at character 28
+2023-12-30 22:23:06.893 EET [100495] STATEMENT:  create database test owner to username;
+2023-12-30 22:23:26.253 EET [100330] LOG:  received fast shutdown request
+2023-12-30 22:23:26.393 EET [100330] LOG:  aborting any active transactions
+2023-12-30 22:23:26.397 EET [100495] FATAL:  terminating connection due to administrator command
+2023-12-30 22:23:26.402 EET [100330] LOG:  background worker "logical replication launcher" (PID 100336) exited with exit code 1
+2023-12-30 22:23:26.403 EET [100331] LOG:  shutting down
+2023-12-30 22:23:26.406 EET [100331] LOG:  checkpoint starting: shutdown immediate
+2023-12-30 22:23:26.500 EET [100331] LOG:  checkpoint complete: wrote 936 buffers (5.7%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.059 s, sync=0.022 s, total=0.097 s; sync files=304, longest=0.004 s, average=0.001 s; distance=4282 kB, estimate=4282 kB; lsn=0/21D9268, redo lsn=0/21D9268
+2023-12-30 22:23:26.512 EET [100330] LOG:  database system is shut down
+2023-12-30 22:23:26.804 EET [100814] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2023-12-30 22:23:26.806 EET [100814] LOG:  listening on IPv6 address "::1", port 5432
+2023-12-30 22:23:26.806 EET [100814] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-12-30 22:23:26.808 EET [100814] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2023-12-30 22:23:26.819 EET [100817] LOG:  database system was shut down at 2023-12-30 22:23:26 EET
+2023-12-30 22:23:26.832 EET [100814] LOG:  database system is ready to accept connections
+2023-12-30 22:28:26.916 EET [100815] LOG:  checkpoint starting: time
+2023-12-30 22:28:26.938 EET [100815] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.006 s, sync=0.002 s, total=0.023 s; sync files=2, longest=0.002 s, average=0.001 s; distance=0 kB, estimate=0 kB; lsn=0/21D9350, redo lsn=0/21D9318
+2023-12-30 22:39:28.717 EET [112357] FATAL:  role "timon" does not exist
+2023-12-30 22:39:28.736 EET [112362] FATAL:  role "timon" does not exist
+2023-12-30 22:39:28.929 EET [112364] ERROR:  duplicate key value violates unique constraint "_sqlx_migrations_pkey"
+2023-12-30 22:39:28.929 EET [112364] DETAIL:  Key (version)=(20231226194208) already exists.
+2023-12-30 22:39:28.929 EET [112364] STATEMENT:  
+	    INSERT INTO _sqlx_migrations ( version, description, success, checksum, execution_time )
+	    VALUES ( $1, $2, TRUE, $3, -1 )
+	                
+2023-12-30 22:43:27.237 EET [100815] LOG:  checkpoint starting: time
+2023-12-30 22:43:35.603 EET [100815] LOG:  checkpoint complete: wrote 84 buffers (0.5%); 0 WAL file(s) added, 0 removed, 0 recycled; write=8.340 s, sync=0.010 s, total=8.367 s; sync files=69, longest=0.004 s, average=0.001 s; distance=309 kB, estimate=309 kB; lsn=0/2226860, redo lsn=0/2226828
+2023-12-31 06:44:19.086 EET [114996] ERROR:  relation "_sqlx_migrations" does not exist at character 15
+2023-12-31 06:44:19.086 EET [114996] STATEMENT:  select * from _sqlx_migrations;
+2023-12-31 06:48:18.458 EET [100814] LOG:  received fast shutdown request
+2023-12-31 06:48:18.488 EET [100814] LOG:  aborting any active transactions
+2023-12-31 06:48:18.518 EET [100814] LOG:  background worker "logical replication launcher" (PID 100820) exited with exit code 1
+2023-12-31 06:48:18.525 EET [100815] LOG:  shutting down
+2023-12-31 06:48:18.528 EET [100815] LOG:  checkpoint starting: shutdown immediate
+2023-12-31 06:48:18.559 EET [100815] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.006 s, sync=0.003 s, total=0.034 s; sync files=3, longest=0.003 s, average=0.001 s; distance=0 kB, estimate=278 kB; lsn=0/2226910, redo lsn=0/2226910
+2023-12-31 06:48:18.581 EET [100814] LOG:  database system is shut down
+2023-12-31 07:01:34.838 EET [125143] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2023-12-31 07:01:34.842 EET [125143] LOG:  listening on IPv6 address "::1", port 5432
+2023-12-31 07:01:34.842 EET [125143] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-12-31 07:01:34.844 EET [125143] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2023-12-31 07:01:34.856 EET [125146] LOG:  database system was shut down at 2023-12-31 06:48:18 EET
+2023-12-31 07:01:34.881 EET [125143] LOG:  database system is ready to accept connections
+2023-12-31 07:03:17.804 EET [126275] FATAL:  role "timon" does not exist
+2023-12-31 07:03:17.851 EET [126280] FATAL:  role "timon" does not exist
+2023-12-31 07:03:30.311 EET [125144] LOG:  checkpoint starting: immediate force wait
+2023-12-31 07:03:30.349 EET [125144] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.013 s, sync=0.005 s, total=0.039 s; sync files=5, longest=0.003 s, average=0.001 s; distance=3 kB, estimate=3 kB; lsn=0/22277D8, redo lsn=0/22277A0
+2023-12-31 07:03:32.110 EET [125143] LOG:  received fast shutdown request
+2023-12-31 07:03:32.120 EET [125143] LOG:  aborting any active transactions
+2023-12-31 07:03:32.151 EET [125143] LOG:  background worker "logical replication launcher" (PID 125149) exited with exit code 1
+2023-12-31 07:03:32.151 EET [125144] LOG:  shutting down
+2023-12-31 07:03:32.153 EET [125144] LOG:  checkpoint starting: shutdown immediate
+2023-12-31 07:03:32.173 EET [125144] LOG:  checkpoint complete: wrote 1 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.003 s, sync=0.002 s, total=0.023 s; sync files=1, longest=0.002 s, average=0.002 s; distance=0 kB, estimate=3 kB; lsn=0/2227928, redo lsn=0/2227928
+2023-12-31 07:03:32.188 EET [125143] LOG:  database system is shut down
+2023-12-31 07:03:32.579 EET [126573] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2023-12-31 07:03:32.582 EET [126573] LOG:  listening on IPv6 address "::1", port 5432
+2023-12-31 07:03:32.582 EET [126573] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-12-31 07:03:32.587 EET [126573] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2023-12-31 07:03:32.599 EET [126577] LOG:  database system was shut down at 2023-12-31 07:03:32 EET
+2023-12-31 07:03:32.620 EET [126573] LOG:  database system is ready to accept connections
+2023-12-31 07:03:32.810 EET [126592] FATAL:  database "test" does not exist
+2023-12-31 07:03:35.586 EET [126635] FATAL:  role "timon" does not exist
+2023-12-31 07:03:35.635 EET [126641] FATAL:  role "timon" does not exist
+2023-12-31 07:03:35.657 EET [126643] FATAL:  database "test" does not exist
+2023-12-31 07:03:38.796 EET [126573] LOG:  received fast shutdown request
+2023-12-31 07:03:38.800 EET [126573] LOG:  aborting any active transactions
+2023-12-31 07:03:38.821 EET [126573] LOG:  background worker "logical replication launcher" (PID 126583) exited with exit code 1
+2023-12-31 07:03:38.830 EET [126575] LOG:  shutting down
+2023-12-31 07:03:38.834 EET [126575] LOG:  checkpoint starting: shutdown immediate
+2023-12-31 07:03:38.864 EET [126575] LOG:  checkpoint complete: wrote 4 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.008 s, sync=0.007 s, total=0.035 s; sync files=3, longest=0.004 s, average=0.003 s; distance=0 kB, estimate=0 kB; lsn=0/22279A0, redo lsn=0/22279A0
+2023-12-31 07:03:38.880 EET [126573] LOG:  database system is shut down
+2023-12-31 07:03:39.101 EET [126695] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2023-12-31 07:03:39.104 EET [126695] LOG:  listening on IPv6 address "::1", port 5432
+2023-12-31 07:03:39.104 EET [126695] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-12-31 07:03:39.119 EET [126695] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2023-12-31 07:03:39.152 EET [126698] LOG:  database system was shut down at 2023-12-31 07:03:38 EET
+2023-12-31 07:03:39.186 EET [126695] LOG:  database system is ready to accept connections
+2023-12-31 07:03:39.393 EET [126707] FATAL:  database "test" does not exist
+2023-12-31 07:03:40.657 EET [126732] FATAL:  role "timon" does not exist
+2023-12-31 07:03:40.690 EET [126737] FATAL:  role "timon" does not exist
+2023-12-31 07:03:40.721 EET [126739] FATAL:  database "test" does not exist
+2023-12-31 07:08:21.321 EET [126695] LOG:  received fast shutdown request
+2023-12-31 07:08:21.342 EET [126695] LOG:  aborting any active transactions
+2023-12-31 07:08:21.361 EET [126695] LOG:  background worker "logical replication launcher" (PID 126702) exited with exit code 1
+2023-12-31 07:08:21.362 EET [126696] LOG:  shutting down
+2023-12-31 07:08:21.364 EET [126696] LOG:  checkpoint starting: shutdown immediate
+2023-12-31 07:08:21.516 EET [126696] LOG:  checkpoint complete: wrote 936 buffers (5.7%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.118 s, sync=0.023 s, total=0.155 s; sync files=304, longest=0.005 s, average=0.001 s; distance=4284 kB, estimate=4284 kB; lsn=0/2656AE0, redo lsn=0/2656AE0
+2023-12-31 07:08:21.537 EET [126695] LOG:  database system is shut down
+2023-12-31 07:08:21.801 EET [130313] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2023-12-31 07:08:21.807 EET [130313] LOG:  listening on IPv6 address "::1", port 5432
+2023-12-31 07:08:21.807 EET [130313] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-12-31 07:08:21.810 EET [130313] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2023-12-31 07:08:21.847 EET [130316] LOG:  database system was shut down at 2023-12-31 07:08:21 EET
+2023-12-31 07:08:21.870 EET [130313] LOG:  database system is ready to accept connections
+2023-12-31 07:08:22.048 EET [130322] ERROR:  database "test" already exists
+2023-12-31 07:08:22.048 EET [130322] STATEMENT:  CREATE DATABASE test OWNER username
+2023-12-31 07:08:23.184 EET [130336] FATAL:  role "timon" does not exist
+2023-12-31 07:08:23.207 EET [130341] FATAL:  role "timon" does not exist
+2023-12-31 07:13:21.867 EET [130314] LOG:  checkpoint starting: time
+2023-12-31 07:13:31.160 EET [130314] LOG:  checkpoint complete: wrote 95 buffers (0.6%); 0 WAL file(s) added, 0 removed, 0 recycled; write=9.268 s, sync=0.011 s, total=9.294 s; sync files=73, longest=0.003 s, average=0.001 s; distance=336 kB, estimate=336 kB; lsn=0/26AABF0, redo lsn=0/26AABB8
+2023-12-31 07:20:56.069 EET [130313] LOG:  received fast shutdown request
+2023-12-31 07:20:56.093 EET [130313] LOG:  aborting any active transactions
+2023-12-31 07:20:56.099 EET [130313] LOG:  background worker "logical replication launcher" (PID 130319) exited with exit code 1
+2023-12-31 07:20:56.102 EET [130314] LOG:  shutting down
+2023-12-31 07:20:56.105 EET [130314] LOG:  checkpoint starting: shutdown immediate
+2023-12-31 07:20:56.118 EET [130314] LOG:  checkpoint complete: wrote 0 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.016 s; sync files=0, longest=0.000 s, average=0.000 s; distance=0 kB, estimate=302 kB; lsn=0/26AACA0, redo lsn=0/26AACA0
+2023-12-31 07:20:56.129 EET [130313] LOG:  database system is shut down
+2023-12-31 07:20:56.305 EET [131401] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2023-12-31 07:20:56.307 EET [131401] LOG:  listening on IPv6 address "::1", port 5432
+2023-12-31 07:20:56.307 EET [131401] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-12-31 07:20:56.310 EET [131401] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2023-12-31 07:20:56.320 EET [131404] LOG:  database system was shut down at 2023-12-31 07:20:56 EET
+2023-12-31 07:20:56.337 EET [131401] LOG:  database system is ready to accept connections
+2023-12-31 07:20:56.451 EET [131410] ERROR:  database "test" already exists
+2023-12-31 07:20:56.451 EET [131410] STATEMENT:  CREATE DATABASE test OWNER username
+2023-12-31 07:20:57.281 EET [131424] FATAL:  role "timon" does not exist
+2023-12-31 07:20:57.299 EET [131429] FATAL:  role "timon" does not exist
+2023-12-31 07:20:57.401 EET [131431] ERROR:  duplicate key value violates unique constraint "accounts_pkey"
+2023-12-31 07:20:57.401 EET [131431] DETAIL:  Key (email)=(test@email.com) already exists.
+2023-12-31 07:20:57.401 EET [131431] STATEMENT:  INSERT INTO accounts (email, password) VALUES ($1, $2) RETURNING id, email, password
+2023-12-31 07:21:18.357 EET [131401] LOG:  received fast shutdown request
+2023-12-31 07:21:18.363 EET [131401] LOG:  aborting any active transactions
+2023-12-31 07:21:18.375 EET [131401] LOG:  background worker "logical replication launcher" (PID 131407) exited with exit code 1
+2023-12-31 07:21:18.376 EET [131402] LOG:  shutting down
+2023-12-31 07:21:18.379 EET [131402] LOG:  checkpoint starting: shutdown immediate
+2023-12-31 07:21:18.400 EET [131402] LOG:  checkpoint complete: wrote 8 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.006 s, sync=0.005 s, total=0.025 s; sync files=6, longest=0.003 s, average=0.001 s; distance=0 kB, estimate=0 kB; lsn=0/26AAEA8, redo lsn=0/26AAEA8
+2023-12-31 07:21:18.408 EET [131401] LOG:  database system is shut down
+2023-12-31 07:21:18.595 EET [131455] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2023-12-31 07:21:18.597 EET [131455] LOG:  listening on IPv6 address "::1", port 5432
+2023-12-31 07:21:18.597 EET [131455] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-12-31 07:21:18.600 EET [131455] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2023-12-31 07:21:18.610 EET [131458] LOG:  database system was shut down at 2023-12-31 07:21:18 EET
+2023-12-31 07:21:18.622 EET [131455] LOG:  database system is ready to accept connections
+2023-12-31 07:21:18.744 EET [131464] ERROR:  database "test" already exists
+2023-12-31 07:21:18.744 EET [131464] STATEMENT:  CREATE DATABASE test OWNER username
+2023-12-31 07:21:19.560 EET [131478] FATAL:  role "timon" does not exist
+2023-12-31 07:21:19.578 EET [131483] FATAL:  role "timon" does not exist
+2023-12-31 07:21:19.673 EET [131485] ERROR:  duplicate key value violates unique constraint "accounts_pkey"
+2023-12-31 07:21:19.673 EET [131485] DETAIL:  Key (email)=(test@email.com) already exists.
+2023-12-31 07:21:19.673 EET [131485] STATEMENT:  INSERT INTO accounts (email, password) VALUES ($1, $2) RETURNING id, email, password
+2023-12-31 07:22:17.831 EET [131455] LOG:  received fast shutdown request
+2023-12-31 07:22:17.838 EET [131455] LOG:  aborting any active transactions
+2023-12-31 07:22:17.842 EET [131455] LOG:  background worker "logical replication launcher" (PID 131461) exited with exit code 1
+2023-12-31 07:22:17.854 EET [131456] LOG:  shutting down
+2023-12-31 07:22:17.856 EET [131456] LOG:  checkpoint starting: shutdown immediate
+2023-12-31 07:22:17.877 EET [131456] LOG:  checkpoint complete: wrote 5 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.006 s, sync=0.005 s, total=0.024 s; sync files=4, longest=0.003 s, average=0.002 s; distance=0 kB, estimate=0 kB; lsn=0/26AB0F0, redo lsn=0/26AB0F0
+2023-12-31 07:22:17.886 EET [131455] LOG:  database system is shut down
+2023-12-31 07:22:18.070 EET [131808] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2023-12-31 07:22:18.072 EET [131808] LOG:  listening on IPv6 address "::1", port 5432
+2023-12-31 07:22:18.072 EET [131808] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-12-31 07:22:18.075 EET [131808] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2023-12-31 07:22:18.085 EET [131811] LOG:  database system was shut down at 2023-12-31 07:22:17 EET
+2023-12-31 07:22:18.098 EET [131808] LOG:  database system is ready to accept connections
+2023-12-31 07:22:18.227 EET [131817] ERROR:  database "test" already exists
+2023-12-31 07:22:18.227 EET [131817] STATEMENT:  CREATE DATABASE test OWNER username
+2023-12-31 07:22:19.050 EET [131831] FATAL:  role "timon" does not exist
+2023-12-31 07:22:19.069 EET [131836] FATAL:  role "timon" does not exist
+2023-12-31 07:22:19.163 EET [131838] ERROR:  duplicate key value violates unique constraint "accounts_pkey"
+2023-12-31 07:22:19.163 EET [131838] DETAIL:  Key (email)=(test@email.com) already exists.
+2023-12-31 07:22:19.163 EET [131838] STATEMENT:  INSERT INTO accounts (email, password) VALUES ($1, $2) RETURNING id, email, password
+2023-12-31 07:27:18.185 EET [131809] LOG:  checkpoint starting: time
+2023-12-31 07:27:18.452 EET [131809] LOG:  checkpoint complete: wrote 5 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.209 s, sync=0.024 s, total=0.268 s; sync files=4, longest=0.020 s, average=0.006 s; distance=0 kB, estimate=0 kB; lsn=0/26AB3A8, redo lsn=0/26AB370
+2023-12-31 07:32:28.232 EET [135289] ERROR:  relation "accounts" does not exist
+2023-12-31 07:32:28.232 EET [135289] STATEMENT:  TRUNCATE TABLE accounts
+2023-12-31 07:32:32.010 EET [135320] ERROR:  relation "accounts" does not exist
+2023-12-31 07:32:32.010 EET [135320] STATEMENT:  TRUNCATE TABLE accounts;
+2023-12-31 07:32:55.020 EET [135348] ERROR:  syntax error at or near "use" at character 1
+2023-12-31 07:32:55.020 EET [135348] STATEMENT:  use test;
+2023-12-31 07:34:20.008 EET [135508] ERROR:  cannot truncate a table referenced in a foreign key constraint
+2023-12-31 07:34:20.008 EET [135508] DETAIL:  Table "time_spent" references "activities".
+2023-12-31 07:34:20.008 EET [135508] HINT:  Truncate table "time_spent" at the same time, or use TRUNCATE ... CASCADE.
+2023-12-31 07:34:20.008 EET [135508] STATEMENT:  TRUNCATE TABLE activities;
+2023-12-31 07:34:32.780 EET [135578] ERROR:  relation "avtivities" does not exist
+2023-12-31 07:34:32.780 EET [135578] STATEMENT:  TRUNCATE TABLE avtivities;
+2023-12-31 07:34:37.034 EET [135611] ERROR:  cannot truncate a table referenced in a foreign key constraint
+2023-12-31 07:34:37.034 EET [135611] DETAIL:  Table "time_spent" references "activities".
+2023-12-31 07:34:37.034 EET [135611] HINT:  Truncate table "time_spent" at the same time, or use TRUNCATE ... CASCADE.
+2023-12-31 07:34:37.034 EET [135611] STATEMENT:  TRUNCATE TABLE activities;
+2023-12-31 07:35:55.597 EET [131808] LOG:  received fast shutdown request
+2023-12-31 07:35:55.603 EET [131808] LOG:  aborting any active transactions
+2023-12-31 07:35:55.616 EET [131808] LOG:  background worker "logical replication launcher" (PID 131814) exited with exit code 1
+2023-12-31 07:35:55.616 EET [131809] LOG:  shutting down
+2023-12-31 07:35:55.619 EET [131809] LOG:  checkpoint starting: shutdown immediate
+2023-12-31 07:35:55.640 EET [131809] LOG:  checkpoint complete: wrote 9 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.005 s, sync=0.005 s, total=0.024 s; sync files=20, longest=0.004 s, average=0.001 s; distance=33 kB, estimate=33 kB; lsn=0/26B3828, redo lsn=0/26B3828
+2023-12-31 07:35:55.650 EET [131808] LOG:  database system is shut down
+2023-12-31 07:35:55.878 EET [135864] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2023-12-31 07:35:55.884 EET [135864] LOG:  listening on IPv6 address "::1", port 5432
+2023-12-31 07:35:55.884 EET [135864] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-12-31 07:35:55.887 EET [135864] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2023-12-31 07:35:55.898 EET [135867] LOG:  database system was shut down at 2023-12-31 07:35:55 EET
+2023-12-31 07:35:55.912 EET [135864] LOG:  database system is ready to accept connections
+2023-12-31 07:35:56.074 EET [135873] ERROR:  database "test" already exists
+2023-12-31 07:35:56.074 EET [135873] STATEMENT:  CREATE DATABASE test OWNER username
+2023-12-31 07:35:56.128 EET [135879] FATAL:  database "{DATABASE_NAME}" does not exist
+2023-12-31 07:35:56.170 EET [135883] FATAL:  database "{DATABASE_NAME}" does not exist
+2023-12-31 07:35:56.202 EET [135886] FATAL:  database "{DATABASE_NAME}" does not exist
+2023-12-31 07:36:38.069 EET [135864] LOG:  received fast shutdown request
+2023-12-31 07:36:38.095 EET [135864] LOG:  aborting any active transactions
+2023-12-31 07:36:38.099 EET [135864] LOG:  background worker "logical replication launcher" (PID 135870) exited with exit code 1
+2023-12-31 07:36:38.108 EET [135865] LOG:  shutting down
+2023-12-31 07:36:38.111 EET [135865] LOG:  checkpoint starting: shutdown immediate
+2023-12-31 07:36:38.130 EET [135865] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.006 s, sync=0.001 s, total=0.022 s; sync files=2, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=0 kB; lsn=0/26B38D8, redo lsn=0/26B38D8
+2023-12-31 07:36:38.141 EET [135864] LOG:  database system is shut down
+2023-12-31 07:36:38.450 EET [136139] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2023-12-31 07:36:38.454 EET [136139] LOG:  listening on IPv6 address "::1", port 5432
+2023-12-31 07:36:38.454 EET [136139] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-12-31 07:36:38.457 EET [136139] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2023-12-31 07:36:38.501 EET [136142] LOG:  database system was shut down at 2023-12-31 07:36:38 EET
+2023-12-31 07:36:38.514 EET [136139] LOG:  database system is ready to accept connections
+2023-12-31 07:36:38.709 EET [136148] ERROR:  database "test" already exists
+2023-12-31 07:36:38.709 EET [136148] STATEMENT:  CREATE DATABASE test OWNER username
+2023-12-31 07:41:31.891 EET [136472] FATAL:  role "timon" does not exist
+2023-12-31 07:41:31.910 EET [136477] FATAL:  role "timon" does not exist
+2023-12-31 07:41:38.597 EET [136140] LOG:  checkpoint starting: time
+2023-12-31 07:41:39.539 EET [136140] LOG:  checkpoint complete: wrote 12 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.911 s, sync=0.013 s, total=0.943 s; sync files=19, longest=0.004 s, average=0.001 s; distance=36 kB, estimate=36 kB; lsn=0/26BC9F0, redo lsn=0/26BC9B8
+2023-12-31 07:45:12.290 EET [136139] LOG:  received fast shutdown request
+2023-12-31 07:45:12.297 EET [136139] LOG:  aborting any active transactions
+2023-12-31 07:45:12.308 EET [136139] LOG:  background worker "logical replication launcher" (PID 136145) exited with exit code 1
+2023-12-31 07:45:12.313 EET [136140] LOG:  shutting down
+2023-12-31 07:45:12.317 EET [136140] LOG:  checkpoint starting: shutdown immediate
+2023-12-31 07:45:12.334 EET [136140] LOG:  checkpoint complete: wrote 0 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.001 s, total=0.021 s; sync files=0, longest=0.000 s, average=0.000 s; distance=0 kB, estimate=32 kB; lsn=0/26BCAA0, redo lsn=0/26BCAA0
+2023-12-31 07:45:12.358 EET [136139] LOG:  database system is shut down
+2023-12-31 07:45:12.908 EET [137267] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2023-12-31 07:45:12.910 EET [137267] LOG:  listening on IPv6 address "::1", port 5432
+2023-12-31 07:45:12.910 EET [137267] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-12-31 07:45:12.931 EET [137267] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2023-12-31 07:45:12.977 EET [137281] LOG:  database system was shut down at 2023-12-31 07:45:12 EET
+2023-12-31 07:45:13.036 EET [137267] LOG:  database system is ready to accept connections
+2023-12-31 07:45:13.390 EET [137287] ERROR:  database "test" already exists
+2023-12-31 07:45:13.390 EET [137287] STATEMENT:  CREATE DATABASE test OWNER username
+2023-12-31 07:45:19.521 EET [137407] FATAL:  role "timon" does not exist
+2023-12-31 07:45:19.620 EET [137413] FATAL:  role "timon" does not exist
+2023-12-31 07:50:05.914 EET [137267] LOG:  received fast shutdown request
+2023-12-31 07:50:05.941 EET [137267] LOG:  aborting any active transactions
+2023-12-31 07:50:05.953 EET [137267] LOG:  background worker "logical replication launcher" (PID 137284) exited with exit code 1
+2023-12-31 07:50:05.955 EET [137277] LOG:  shutting down
+2023-12-31 07:50:05.957 EET [137277] LOG:  checkpoint starting: shutdown immediate
+2023-12-31 07:50:05.983 EET [137277] LOG:  checkpoint complete: wrote 12 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.006 s, sync=0.007 s, total=0.029 s; sync files=19, longest=0.003 s, average=0.001 s; distance=36 kB, estimate=36 kB; lsn=0/26C5B60, redo lsn=0/26C5B60
+2023-12-31 07:50:05.991 EET [137267] LOG:  database system is shut down
+2023-12-31 07:50:06.169 EET [138396] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2023-12-31 07:50:06.171 EET [138396] LOG:  listening on IPv6 address "::1", port 5432
+2023-12-31 07:50:06.171 EET [138396] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-12-31 07:50:06.174 EET [138396] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2023-12-31 07:50:06.184 EET [138399] LOG:  database system was shut down at 2023-12-31 07:50:05 EET
+2023-12-31 07:50:06.197 EET [138396] LOG:  database system is ready to accept connections
+2023-12-31 07:50:06.315 EET [138405] ERROR:  database "test" already exists
+2023-12-31 07:50:06.315 EET [138405] STATEMENT:  CREATE DATABASE test OWNER username
+2023-12-31 07:50:07.347 EET [138428] FATAL:  role "timon" does not exist
+2023-12-31 07:50:07.366 EET [138433] FATAL:  role "timon" does not exist
+2023-12-31 07:50:11.558 EET [138396] LOG:  received fast shutdown request
+2023-12-31 07:50:11.561 EET [138396] LOG:  aborting any active transactions
+2023-12-31 07:50:11.564 EET [138396] LOG:  background worker "logical replication launcher" (PID 138402) exited with exit code 1
+2023-12-31 07:50:11.570 EET [138397] LOG:  shutting down
+2023-12-31 07:50:11.574 EET [138397] LOG:  checkpoint starting: shutdown immediate
+2023-12-31 07:50:11.597 EET [138397] LOG:  checkpoint complete: wrote 12 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.006 s, sync=0.005 s, total=0.028 s; sync files=19, longest=0.003 s, average=0.001 s; distance=35 kB, estimate=35 kB; lsn=0/26CEB30, redo lsn=0/26CEB30
+2023-12-31 07:50:11.607 EET [138396] LOG:  database system is shut down
+2023-12-31 08:16:02.108 EET [139256] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2023-12-31 08:16:02.110 EET [139256] LOG:  listening on IPv6 address "::1", port 5432
+2023-12-31 08:16:02.110 EET [139256] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-12-31 08:16:02.113 EET [139256] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2023-12-31 08:16:02.124 EET [139259] LOG:  database system was shut down at 2023-12-31 07:50:11 EET
+2023-12-31 08:16:02.137 EET [139256] LOG:  database system is ready to accept connections
+2023-12-31 08:16:02.252 EET [139265] ERROR:  database "test" already exists
+2023-12-31 08:16:02.252 EET [139265] STATEMENT:  CREATE DATABASE test OWNER username
+2023-12-31 08:16:03.344 EET [139288] FATAL:  role "timon" does not exist
+2023-12-31 08:16:03.361 EET [139293] FATAL:  role "timon" does not exist
+2023-12-31 08:16:11.517 EET [139256] LOG:  received fast shutdown request
+2023-12-31 08:16:11.520 EET [139256] LOG:  aborting any active transactions
+2023-12-31 08:16:11.529 EET [139256] LOG:  background worker "logical replication launcher" (PID 139262) exited with exit code 1
+2023-12-31 08:16:11.532 EET [139257] LOG:  shutting down
+2023-12-31 08:16:11.535 EET [139257] LOG:  checkpoint starting: shutdown immediate
+2023-12-31 08:16:11.564 EET [139257] LOG:  checkpoint complete: wrote 12 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.007 s, sync=0.006 s, total=0.033 s; sync files=19, longest=0.004 s, average=0.001 s; distance=39 kB, estimate=39 kB; lsn=0/26D87A0, redo lsn=0/26D87A0
+2023-12-31 08:16:11.573 EET [139256] LOG:  database system is shut down
+2023-12-31 08:17:02.439 EET [139493] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2023-12-31 08:17:02.442 EET [139493] LOG:  listening on IPv6 address "::1", port 5432
+2023-12-31 08:17:02.442 EET [139493] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-12-31 08:17:02.444 EET [139493] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2023-12-31 08:17:02.457 EET [139496] LOG:  database system was shut down at 2023-12-31 08:16:11 EET
+2023-12-31 08:17:02.472 EET [139493] LOG:  database system is ready to accept connections
+2023-12-31 08:17:02.611 EET [139502] ERROR:  database "test" already exists
+2023-12-31 08:17:02.611 EET [139502] STATEMENT:  CREATE DATABASE test OWNER username
+2023-12-31 08:17:03.687 EET [139525] FATAL:  role "timon" does not exist
+2023-12-31 08:17:03.705 EET [139530] FATAL:  role "timon" does not exist
+2023-12-31 08:19:39.679 EET [139493] LOG:  received fast shutdown request
+2023-12-31 08:19:39.685 EET [139493] LOG:  aborting any active transactions
+2023-12-31 08:19:39.690 EET [139493] LOG:  background worker "logical replication launcher" (PID 139499) exited with exit code 1
+2023-12-31 08:19:39.699 EET [139494] LOG:  shutting down
+2023-12-31 08:19:39.702 EET [139494] LOG:  checkpoint starting: shutdown immediate
+2023-12-31 08:19:39.726 EET [139494] LOG:  checkpoint complete: wrote 23 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.008 s, sync=0.006 s, total=0.028 s; sync files=23, longest=0.003 s, average=0.001 s; distance=101 kB, estimate=101 kB; lsn=0/26F1C80, redo lsn=0/26F1C80
+2023-12-31 08:19:39.738 EET [139493] LOG:  database system is shut down
+2023-12-31 08:19:39.931 EET [139702] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2023-12-31 08:19:39.933 EET [139702] LOG:  listening on IPv6 address "::1", port 5432
+2023-12-31 08:19:39.934 EET [139702] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-12-31 08:19:39.936 EET [139702] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2023-12-31 08:19:39.948 EET [139705] LOG:  database system was shut down at 2023-12-31 08:19:39 EET
+2023-12-31 08:19:39.962 EET [139702] LOG:  database system is ready to accept connections
+2023-12-31 08:19:40.077 EET [139711] ERROR:  database "test" already exists
+2023-12-31 08:19:40.077 EET [139711] STATEMENT:  CREATE DATABASE test OWNER username
+2023-12-31 08:19:41.105 EET [139734] FATAL:  role "timon" does not exist
+2023-12-31 08:19:41.122 EET [139739] FATAL:  role "timon" does not exist
+2023-12-31 08:19:44.613 EET [139702] LOG:  received fast shutdown request
+2023-12-31 08:19:44.619 EET [139702] LOG:  aborting any active transactions
+2023-12-31 08:19:44.623 EET [139702] LOG:  background worker "logical replication launcher" (PID 139708) exited with exit code 1
+2023-12-31 08:19:44.632 EET [139703] LOG:  shutting down
+2023-12-31 08:19:44.636 EET [139703] LOG:  checkpoint starting: shutdown immediate
+2023-12-31 08:19:44.660 EET [139703] LOG:  checkpoint complete: wrote 12 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.007 s, sync=0.006 s, total=0.028 s; sync files=19, longest=0.003 s, average=0.001 s; distance=38 kB, estimate=38 kB; lsn=0/26FB4F8, redo lsn=0/26FB4F8
+2023-12-31 08:19:44.670 EET [139702] LOG:  database system is shut down
+2023-12-31 08:20:19.711 EET [139953] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2023-12-31 08:20:19.713 EET [139953] LOG:  listening on IPv6 address "::1", port 5432
+2023-12-31 08:20:19.713 EET [139953] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-12-31 08:20:19.716 EET [139953] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2023-12-31 08:20:19.726 EET [139956] LOG:  database system was shut down at 2023-12-31 08:19:44 EET
+2023-12-31 08:20:19.740 EET [139953] LOG:  database system is ready to accept connections
+2023-12-31 08:20:19.879 EET [139962] ERROR:  database "test" already exists
+2023-12-31 08:20:19.879 EET [139962] STATEMENT:  CREATE DATABASE test OWNER username
+2023-12-31 08:20:20.931 EET [139985] FATAL:  role "timon" does not exist
+2023-12-31 08:20:20.948 EET [139990] FATAL:  role "timon" does not exist
+2023-12-31 08:21:11.982 EET [139953] LOG:  received fast shutdown request
+2023-12-31 08:21:11.988 EET [139953] LOG:  aborting any active transactions
+2023-12-31 08:21:11.992 EET [139953] LOG:  background worker "logical replication launcher" (PID 139959) exited with exit code 1
+2023-12-31 08:21:12.000 EET [139954] LOG:  shutting down
+2023-12-31 08:21:12.003 EET [139954] LOG:  checkpoint starting: shutdown immediate
+2023-12-31 08:21:12.028 EET [139954] LOG:  checkpoint complete: wrote 12 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.006 s, sync=0.006 s, total=0.028 s; sync files=19, longest=0.004 s, average=0.001 s; distance=38 kB, estimate=38 kB; lsn=0/2704FF0, redo lsn=0/2704FF0
+2023-12-31 08:21:12.039 EET [139953] LOG:  database system is shut down
+2023-12-31 08:21:12.227 EET [140163] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2023-12-31 08:21:12.229 EET [140163] LOG:  listening on IPv6 address "::1", port 5432
+2023-12-31 08:21:12.229 EET [140163] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-12-31 08:21:12.231 EET [140163] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2023-12-31 08:21:12.242 EET [140166] LOG:  database system was shut down at 2023-12-31 08:21:12 EET
+2023-12-31 08:21:12.255 EET [140163] LOG:  database system is ready to accept connections
+2023-12-31 08:21:12.379 EET [140172] ERROR:  database "test" already exists
+2023-12-31 08:21:12.379 EET [140172] STATEMENT:  CREATE DATABASE test OWNER username
+2023-12-31 08:21:13.414 EET [140195] FATAL:  role "timon" does not exist
+2023-12-31 08:21:13.432 EET [140200] FATAL:  role "timon" does not exist
+2023-12-31 08:26:12.289 EET [140164] LOG:  checkpoint starting: time
+2023-12-31 08:26:13.240 EET [140164] LOG:  checkpoint complete: wrote 12 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.910 s, sync=0.028 s, total=0.952 s; sync files=19, longest=0.022 s, average=0.002 s; distance=39 kB, estimate=39 kB; lsn=0/270EED0, redo lsn=0/270EE98
+2023-12-31 15:02:26.780 EET [140163] LOG:  received fast shutdown request
+2023-12-31 15:02:26.789 EET [140163] LOG:  aborting any active transactions
+2023-12-31 15:02:26.805 EET [140163] LOG:  background worker "logical replication launcher" (PID 140169) exited with exit code 1
+2023-12-31 15:02:26.805 EET [140164] LOG:  shutting down
+2023-12-31 15:02:26.808 EET [140164] LOG:  checkpoint starting: shutdown immediate
+2023-12-31 15:02:26.824 EET [140164] LOG:  checkpoint complete: wrote 0 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.020 s; sync files=0, longest=0.000 s, average=0.000 s; distance=0 kB, estimate=35 kB; lsn=0/270EF80, redo lsn=0/270EF80
+2023-12-31 15:02:26.834 EET [140163] LOG:  database system is shut down
+2023-12-31 15:02:27.182 EET [143570] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2023-12-31 15:02:27.192 EET [143570] LOG:  listening on IPv6 address "::1", port 5432
+2023-12-31 15:02:27.192 EET [143570] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-12-31 15:02:27.195 EET [143570] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2023-12-31 15:02:27.222 EET [143573] LOG:  database system was shut down at 2023-12-31 15:02:26 EET
+2023-12-31 15:02:27.255 EET [143570] LOG:  database system is ready to accept connections
+2023-12-31 15:02:27.563 EET [143579] ERROR:  database "test" already exists
+2023-12-31 15:02:27.563 EET [143579] STATEMENT:  CREATE DATABASE test OWNER username
+2023-12-31 15:03:26.700 EET [143891] FATAL:  role "timon" does not exist
+2023-12-31 15:03:26.719 EET [143896] FATAL:  role "timon" does not exist
+2023-12-31 15:07:27.318 EET [143571] LOG:  checkpoint starting: time
+2023-12-31 15:07:28.570 EET [143571] LOG:  checkpoint complete: wrote 15 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=1.220 s, sync=0.010 s, total=1.253 s; sync files=19, longest=0.004 s, average=0.001 s; distance=40 kB, estimate=40 kB; lsn=0/2719278, redo lsn=0/2719240
+2023-12-31 15:09:03.474 EET [143570] LOG:  received fast shutdown request
+2023-12-31 15:09:03.478 EET [143570] LOG:  aborting any active transactions
+2023-12-31 15:09:03.488 EET [143570] LOG:  background worker "logical replication launcher" (PID 143576) exited with exit code 1
+2023-12-31 15:09:03.491 EET [143571] LOG:  shutting down
+2023-12-31 15:09:03.494 EET [143571] LOG:  checkpoint starting: shutdown immediate
+2023-12-31 15:09:03.508 EET [143571] LOG:  checkpoint complete: wrote 0 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.017 s; sync files=0, longest=0.000 s, average=0.000 s; distance=0 kB, estimate=36 kB; lsn=0/2719328, redo lsn=0/2719328
+2023-12-31 15:09:03.518 EET [143570] LOG:  database system is shut down
+2023-12-31 15:09:03.982 EET [146545] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2023-12-31 15:09:03.997 EET [146545] LOG:  listening on IPv6 address "::1", port 5432
+2023-12-31 15:09:03.997 EET [146545] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-12-31 15:09:03.999 EET [146545] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2023-12-31 15:09:04.015 EET [146548] LOG:  database system was shut down at 2023-12-31 15:09:03 EET
+2023-12-31 15:09:04.039 EET [146545] LOG:  database system is ready to accept connections
+2023-12-31 15:09:04.285 EET [146554] ERROR:  database "test" already exists
+2023-12-31 15:09:04.285 EET [146554] STATEMENT:  CREATE DATABASE test OWNER username
+2023-12-31 15:10:25.546 EET [146858] FATAL:  role "timon" does not exist
+2023-12-31 15:10:25.563 EET [146863] FATAL:  role "timon" does not exist
+2023-12-31 15:14:04.124 EET [146546] LOG:  checkpoint starting: time
+2023-12-31 15:14:05.886 EET [146546] LOG:  checkpoint complete: wrote 20 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=1.716 s, sync=0.008 s, total=1.763 s; sync files=21, longest=0.003 s, average=0.001 s; distance=66 kB, estimate=66 kB; lsn=0/2729DB8, redo lsn=0/2729D80
+2023-12-31 15:14:33.938 EET [146545] LOG:  received fast shutdown request
+2023-12-31 15:14:33.961 EET [146545] LOG:  aborting any active transactions
+2023-12-31 15:14:33.965 EET [146545] LOG:  background worker "logical replication launcher" (PID 146551) exited with exit code 1
+2023-12-31 15:14:33.969 EET [146546] LOG:  shutting down
+2023-12-31 15:14:33.973 EET [146546] LOG:  checkpoint starting: shutdown immediate
+2023-12-31 15:14:33.986 EET [146546] LOG:  checkpoint complete: wrote 0 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.017 s; sync files=0, longest=0.000 s, average=0.000 s; distance=0 kB, estimate=59 kB; lsn=0/2729E68, redo lsn=0/2729E68
+2023-12-31 15:14:33.996 EET [146545] LOG:  database system is shut down
+2024-01-01 15:22:12.544 EET [27499] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-01-01 15:22:12.551 EET [27499] LOG:  could not bind IPv6 address "::1": Address already in use
+2024-01-01 15:22:12.551 EET [27499] HINT:  Is another postmaster already running on port 5432? If not, wait a few seconds and retry.
+2024-01-01 15:22:12.552 EET [27499] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-01-01 15:22:12.554 EET [27499] FATAL:  could not create lock file "/run/postgresql/.s.PGSQL.5432.lock": No such file or directory
+2024-01-01 15:22:12.557 EET [27499] LOG:  database system is shut down
+2024-01-01 15:25:44.234 EET [30740] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-01-01 15:25:44.238 EET [30740] LOG:  listening on IPv6 address "::1", port 5432
+2024-01-01 15:25:44.239 EET [30740] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-01-01 15:25:44.246 EET [30740] FATAL:  could not create lock file "/run/postgresql/.s.PGSQL.5432.lock": No such file or directory
+2024-01-01 15:25:44.249 EET [30740] LOG:  database system is shut down
+2024-01-01 15:26:01.993 EET [31298] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-01-01 15:26:01.995 EET [31298] LOG:  listening on IPv6 address "::1", port 5432
+2024-01-01 15:26:01.995 EET [31298] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-01-01 15:26:02.000 EET [31298] FATAL:  could not create lock file "/run/postgresql/.s.PGSQL.5432.lock": No such file or directory
+2024-01-01 15:26:02.002 EET [31298] LOG:  database system is shut down
+2024-01-01 15:27:41.388 EET [33484] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-01-01 15:27:41.398 EET [33484] LOG:  listening on IPv6 address "::1", port 5432
+2024-01-01 15:27:41.398 EET [33484] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-01-01 15:27:41.419 EET [33484] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2024-01-01 15:27:41.441 EET [33487] LOG:  database system was shut down at 2023-12-31 15:14:33 EET
+2024-01-01 15:27:41.469 EET [33484] LOG:  database system is ready to accept connections
+2024-01-01 15:27:41.708 EET [33493] ERROR:  database "test" already exists
+2024-01-01 15:27:41.708 EET [33493] STATEMENT:  CREATE DATABASE test OWNER username
+2024-01-01 15:29:31.622 EET [38287] FATAL:  role "timon" does not exist
+2024-01-01 15:29:31.672 EET [38292] FATAL:  role "timon" does not exist
+2024-01-01 15:31:14.183 EET [33484] LOG:  received fast shutdown request
+2024-01-01 15:31:14.187 EET [33484] LOG:  aborting any active transactions
+2024-01-01 15:31:14.203 EET [33484] LOG:  background worker "logical replication launcher" (PID 33490) exited with exit code 1
+2024-01-01 15:31:14.204 EET [33485] LOG:  shutting down
+2024-01-01 15:31:14.207 EET [33485] LOG:  checkpoint starting: shutdown immediate
+2024-01-01 15:31:14.235 EET [33485] LOG:  checkpoint complete: wrote 13 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.008 s, sync=0.008 s, total=0.031 s; sync files=20, longest=0.003 s, average=0.001 s; distance=25 kB, estimate=25 kB; lsn=0/27305E0, redo lsn=0/27305E0
+2024-01-01 15:31:14.245 EET [33484] LOG:  database system is shut down
+2024-01-01 15:31:14.507 EET [41210] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-01-01 15:31:14.510 EET [41210] LOG:  listening on IPv6 address "::1", port 5432
+2024-01-01 15:31:14.510 EET [41210] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-01-01 15:31:14.513 EET [41210] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2024-01-01 15:31:14.527 EET [41213] LOG:  database system was shut down at 2024-01-01 15:31:14 EET
+2024-01-01 15:31:14.542 EET [41210] LOG:  database system is ready to accept connections
+2024-01-01 15:31:14.706 EET [41219] ERROR:  database "test" already exists
+2024-01-01 15:31:14.706 EET [41219] STATEMENT:  CREATE DATABASE test OWNER username
+2024-01-01 15:32:50.754 EET [41210] LOG:  received fast shutdown request
+2024-01-01 15:32:50.762 EET [41210] LOG:  aborting any active transactions
+2024-01-01 15:32:50.766 EET [41210] LOG:  background worker "logical replication launcher" (PID 41216) exited with exit code 1
+2024-01-01 15:32:50.778 EET [41211] LOG:  shutting down
+2024-01-01 15:32:50.783 EET [41211] LOG:  checkpoint starting: shutdown immediate
+2024-01-01 15:32:50.811 EET [41211] LOG:  checkpoint complete: wrote 8 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.008 s, sync=0.006 s, total=0.034 s; sync files=18, longest=0.003 s, average=0.001 s; distance=28 kB, estimate=28 kB; lsn=0/2737790, redo lsn=0/2737790
+2024-01-01 15:32:50.821 EET [41210] LOG:  database system is shut down
+2024-01-01 15:32:51.108 EET [41993] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-01-01 15:32:51.111 EET [41993] LOG:  listening on IPv6 address "::1", port 5432
+2024-01-01 15:32:51.111 EET [41993] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-01-01 15:32:51.113 EET [41993] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2024-01-01 15:32:51.129 EET [41997] LOG:  database system was shut down at 2024-01-01 15:32:50 EET
+2024-01-01 15:32:51.142 EET [41993] LOG:  database system is ready to accept connections
+2024-01-01 15:32:51.265 EET [42005] ERROR:  database "test" already exists
+2024-01-01 15:32:51.265 EET [42005] STATEMENT:  CREATE DATABASE test OWNER username
+2024-01-01 15:33:54.205 EET [42520] FATAL:  role "timon" does not exist
+2024-01-01 15:33:54.223 EET [42525] FATAL:  role "timon" does not exist
+2024-01-01 15:35:17.278 EET [41993] LOG:  received fast shutdown request
+2024-01-01 15:35:17.281 EET [41993] LOG:  aborting any active transactions
+2024-01-01 15:35:17.294 EET [41993] LOG:  background worker "logical replication launcher" (PID 42000) exited with exit code 1
+2024-01-01 15:35:17.294 EET [41995] LOG:  shutting down
+2024-01-01 15:35:17.298 EET [41995] LOG:  checkpoint starting: shutdown immediate
+2024-01-01 15:35:17.328 EET [41995] LOG:  checkpoint complete: wrote 24 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.009 s, sync=0.008 s, total=0.035 s; sync files=23, longest=0.003 s, average=0.001 s; distance=86 kB, estimate=86 kB; lsn=0/274D070, redo lsn=0/274D070
+2024-01-01 15:35:17.337 EET [41993] LOG:  database system is shut down
+2024-01-01 15:35:17.542 EET [42830] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-01-01 15:35:17.544 EET [42830] LOG:  listening on IPv6 address "::1", port 5432
+2024-01-01 15:35:17.544 EET [42830] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-01-01 15:35:17.547 EET [42830] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2024-01-01 15:35:17.558 EET [42833] LOG:  database system was shut down at 2024-01-01 15:35:17 EET
+2024-01-01 15:35:17.572 EET [42830] LOG:  database system is ready to accept connections
+2024-01-01 15:35:17.748 EET [42839] ERROR:  database "test" already exists
+2024-01-01 15:35:17.748 EET [42839] STATEMENT:  CREATE DATABASE test OWNER username
+2024-01-01 15:35:19.712 EET [42862] FATAL:  role "timon" does not exist
+2024-01-01 15:35:19.729 EET [42867] FATAL:  role "timon" does not exist
+2024-01-01 15:37:13.790 EET [42830] LOG:  received fast shutdown request
+2024-01-01 15:37:13.797 EET [42830] LOG:  aborting any active transactions
+2024-01-01 15:37:13.800 EET [42830] LOG:  background worker "logical replication launcher" (PID 42836) exited with exit code 1
+2024-01-01 15:37:13.808 EET [42831] LOG:  shutting down
+2024-01-01 15:37:13.811 EET [42831] LOG:  checkpoint starting: shutdown immediate
+2024-01-01 15:37:13.838 EET [42831] LOG:  checkpoint complete: wrote 12 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.007 s, sync=0.007 s, total=0.030 s; sync files=19, longest=0.003 s, average=0.001 s; distance=29 kB, estimate=29 kB; lsn=0/27546A0, redo lsn=0/27546A0
+2024-01-01 15:37:13.848 EET [42830] LOG:  database system is shut down
+2024-01-01 15:37:14.181 EET [43885] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-01-01 15:37:14.184 EET [43885] LOG:  listening on IPv6 address "::1", port 5432
+2024-01-01 15:37:14.184 EET [43885] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-01-01 15:37:14.209 EET [43885] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2024-01-01 15:37:14.227 EET [43888] LOG:  database system was shut down at 2024-01-01 15:37:13 EET
+2024-01-01 15:37:14.250 EET [43885] LOG:  database system is ready to accept connections
+2024-01-01 15:37:14.457 EET [43894] ERROR:  database "test" already exists
+2024-01-01 15:37:14.457 EET [43894] STATEMENT:  CREATE DATABASE test OWNER username
+2024-01-01 15:38:22.379 EET [44620] FATAL:  role "timon" does not exist
+2024-01-01 15:38:22.400 EET [44625] FATAL:  role "timon" does not exist
+2024-01-01 15:42:14.340 EET [43886] LOG:  checkpoint starting: time
+2024-01-01 15:42:15.357 EET [43886] LOG:  checkpoint complete: wrote 12 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.955 s, sync=0.014 s, total=1.025 s; sync files=19, longest=0.005 s, average=0.001 s; distance=30 kB, estimate=30 kB; lsn=0/275C0C0, redo lsn=0/275C088
+2024-01-01 15:44:13.380 EET [43885] LOG:  received fast shutdown request
+2024-01-01 15:44:13.389 EET [43885] LOG:  aborting any active transactions
+2024-01-01 15:44:13.445 EET [43885] LOG:  background worker "logical replication launcher" (PID 43891) exited with exit code 1
+2024-01-01 15:44:13.446 EET [43886] LOG:  shutting down
+2024-01-01 15:44:13.450 EET [43886] LOG:  checkpoint starting: shutdown immediate
+2024-01-01 15:44:13.470 EET [43886] LOG:  checkpoint complete: wrote 0 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.025 s; sync files=0, longest=0.000 s, average=0.000 s; distance=0 kB, estimate=27 kB; lsn=0/275C170, redo lsn=0/275C170
+2024-01-01 15:44:13.493 EET [43885] LOG:  database system is shut down
+2024-01-01 15:44:14.061 EET [47241] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-01-01 15:44:14.077 EET [47241] LOG:  listening on IPv6 address "::1", port 5432
+2024-01-01 15:44:14.077 EET [47241] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-01-01 15:44:14.091 EET [47241] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2024-01-01 15:44:14.121 EET [47244] LOG:  database system was shut down at 2024-01-01 15:44:13 EET
+2024-01-01 15:44:14.167 EET [47241] LOG:  database system is ready to accept connections
+2024-01-01 15:44:14.425 EET [47250] ERROR:  database "test" already exists
+2024-01-01 15:44:14.425 EET [47250] STATEMENT:  CREATE DATABASE test OWNER username
+2024-01-01 15:45:22.814 EET [47572] FATAL:  role "timon" does not exist
+2024-01-01 15:45:22.834 EET [47577] FATAL:  role "timon" does not exist
+2024-01-01 15:49:14.122 EET [47242] LOG:  checkpoint starting: time
+2024-01-01 15:49:15.084 EET [47242] LOG:  checkpoint complete: wrote 12 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.912 s, sync=0.030 s, total=0.963 s; sync files=19, longest=0.023 s, average=0.002 s; distance=31 kB, estimate=31 kB; lsn=0/2763EF8, redo lsn=0/2763EC0
+2024-01-01 15:50:24.847 EET [47241] LOG:  received fast shutdown request
+2024-01-01 15:50:24.852 EET [47241] LOG:  aborting any active transactions
+2024-01-01 15:50:24.859 EET [47241] LOG:  background worker "logical replication launcher" (PID 47247) exited with exit code 1
+2024-01-01 15:50:24.860 EET [47242] LOG:  shutting down
+2024-01-01 15:50:24.868 EET [47242] LOG:  checkpoint starting: shutdown immediate
+2024-01-01 15:50:24.883 EET [47242] LOG:  checkpoint complete: wrote 0 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.023 s; sync files=0, longest=0.000 s, average=0.000 s; distance=0 kB, estimate=28 kB; lsn=0/2763FA8, redo lsn=0/2763FA8
+2024-01-01 15:50:24.896 EET [47241] LOG:  database system is shut down
+2024-01-01 15:50:25.124 EET [48114] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-01-01 15:50:25.128 EET [48114] LOG:  listening on IPv6 address "::1", port 5432
+2024-01-01 15:50:25.128 EET [48114] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-01-01 15:50:25.130 EET [48114] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2024-01-01 15:50:25.141 EET [48117] LOG:  database system was shut down at 2024-01-01 15:50:24 EET
+2024-01-01 15:50:25.156 EET [48114] LOG:  database system is ready to accept connections
+2024-01-01 15:50:25.320 EET [48123] ERROR:  database "test" already exists
+2024-01-01 15:50:25.320 EET [48123] STATEMENT:  CREATE DATABASE test OWNER username
+2024-01-01 15:50:26.445 EET [48146] FATAL:  role "timon" does not exist
+2024-01-01 15:50:26.462 EET [48151] FATAL:  role "timon" does not exist
+2024-01-01 15:50:26.622 EET [48153] LOG:  could not receive data from client: Connection reset by peer
+2024-01-01 15:50:35.089 EET [48114] LOG:  received fast shutdown request
+2024-01-01 15:50:35.094 EET [48114] LOG:  aborting any active transactions
+2024-01-01 15:50:35.098 EET [48114] LOG:  background worker "logical replication launcher" (PID 48120) exited with exit code 1
+2024-01-01 15:50:35.103 EET [48115] LOG:  shutting down
+2024-01-01 15:50:35.106 EET [48115] LOG:  checkpoint starting: shutdown immediate
+2024-01-01 15:50:35.133 EET [48115] LOG:  checkpoint complete: wrote 12 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.007 s, sync=0.008 s, total=0.030 s; sync files=19, longest=0.003 s, average=0.001 s; distance=32 kB, estimate=32 kB; lsn=0/276C038, redo lsn=0/276C038
+2024-01-01 15:50:35.142 EET [48114] LOG:  database system is shut down
+2024-01-01 15:50:35.335 EET [48316] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-01-01 15:50:35.337 EET [48316] LOG:  listening on IPv6 address "::1", port 5432
+2024-01-01 15:50:35.337 EET [48316] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-01-01 15:50:35.340 EET [48316] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2024-01-01 15:50:35.350 EET [48319] LOG:  database system was shut down at 2024-01-01 15:50:35 EET
+2024-01-01 15:50:35.363 EET [48316] LOG:  database system is ready to accept connections
+2024-01-01 15:50:35.486 EET [48325] ERROR:  database "test" already exists
+2024-01-01 15:50:35.486 EET [48325] STATEMENT:  CREATE DATABASE test OWNER username
+2024-01-01 15:50:36.490 EET [48348] FATAL:  role "timon" does not exist
+2024-01-01 15:50:36.507 EET [48353] FATAL:  role "timon" does not exist
+2024-01-01 15:55:35.446 EET [48317] LOG:  checkpoint starting: time
+2024-01-01 15:55:36.892 EET [48317] LOG:  checkpoint complete: wrote 17 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=1.417 s, sync=0.008 s, total=1.446 s; sync files=21, longest=0.004 s, average=0.001 s; distance=33 kB, estimate=33 kB; lsn=0/2774640, redo lsn=0/2774608
+2024-01-01 15:56:11.360 EET [48316] LOG:  received fast shutdown request
+2024-01-01 15:56:11.364 EET [48316] LOG:  aborting any active transactions
+2024-01-01 15:56:11.378 EET [48316] LOG:  background worker "logical replication launcher" (PID 48322) exited with exit code 1
+2024-01-01 15:56:11.379 EET [48317] LOG:  shutting down
+2024-01-01 15:56:11.383 EET [48317] LOG:  checkpoint starting: shutdown immediate
+2024-01-01 15:56:11.398 EET [48317] LOG:  checkpoint complete: wrote 0 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.020 s; sync files=0, longest=0.000 s, average=0.000 s; distance=0 kB, estimate=30 kB; lsn=0/27746F0, redo lsn=0/27746F0
+2024-01-01 15:56:11.420 EET [48316] LOG:  database system is shut down
+2024-01-01 15:56:11.658 EET [50277] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-01-01 15:56:11.661 EET [50277] LOG:  listening on IPv6 address "::1", port 5432
+2024-01-01 15:56:11.661 EET [50277] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-01-01 15:56:11.664 EET [50277] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2024-01-01 15:56:11.675 EET [50280] LOG:  database system was shut down at 2024-01-01 15:56:11 EET
+2024-01-01 15:56:11.688 EET [50277] LOG:  database system is ready to accept connections
+2024-01-01 15:56:11.865 EET [50286] ERROR:  database "test" already exists
+2024-01-01 15:56:11.865 EET [50286] STATEMENT:  CREATE DATABASE test OWNER username
+2024-01-01 15:57:06.470 EET [50581] FATAL:  role "timon" does not exist
+2024-01-01 15:57:06.487 EET [50586] FATAL:  role "timon" does not exist
+2024-01-01 15:57:39.122 EET [50277] LOG:  received fast shutdown request
+2024-01-01 15:57:39.129 EET [50277] LOG:  aborting any active transactions
+2024-01-01 15:57:39.141 EET [50277] LOG:  background worker "logical replication launcher" (PID 50283) exited with exit code 1
+2024-01-01 15:57:39.141 EET [50278] LOG:  shutting down
+2024-01-01 15:57:39.144 EET [50278] LOG:  checkpoint starting: shutdown immediate
+2024-01-01 15:57:39.173 EET [50278] LOG:  checkpoint complete: wrote 16 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.008 s, sync=0.007 s, total=0.032 s; sync files=20, longest=0.004 s, average=0.001 s; distance=34 kB, estimate=34 kB; lsn=0/277D078, redo lsn=0/277D078
+2024-01-01 15:57:39.182 EET [50277] LOG:  database system is shut down
+2024-01-01 15:57:39.386 EET [50807] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-01-01 15:57:39.388 EET [50807] LOG:  listening on IPv6 address "::1", port 5432
+2024-01-01 15:57:39.388 EET [50807] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-01-01 15:57:39.391 EET [50807] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2024-01-01 15:57:39.405 EET [50810] LOG:  database system was shut down at 2024-01-01 15:57:39 EET
+2024-01-01 15:57:39.419 EET [50807] LOG:  database system is ready to accept connections
+2024-01-01 15:57:39.607 EET [50816] ERROR:  database "test" already exists
+2024-01-01 15:57:39.607 EET [50816] STATEMENT:  CREATE DATABASE test OWNER username
+2024-01-01 15:58:33.634 EET [51106] FATAL:  role "timon" does not exist
+2024-01-01 15:58:33.652 EET [51111] FATAL:  role "timon" does not exist
+2024-01-01 15:59:47.911 EET [50807] LOG:  received fast shutdown request
+2024-01-01 15:59:47.914 EET [50807] LOG:  aborting any active transactions
+2024-01-01 15:59:47.930 EET [50807] LOG:  background worker "logical replication launcher" (PID 50813) exited with exit code 1
+2024-01-01 15:59:47.930 EET [50808] LOG:  shutting down
+2024-01-01 15:59:47.933 EET [50808] LOG:  checkpoint starting: shutdown immediate
+2024-01-01 15:59:47.973 EET [50808] LOG:  checkpoint complete: wrote 16 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.008 s, sync=0.010 s, total=0.043 s; sync files=20, longest=0.003 s, average=0.001 s; distance=35 kB, estimate=35 kB; lsn=0/2785DB8, redo lsn=0/2785DB8
+2024-01-01 15:59:47.987 EET [50807] LOG:  database system is shut down
+2024-01-01 15:59:48.224 EET [51368] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-01-01 15:59:48.227 EET [51368] LOG:  listening on IPv6 address "::1", port 5432
+2024-01-01 15:59:48.227 EET [51368] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-01-01 15:59:48.230 EET [51368] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2024-01-01 15:59:48.245 EET [51371] LOG:  database system was shut down at 2024-01-01 15:59:47 EET
+2024-01-01 15:59:48.258 EET [51368] LOG:  database system is ready to accept connections
+2024-01-01 15:59:48.392 EET [51380] ERROR:  database "test" already exists
+2024-01-01 15:59:48.392 EET [51380] STATEMENT:  CREATE DATABASE test OWNER username
+2024-01-01 16:04:41.462 EET [51368] LOG:  received fast shutdown request
+2024-01-01 16:04:41.471 EET [51368] LOG:  aborting any active transactions
+2024-01-01 16:04:41.483 EET [51368] LOG:  background worker "logical replication launcher" (PID 51374) exited with exit code 1
+2024-01-01 16:04:41.484 EET [51369] LOG:  shutting down
+2024-01-01 16:04:41.488 EET [51369] LOG:  checkpoint starting: shutdown immediate
+2024-01-01 16:04:41.526 EET [51369] LOG:  checkpoint complete: wrote 20 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.016 s, sync=0.007 s, total=0.043 s; sync files=22, longest=0.004 s, average=0.001 s; distance=96 kB, estimate=96 kB; lsn=0/279E070, redo lsn=0/279E070
+2024-01-01 16:04:41.535 EET [51368] LOG:  database system is shut down
+2024-01-01 16:04:42.127 EET [52668] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-01-01 16:04:42.135 EET [52668] LOG:  listening on IPv6 address "::1", port 5432
+2024-01-01 16:04:42.136 EET [52668] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-01-01 16:04:42.138 EET [52668] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2024-01-01 16:04:42.164 EET [52671] LOG:  database system was shut down at 2024-01-01 16:04:41 EET
+2024-01-01 16:04:42.206 EET [52668] LOG:  database system is ready to accept connections
+2024-01-01 16:04:42.434 EET [52677] ERROR:  database "test" already exists
+2024-01-01 16:04:42.434 EET [52677] STATEMENT:  CREATE DATABASE test OWNER username
+2024-01-01 16:05:15.591 EET [52668] LOG:  received fast shutdown request
+2024-01-01 16:05:15.594 EET [52668] LOG:  aborting any active transactions
+2024-01-01 16:05:15.605 EET [52668] LOG:  background worker "logical replication launcher" (PID 52674) exited with exit code 1
+2024-01-01 16:05:15.605 EET [52669] LOG:  shutting down
+2024-01-01 16:05:15.608 EET [52669] LOG:  checkpoint starting: shutdown immediate
+2024-01-01 16:05:15.633 EET [52669] LOG:  checkpoint complete: wrote 11 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.007 s, sync=0.006 s, total=0.028 s; sync files=20, longest=0.003 s, average=0.001 s; distance=48 kB, estimate=48 kB; lsn=0/27AA448, redo lsn=0/27AA448
+2024-01-01 16:05:15.643 EET [52668] LOG:  database system is shut down
+2024-01-01 16:05:15.861 EET [52989] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-01-01 16:05:15.865 EET [52989] LOG:  listening on IPv6 address "::1", port 5432
+2024-01-01 16:05:15.865 EET [52989] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-01-01 16:05:15.867 EET [52989] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2024-01-01 16:05:15.879 EET [52992] LOG:  database system was shut down at 2024-01-01 16:05:15 EET
+2024-01-01 16:05:15.892 EET [52989] LOG:  database system is ready to accept connections
+2024-01-01 16:05:16.067 EET [52998] ERROR:  database "test" already exists
+2024-01-01 16:05:16.067 EET [52998] STATEMENT:  CREATE DATABASE test OWNER username
+2024-01-01 16:06:31.720 EET [53401] FATAL:  role "timon" does not exist
+2024-01-01 16:06:31.739 EET [53406] FATAL:  role "timon" does not exist
+2024-01-01 16:08:39.413 EET [52989] LOG:  received fast shutdown request
+2024-01-01 16:08:39.418 EET [52989] LOG:  aborting any active transactions
+2024-01-01 16:08:39.428 EET [52989] LOG:  background worker "logical replication launcher" (PID 52995) exited with exit code 1
+2024-01-01 16:08:39.430 EET [52990] LOG:  shutting down
+2024-01-01 16:08:39.433 EET [52990] LOG:  checkpoint starting: shutdown immediate
+2024-01-01 16:08:39.458 EET [52990] LOG:  checkpoint complete: wrote 17 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.008 s, sync=0.006 s, total=0.029 s; sync files=21, longest=0.003 s, average=0.001 s; distance=26 kB, estimate=26 kB; lsn=0/27B0D68, redo lsn=0/27B0D68
+2024-01-01 16:08:39.469 EET [52989] LOG:  database system is shut down
+2024-01-01 16:08:39.671 EET [54117] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-01-01 16:08:39.673 EET [54117] LOG:  listening on IPv6 address "::1", port 5432
+2024-01-01 16:08:39.673 EET [54117] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-01-01 16:08:39.676 EET [54117] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2024-01-01 16:08:39.688 EET [54120] LOG:  database system was shut down at 2024-01-01 16:08:39 EET
+2024-01-01 16:08:39.701 EET [54117] LOG:  database system is ready to accept connections
+2024-01-01 16:08:39.882 EET [54126] ERROR:  database "test" already exists
+2024-01-01 16:08:39.882 EET [54126] STATEMENT:  CREATE DATABASE test OWNER username
+2024-01-01 16:09:05.234 EET [54117] LOG:  received fast shutdown request
+2024-01-01 16:09:05.239 EET [54117] LOG:  aborting any active transactions
+2024-01-01 16:09:05.258 EET [54117] LOG:  background worker "logical replication launcher" (PID 54123) exited with exit code 1
+2024-01-01 16:09:05.259 EET [54118] LOG:  shutting down
+2024-01-01 16:09:05.263 EET [54118] LOG:  checkpoint starting: shutdown immediate
+2024-01-01 16:09:05.297 EET [54118] LOG:  checkpoint complete: wrote 8 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.007 s, sync=0.007 s, total=0.038 s; sync files=18, longest=0.003 s, average=0.001 s; distance=28 kB, estimate=28 kB; lsn=0/27B7F00, redo lsn=0/27B7F00
+2024-01-01 16:09:05.307 EET [54117] LOG:  database system is shut down
+2024-01-01 16:09:05.542 EET [54476] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-01-01 16:09:05.545 EET [54476] LOG:  listening on IPv6 address "::1", port 5432
+2024-01-01 16:09:05.545 EET [54476] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-01-01 16:09:05.548 EET [54476] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2024-01-01 16:09:05.564 EET [54499] LOG:  database system was shut down at 2024-01-01 16:09:05 EET
+2024-01-01 16:09:05.580 EET [54476] LOG:  database system is ready to accept connections
+2024-01-01 16:09:05.728 EET [54534] ERROR:  database "test" already exists
+2024-01-01 16:09:05.728 EET [54534] STATEMENT:  CREATE DATABASE test OWNER username
+2024-01-01 16:10:22.593 EET [54967] FATAL:  role "timon" does not exist
+2024-01-01 16:10:22.616 EET [54972] FATAL:  role "timon" does not exist
+2024-01-01 16:14:05.660 EET [54497] LOG:  checkpoint starting: time
+2024-01-01 16:14:07.021 EET [54497] LOG:  checkpoint complete: wrote 16 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=1.316 s, sync=0.015 s, total=1.362 s; sync files=20, longest=0.003 s, average=0.001 s; distance=29 kB, estimate=29 kB; lsn=0/27BF548, redo lsn=0/27BF510
+2024-01-01 18:08:49.360 EET [54476] LOG:  received fast shutdown request
+2024-01-01 18:08:49.364 EET [54476] LOG:  aborting any active transactions
+2024-01-01 18:08:49.371 EET [54476] LOG:  background worker "logical replication launcher" (PID 54506) exited with exit code 1
+2024-01-01 18:08:49.376 EET [54497] LOG:  shutting down
+2024-01-01 18:08:49.379 EET [54497] LOG:  checkpoint starting: shutdown immediate
+2024-01-01 18:08:49.393 EET [54497] LOG:  checkpoint complete: wrote 0 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.018 s; sync files=0, longest=0.000 s, average=0.000 s; distance=0 kB, estimate=26 kB; lsn=0/27BF5F8, redo lsn=0/27BF5F8
+2024-01-01 18:08:49.403 EET [54476] LOG:  database system is shut down
+2024-01-01 18:08:49.627 EET [56619] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-01-01 18:08:49.630 EET [56619] LOG:  listening on IPv6 address "::1", port 5432
+2024-01-01 18:08:49.630 EET [56619] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-01-01 18:08:49.632 EET [56619] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2024-01-01 18:08:49.645 EET [56622] LOG:  database system was shut down at 2024-01-01 18:08:49 EET
+2024-01-01 18:08:49.659 EET [56619] LOG:  database system is ready to accept connections
+2024-01-01 18:08:49.829 EET [56628] ERROR:  database "test" already exists
+2024-01-01 18:08:49.829 EET [56628] STATEMENT:  CREATE DATABASE test OWNER username
+2024-01-01 18:08:51.814 EET [56651] FATAL:  role "timon" does not exist
+2024-01-01 18:08:51.832 EET [56656] FATAL:  role "timon" does not exist
+2024-01-01 18:09:10.095 EET [56702] ERROR:  syntax error at or near "activities" at character 35
+2024-01-01 18:09:10.095 EET [56702] STATEMENT:  TRUNCATE TABLE activities CASCADE activities;
+2024-01-01 18:09:36.937 EET [56619] LOG:  received fast shutdown request
+2024-01-01 18:09:36.942 EET [56619] LOG:  aborting any active transactions
+2024-01-01 18:09:36.951 EET [56619] LOG:  background worker "logical replication launcher" (PID 56625) exited with exit code 1
+2024-01-01 18:09:36.953 EET [56620] LOG:  shutting down
+2024-01-01 18:09:36.955 EET [56620] LOG:  checkpoint starting: shutdown immediate
+2024-01-01 18:09:36.987 EET [56620] LOG:  checkpoint complete: wrote 13 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.013 s, sync=0.008 s, total=0.035 s; sync files=26, longest=0.003 s, average=0.001 s; distance=33 kB, estimate=33 kB; lsn=0/27C7B28, redo lsn=0/27C7B28
+2024-01-01 18:09:36.996 EET [56619] LOG:  database system is shut down
+2024-01-01 18:09:37.182 EET [56833] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-01-01 18:09:37.184 EET [56833] LOG:  listening on IPv6 address "::1", port 5432
+2024-01-01 18:09:37.184 EET [56833] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-01-01 18:09:37.187 EET [56833] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2024-01-01 18:09:37.197 EET [56836] LOG:  database system was shut down at 2024-01-01 18:09:36 EET
+2024-01-01 18:09:37.210 EET [56833] LOG:  database system is ready to accept connections
+2024-01-01 18:09:37.329 EET [56842] ERROR:  database "test" already exists
+2024-01-01 18:09:37.329 EET [56842] STATEMENT:  CREATE DATABASE test OWNER username
+2024-01-01 18:09:38.333 EET [56865] FATAL:  role "timon" does not exist
+2024-01-01 18:09:38.351 EET [56870] FATAL:  role "timon" does not exist
+2024-01-01 18:10:03.650 EET [56833] LOG:  received fast shutdown request
+2024-01-01 18:10:03.653 EET [56833] LOG:  aborting any active transactions
+2024-01-01 18:10:03.657 EET [56833] LOG:  background worker "logical replication launcher" (PID 56839) exited with exit code 1
+2024-01-01 18:10:03.664 EET [56834] LOG:  shutting down
+2024-01-01 18:10:03.667 EET [56834] LOG:  checkpoint starting: shutdown immediate
+2024-01-01 18:10:03.693 EET [56834] LOG:  checkpoint complete: wrote 16 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.007 s, sync=0.007 s, total=0.029 s; sync files=20, longest=0.004 s, average=0.001 s; distance=32 kB, estimate=32 kB; lsn=0/27CFC48, redo lsn=0/27CFC48
+2024-01-01 18:10:03.702 EET [56833] LOG:  database system is shut down
+2024-01-01 18:10:03.896 EET [56917] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-01-01 18:10:03.898 EET [56917] LOG:  listening on IPv6 address "::1", port 5432
+2024-01-01 18:10:03.898 EET [56917] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-01-01 18:10:03.900 EET [56917] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2024-01-01 18:10:03.911 EET [56920] LOG:  database system was shut down at 2024-01-01 18:10:03 EET
+2024-01-01 18:10:03.924 EET [56917] LOG:  database system is ready to accept connections
+2024-01-01 18:10:04.044 EET [56926] ERROR:  database "test" already exists
+2024-01-01 18:10:04.044 EET [56926] STATEMENT:  CREATE DATABASE test OWNER username
+2024-01-01 18:10:05.053 EET [56949] FATAL:  role "timon" does not exist
+2024-01-01 18:10:05.069 EET [56954] FATAL:  role "timon" does not exist
+2024-01-01 18:10:45.880 EET [56917] LOG:  received fast shutdown request
+2024-01-01 18:10:45.883 EET [56917] LOG:  aborting any active transactions
+2024-01-01 18:10:45.895 EET [56917] LOG:  background worker "logical replication launcher" (PID 56923) exited with exit code 1
+2024-01-01 18:10:45.904 EET [56918] LOG:  shutting down
+2024-01-01 18:10:45.908 EET [56918] LOG:  checkpoint starting: shutdown immediate
+2024-01-01 18:10:45.948 EET [56918] LOG:  checkpoint complete: wrote 16 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.014 s, sync=0.009 s, total=0.044 s; sync files=20, longest=0.003 s, average=0.001 s; distance=32 kB, estimate=32 kB; lsn=0/27D7E28, redo lsn=0/27D7E28
+2024-01-01 18:10:45.959 EET [56917] LOG:  database system is shut down
+2024-01-01 18:10:46.238 EET [57674] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-01-01 18:10:46.243 EET [57674] LOG:  listening on IPv6 address "::1", port 5432
+2024-01-01 18:10:46.243 EET [57674] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-01-01 18:10:46.246 EET [57674] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2024-01-01 18:10:46.263 EET [57677] LOG:  database system was shut down at 2024-01-01 18:10:45 EET
+2024-01-01 18:10:46.280 EET [57674] LOG:  database system is ready to accept connections
+2024-01-01 18:10:46.426 EET [57683] ERROR:  database "test" already exists
+2024-01-01 18:10:46.426 EET [57683] STATEMENT:  CREATE DATABASE test OWNER username
+2024-01-01 18:11:16.211 EET [57674] LOG:  received fast shutdown request
+2024-01-01 18:11:16.226 EET [57674] LOG:  aborting any active transactions
+2024-01-01 18:11:16.230 EET [57674] LOG:  background worker "logical replication launcher" (PID 57680) exited with exit code 1
+2024-01-01 18:11:16.241 EET [57675] LOG:  shutting down
+2024-01-01 18:11:16.245 EET [57675] LOG:  checkpoint starting: shutdown immediate
+2024-01-01 18:11:16.283 EET [57675] LOG:  checkpoint complete: wrote 21 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.011 s, sync=0.009 s, total=0.041 s; sync files=22, longest=0.004 s, average=0.001 s; distance=98 kB, estimate=98 kB; lsn=0/27F0870, redo lsn=0/27F0870
+2024-01-01 18:11:16.296 EET [57674] LOG:  database system is shut down
+2024-01-01 18:11:16.500 EET [57931] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-01-01 18:11:16.503 EET [57931] LOG:  listening on IPv6 address "::1", port 5432
+2024-01-01 18:11:16.503 EET [57931] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-01-01 18:11:16.505 EET [57931] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2024-01-01 18:11:16.520 EET [57934] LOG:  database system was shut down at 2024-01-01 18:11:16 EET
+2024-01-01 18:11:16.534 EET [57931] LOG:  database system is ready to accept connections
+2024-01-01 18:11:16.643 EET [57940] ERROR:  database "test" already exists
+2024-01-01 18:11:16.643 EET [57940] STATEMENT:  CREATE DATABASE test OWNER username
+2024-01-01 18:14:23.906 EET [57931] LOG:  received fast shutdown request
+2024-01-01 18:14:23.911 EET [57931] LOG:  aborting any active transactions
+2024-01-01 18:14:23.922 EET [57931] LOG:  background worker "logical replication launcher" (PID 57937) exited with exit code 1
+2024-01-01 18:14:23.925 EET [57932] LOG:  shutting down
+2024-01-01 18:14:23.928 EET [57932] LOG:  checkpoint starting: shutdown immediate
+2024-01-01 18:14:23.970 EET [57932] LOG:  checkpoint complete: wrote 26 buffers (0.2%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.016 s, sync=0.008 s, total=0.046 s; sync files=22, longest=0.004 s, average=0.001 s; distance=104 kB, estimate=104 kB; lsn=0/280AA80, redo lsn=0/280AA80
+2024-01-01 18:14:23.985 EET [57931] LOG:  database system is shut down
+2024-01-01 18:14:24.266 EET [58802] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-01-01 18:14:24.273 EET [58802] LOG:  listening on IPv6 address "::1", port 5432
+2024-01-01 18:14:24.274 EET [58802] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-01-01 18:14:24.276 EET [58802] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2024-01-01 18:14:24.291 EET [58805] LOG:  database system was shut down at 2024-01-01 18:14:23 EET
+2024-01-01 18:14:24.310 EET [58802] LOG:  database system is ready to accept connections
+2024-01-01 18:14:24.487 EET [58811] ERROR:  database "test" already exists
+2024-01-01 18:14:24.487 EET [58811] STATEMENT:  CREATE DATABASE test OWNER username
+2024-01-01 18:15:24.880 EET [59306] FATAL:  role "timon" does not exist
+2024-01-01 18:15:24.898 EET [59311] FATAL:  role "timon" does not exist
+2024-01-01 18:19:24.373 EET [58803] LOG:  checkpoint starting: time
+2024-01-01 18:19:25.719 EET [58803] LOG:  checkpoint complete: wrote 16 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=1.321 s, sync=0.008 s, total=1.347 s; sync files=20, longest=0.004 s, average=0.001 s; distance=34 kB, estimate=34 kB; lsn=0/28135E8, redo lsn=0/28135B0

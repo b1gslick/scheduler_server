@@ -25,6 +25,6 @@ POST /login
 
 #body
 {
-  "email": "test2@test.iv",
+  "email": "test2@test1.iv",
   "password": "passfdsfsf"
 }

@@ -20,13 +20,14 @@ RUN --mount=type=bind,source=src,target=src \
   --mount=type=bind,source=handle-errors,target=handle-errors \
   --mount=type=bind,source=Cargo.toml,target=Cargo.toml \
   --mount=type=bind,source=Cargo.lock,target=Cargo.lock \
+  # --mount=type=bind,source=.env,target=.env \
   --mount=type=cache,target=/app/target/ \
   --mount=type=cache,target=/usr/local/cargo/registry/ \
   --mount=type=bind,source=migrations,target=migrations \
   <<EOF
 set -e
 cargo build --locked --release --target ${TARGET}
-cp ./target/${TARGET}/release/${APP_NAME} /bin/server
+cp ./target/${TARGET}/release/server /bin/server
 EOF
 
 FROM debian:bullseye-slim AS final
@@ -43,10 +44,17 @@ RUN adduser \
   appuser
 USER appuser
 
+HEALTHCHECK \
+  --interval=30s \
+  --timeout=30s  \
+  --start-period=5s \
+  --retries=3 \ 
+  CMD curl -f http://localhost:8080/get_activities || exit
+
 # copy binaries
 COPY --from=build /bin/server /bin/
 # copy configuration file
-COPY .env ./.env
+COPY .env /bin/.env
 
 # expose port
 EXPOSE 8080

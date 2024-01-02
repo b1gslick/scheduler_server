@@ -1,9 +1,8 @@
 use clap::Parser;
-use dotenv;
 use std::env;
 
 /// Scheduler web service API
-#[derive(Parser, Debug)]
+#[derive(Parser, Debug, PartialEq)]
 #[clap(author, version, about, long_about = None)]
 pub struct Config {
     /// Which errors we want to log (info, warn or error)
@@ -25,7 +24,7 @@ pub struct Config {
     #[clap(long, default_value = "5432")]
     pub database_port: u16,
     /// Database name
-    #[clap(long, default_value = "schedeulerdb")]
+    #[clap(long, default_value = "schedulerdb")]
     pub database_name: String,
 }
 impl Config {
@@ -46,7 +45,8 @@ impl Config {
         let db_password = env::var("DATABASE_PASSWORD").unwrap();
         let db_host = env::var("DATABASE_HOST").unwrap_or(config.database_host.to_owned());
         let db_port = env::var("DATABASE_PORT").unwrap_or(config.database_port.to_string());
-        let db_name = env::var("DATABASE_DB").unwrap_or(config.database_name.to_owned());
+        // let db_name = env::var("DATABASE_NAME").unwrap_or(config.database_name.to_owned());
+        let db_name = env::var("DATABASE_NAME").unwrap_or(config.database_name.to_owned());
         Ok(Config {
             log_level: config.log_level,
             port,
@@ -58,5 +58,35 @@ impl Config {
                 .map_err(|e| handle_errors::Error::ParseError(e))?,
             database_name: db_name,
         })
+    }
+}
+#[cfg(test)]
+mod config_tests {
+    use super::*;
+
+    fn set_env() {
+        env::set_var("PASETO_KEY", "yes");
+        env::set_var("DATABASE_USER", "user");
+        env::set_var("DATABASE_PASSWORD", "pass");
+        env::set_var("DATABASE_NAME", "userdb");
+        env::set_var("DATABASE_HOST", "localhost");
+        env::set_var("DATABASE_PORT", "5432");
+    }
+
+    #[test]
+    fn set_paseto_key() {
+        set_env();
+
+        let expexted = Config {
+            log_level: "warn".to_string(),
+            port: 8080,
+            database_user: "user".to_string(),
+            database_password: "pass".to_string(),
+            database_host: "localhost".to_string(),
+            database_port: 5432,
+            database_name: "userdb".to_string(),
+        };
+        let config = Config::new().unwrap();
+        assert_eq!(config, expexted);
     }
 }
