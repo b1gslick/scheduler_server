@@ -71,7 +71,7 @@ jobs:
         env:
           TAG: ${{ github.ref_name }}
         with:
-          image: t1mon1106/scheduler:$TAG
+          image: t1mon1106/scheduler:latest
       - name: Run e2e tests
         uses: matt-ball/newman-action@master
         with:
