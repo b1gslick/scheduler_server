@@ -56,7 +56,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ steps.meta.outputs.tags }},latest
+          tags: ${{ steps.meta.outputs.tags }},t1mon1106/scheduler:latest
           labels: ${{ steps.meta.outputs.labels }}
 
   e2e:
