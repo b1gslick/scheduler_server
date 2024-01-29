@@ -66,13 +66,10 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
-      - name: run docker image
-        uses: addnab/docker-run-action@v3
+      - name: run-compose with tests
+        uses: isbang/compose-action@v1.5.1
+        with:
+          compose-file: "tests/e2e/docker-compose.yml"
+          up-flags: "--abort-on-container-exit"
         env:
           TAG: ${{ github.ref_name }}
-        with:
-          image: t1mon1106/scheduler:latest
-      - name: Run e2e tests
-        uses: matt-ball/newman-action@master
-        with:
-          collection: tests/e2e/e2e-regression.postman_collection.json
