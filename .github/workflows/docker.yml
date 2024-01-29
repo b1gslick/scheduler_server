@@ -68,8 +68,10 @@ jobs:
         uses: actions/checkout@v4
       - name: run docker image
         uses: addnab/docker-run-action@v3
+        env:
+          TAG: ${{ github.ref_name }}
         with:
-          image: t1mon1106/scheduler:${GITHUB_REF##*/}
+          image: t1mon1106/scheduler:$TAG
       - name: Run e2e tests
         uses: matt-ball/newman-action@master
         with:
