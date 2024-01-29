@@ -69,7 +69,7 @@ jobs:
       - name: run docker image
         uses: addnab/docker-run-action@v3
         with:
-          image: t1mon1106/scheduler:${{ steps.meta.outputs.tags }}
+          image: t1mon1106/scheduler:${GITHUB_REF##*/}
       - name: Run e2e tests
         uses: matt-ball/newman-action@master
         with:
