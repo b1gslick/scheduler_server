@@ -1,5 +1,5 @@
 ---
-name: Test,Build,Deploy
+name: Test,Build,Deploy,e2e
 
 on: [push]
 
@@ -58,3 +58,19 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+  e2e:
+    name: e2e tests
+    runs-on: ubuntu-latest
+    needs: [push_to_registry]
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+      - name: run docker image
+        uses: addnab/docker-run-action@v3
+        with:
+          image: t1mon1106/scheduler:${{ steps.meta.outputs.tags }}
+      - name: Run e2e tests
+        uses: matt-ball/newman-action@master
+        with:
+          collection: tests/e2e/e2e-regression.postman_collection.json
