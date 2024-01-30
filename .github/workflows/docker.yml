@@ -102,10 +102,16 @@ jobs:
       - name: Run scan
         run: docker run --user root --network zapnet -v $HOME:/zap/wrk/:rw -t owasp/zap2docker-stable zap-full-scan.py  -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):8080 -r report.html
 
+      - name: test
+        run: |
+          ls -lha
+          mkdir public
+          cp $HOME/report.html /public
+
       - name: upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          path: "/home/runner/report.html"
+          path: "/public/report.html"
 
       - name: deploy to Github Pages
         uses: actions/deploy-pages@v2
