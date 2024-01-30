@@ -75,7 +75,7 @@ jobs:
           TAG: ${{ github.ref_name }}
 
   smoke-performance:
-    name: smoke
+    name: smoke-performance
     runs-on: ubuntu-latest
     needs: [push_to_registry]
     steps:
