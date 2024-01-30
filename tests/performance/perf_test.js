@@ -43,7 +43,7 @@ export const options = {
 
 // Simulate user behavior
 export default function () {
-  let baseUrl = "http://localhost:8080";
+  let baseUrl = "http://backend:8080";
 
   const body = {
     id: `${exec.vu.iterationInInstance}`,
