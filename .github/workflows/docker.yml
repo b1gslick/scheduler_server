@@ -84,4 +84,4 @@ jobs:
       - name: run-compose with tests
         env:
           TAG: ${{ github.ref_name }}
-        run: cd tests/performance && docker-compose run k6s run /scripts/perf_test.js --quiet --abort-on-container-exit
+        run: cd tests/performance && docker-compose --abort-on-container-exit run k6s run /scripts/perf_test.js --quiet
