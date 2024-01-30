@@ -106,7 +106,7 @@ jobs:
         run: |
           ls -lha
           mkdir public
-          cp $HOME/report.html /public
+          cp $HOME/report.html public/
 
       - name: upload artifact
         uses: actions/upload-pages-artifact@v1
