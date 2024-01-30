@@ -99,9 +99,6 @@ jobs:
           TAG: ${{ github.ref_name }}
         run: docker run -d -p 8080:8080 --network zapnet t1mon1106/scheduler:$TAG
 
-      - name: Prepare for report
-        run: mdkir zap-report
-
       - name: Run scan
         run: docker run --network zapnet -v $HOME:/zap/wrk/:rw -t owasp/zap2docker-stable zap-full-scan.py  -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):8080 -r report.html
 
