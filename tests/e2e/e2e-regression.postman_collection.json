@@ -1180,7 +1180,7 @@
     },
     {
       "key": "url",
-      "value": "http://backend:8080",
+      "value": "http://localhost:8080",
       "type": "string"
     },
     {

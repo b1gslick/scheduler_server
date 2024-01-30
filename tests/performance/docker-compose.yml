@@ -1,0 +1,12 @@
+services:
+  backend:
+    image: t1mon1106/scheduler:${TAG}
+    ports:
+      - "8080:8080"
+  k6s:
+    image: grafana/k6
+    command: k6s run /scripts/perf_test.js
+    volumes:
+      - .:/scripts
+    depends_on:
+      - backend
