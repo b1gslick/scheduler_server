@@ -1,0 +1,13 @@
+services:
+  backend:
+    image: t1mon1106/scheduler:${TAG}
+    ports:
+      - "8080:8080"
+
+  postman_checks:
+    image: postman/newman
+    command: run ./e2e-regression.postman_collection.json
+    volumes:
+      - .:/etc/newman
+    depends_on:
+      - backend
