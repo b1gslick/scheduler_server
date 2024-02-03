@@ -4,8 +4,8 @@ name: Test,Build,Deploy,e2e
 on: [push]
 
 jobs:
-  lint:
-    name: Lint
+  test:
+    name: test
     runs-on: self-hosted
     steps:
       - name: Setup | Checkout
@@ -15,24 +15,14 @@ jobs:
         with:
           rust-version: stable
           components: clippy
-      - name: Build | Lint
-        run: cargo clippy
-  test:
-    name: Test
-    runs-on: self-hosted
-    steps:
-      - name: Setup | Checkout
-        uses: actions/checkout@v4
-      - name: Setup | Rust
-        uses: ATiltedTree/setup-rust@v1
-        with:
-          rust-version: stable
-      - name: Build | Compile
-        run: cargo test
+      - name: Build | Lint | Test
+        run: |
+          cargo clippy
+          cargo test
 
   security-audit:
     name: security-audit
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - name: Setup | Checkout
         uses: actions/checkout@v4
@@ -47,7 +37,6 @@ jobs:
 
   push_to_registry:
     name: Push Docker image to Docker Hub
-    # runs-on: ubuntu-latest
     runs-on: self-hosted
     needs: [test]
     steps:
