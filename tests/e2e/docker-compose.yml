@@ -4,9 +4,6 @@ services:
     image: t1mon1106/scheduler:${TAG}
     container_name: server
     hostname: localhost
-    build:
-      context: .
-      target: final
     ports:
       - "8080:8080"
     environment:
