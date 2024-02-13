@@ -5,7 +5,7 @@ on: [push]
 
 jobs:
   lint:
-    name: Lint
+    name: Test
     runs-on: ubuntu-latest
     steps:
       - name: Setup | Checkout
