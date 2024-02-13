@@ -4,7 +4,7 @@ name: Test,Build,Deploy,e2e
 on: [push]
 
 jobs:
-  lint:
+  test:
     name: Test
     runs-on: ubuntu-latest
     steps:
