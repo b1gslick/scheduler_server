@@ -1,72 +1,90 @@
-pub mod activities {
-    use crate::store::store::Store;
-    use crate::types::activities::{Activity, ActivityId};
-    use crate::types::pagination::extract_pagination;
-    use handle_errors::Error;
-    use std::collections::HashMap;
-    use tracing::{info, instrument};
-    use warp::http::StatusCode;
+use crate::store::Store;
+use crate::types::account::Session;
+use crate::types::activities::{Activity, NewActivity};
+use crate::types::pagination::extract_pagination;
+use crate::types::pagination::Pagination;
+use std::collections::HashMap;
+use tracing::{info, instrument};
+use warp::http::StatusCode;
 
-    #[instrument]
-    pub async fn get_activities(
-        params: HashMap<String, String>,
-        store: Store,
-    ) -> Result<impl warp::Reply, warp::Rejection> {
-        info!("quering activities");
-        if !params.is_empty() {
-            let pagination = extract_pagination(params)?;
-            info!(pagination = true);
-            let res: Vec<Activity> = store.activities.read().await.values().cloned().collect();
-            let res = &res[pagination.start..pagination.end];
-            Ok(warp::reply::json(&res))
-        } else {
-            info!(pagination = false);
-            let res: Vec<Activity> = store.activities.read().await.values().cloned().collect();
-            Ok(warp::reply::json(&res))
-        }
+#[instrument]
+pub async fn get_activities(
+    params: HashMap<String, String>,
+    store: Store,
+) -> Result<impl warp::Reply, warp::Rejection> {
+    info!("quering activities");
+    let mut pagination = Pagination::default();
+
+    if !params.is_empty() {
+        info!(pagination = true);
+        pagination = extract_pagination(params)?;
     }
 
-    pub async fn add_activity(
-        store: Store,
-        activity: Activity,
-    ) -> Result<impl warp::Reply, warp::Rejection> {
-        info!("add activity");
-        store
-            .activities
-            .write()
-            .await
-            .insert(activity.id.clone(), activity.clone());
+    let res: Vec<Activity> = match store
+        .get_activities(pagination.limit, pagination.offset)
+        .await
+    {
+        Ok(res) => res,
+        Err(e) => return Err(warp::reject::custom(e)),
+    };
 
+    Ok(warp::reply::json(&res))
+}
+
+pub async fn add_activity(
+    session: Session,
+    store: Store,
+    new_activity: NewActivity,
+) -> Result<impl warp::Reply, warp::Rejection> {
+    info!("add activity");
+    let account_id = session.account_id;
+    if let Err(e) = store.add_activity(new_activity.clone(), account_id).await {
+        info!("Add activity not added{:?}", new_activity.clone());
+        return Err(warp::reject::custom(e));
+    }
+
+    Ok(warp::reply::with_status(
+        format!("Activity added: {:?}", new_activity),
+        StatusCode::OK,
+    ))
+}
+
+pub async fn update_activities(
+    id: i32,
+    session: Session,
+    store: Store,
+    activity: Activity,
+) -> Result<impl warp::Reply, warp::Rejection> {
+    info!("update activities");
+    let account_id = session.account_id;
+    if store.is_activity_owner(id, &account_id).await? {
+        let res = match store.update_activity(activity, id, account_id).await {
+            Ok(res) => res,
+            Err(e) => return Err(warp::reject::custom(e)),
+        };
+        info!("Update completed with {:?}", &res);
+        Ok(warp::reply::json(&res))
+    } else {
+        Err(warp::reject::custom(handle_errors::Error::Unauthorized))
+    }
+}
+
+pub async fn deleted_activities(
+    id: i32,
+    session: Session,
+    store: Store,
+) -> Result<impl warp::Reply, warp::Rejection> {
+    info!("delete activities");
+    let account_id = session.account_id;
+    if store.is_activity_owner(id, &account_id).await? {
+        if let Err(e) = store.delete_activity(id, account_id).await {
+            return Err(warp::reject::custom(e));
+        }
         Ok(warp::reply::with_status(
-            format!("Activity added: {:?}", activity.clone()),
+            format!("Activity {} deleted", id),
             StatusCode::OK,
         ))
-    }
-
-    pub async fn update_activities(
-        id: String,
-        store: Store,
-        activity: Activity,
-    ) -> Result<impl warp::Reply, warp::Rejection> {
-        info!("update activities");
-        match store.activities.write().await.get_mut(&ActivityId(id)) {
-            Some(a) => *a = activity.clone(),
-            None => return Err(warp::reject::custom(Error::ActivitiesNotFound)),
-        }
-        Ok(warp::reply::with_status(
-            format!("Activity updated: {:?}", activity.clone()),
-            StatusCode::OK,
-        ))
-    }
-
-    pub async fn deleted_activities(
-        id: String,
-        store: Store,
-    ) -> Result<impl warp::Reply, warp::Rejection> {
-        info!("delete activities");
-        match store.activities.write().await.remove(&ActivityId(id)) {
-            Some(_) => Ok(warp::reply::with_status("Activity deleted", StatusCode::OK)),
-            None => Err(warp::reject::custom(Error::ActivitiesNotFound)),
-        }
+    } else {
+        Err(warp::reject::custom(handle_errors::Error::Unauthorized))
     }
 }

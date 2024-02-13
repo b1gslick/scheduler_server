@@ -1,30 +1,54 @@
-FROM rust:1.74.1-slim-bullseye as builder
-# 1. Create a new empty shell project
-RUN USER=root cargo new --bin activities-scheduler-server
-WORKDIR /scheduler
+ARG RUST_VERSION=1.74.1
+ARG APP_NAME=activities-scheduler-server
+ARG TARGET=x86_64-unknown-linux-musl
+FROM rust:${RUST_VERSION}-slim-bullseye AS build
+ARG APP_NAME
+ARG TARGET
+WORKDIR /app
 
-COPY ./ ./
+RUN apt-get update && \
+  apt-get install -y pkg-config make g++ libssl-dev musl-tools musl-dev build-essential gcc-x86-64-linux-gnu && \
+  rustup target add ${TARGET}
 
-RUN cargo build --release
+# For a musl build on M1 Macs, these ENV variables have to be set
+ENV RUSTFLAGS='-C linker=x86_64-linux-gnu-gcc'
+ENV CC='gcc'
+ENV CC_x86_64_unknown_linux_musl=x86_64-linux-gnu-gcc
+ENV CC_x86_64-unknown-linux-musl=x86_64-linux-gnu-gcc
 
-FROM debian:bookworm-slim
+RUN --mount=type=bind,source=src,target=src \
+  --mount=type=bind,source=handle-errors,target=handle-errors \
+  --mount=type=bind,source=Cargo.toml,target=Cargo.toml \
+  --mount=type=bind,source=Cargo.lock,target=Cargo.lock \
+  --mount=type=cache,target=/app/target/ \
+  --mount=type=cache,target=/usr/local/cargo/registry/ \
+  --mount=type=bind,source=migrations,target=migrations \
+  <<EOF
+set -e
+cargo build --locked --release --target ${TARGET}
+cp ./target/${TARGET}/release/${APP_NAME} /bin/server
+EOF
 
-RUN apt-get update; apt-get clean
+FROM debian:bullseye-slim AS final
 
-# Install wget.
-RUN \
-  apt-get install -y wget && \
-  apt-get install -y openssl && \
-  apt-get install -y gnupg && \
-  apt-get install -y gcc
-# Set the Chrome repo.
-RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-  && echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list
+# create simple user
+ARG UID=10001
+RUN adduser \
+  --disabled-password \
+  --gecos "" \
+  --home "/nonexistent" \
+  --shell "/sbin/nologin" \
+  --no-create-home \
+  --uid "${UID}" \
+  appuser
+USER appuser
 
-# Install Chrome.
-RUN apt-get update && apt-get -y install google-chrome-stable
+# copy binaries
+COPY --from=build /bin/server /bin/
+# copy configuration file
+COPY .env ./.env
 
-COPY --from=builder ./scheduler/target/release/activities-scheduler-server .
-COPY ./setup.toml .
+# expose port
+EXPOSE 8080
 
-CMD ["./activities-scheduler-server"]
+CMD ["/bin/server"]
