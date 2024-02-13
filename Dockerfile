@@ -16,7 +16,6 @@ set -e
 cargo build --locked --release
 cp ./target/release/$APP_NAME /bin/server
 EOF
-
 FROM debian:bullseye-slim AS final
 
 # create simple user
