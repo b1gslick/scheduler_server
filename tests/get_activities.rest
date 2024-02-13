@@ -20,7 +20,7 @@ Content-Type: application/json; charset=utf-8
 User-Agent: VRC
 
 # query
-GET /activities
+GET /activities?limit=1&offset=1
 
 #body
 # {

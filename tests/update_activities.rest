@@ -26,8 +26,8 @@ PUT /activities/3
 
 #body
 {
-  "id": 3,
+  "id": "3",
   "title": "How?",
-  "content": "why help!",
-  "time": 30
+  "content": "Please help!",
+  "time": 10
 }
