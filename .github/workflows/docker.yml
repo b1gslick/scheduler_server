@@ -5,8 +5,8 @@ on: [push]
 
 jobs:
   test:
-    name: test
-    runs-on: self-hosted
+    name: Test
+    runs-on: ubuntu-latest
     steps:
       - name: Setup | Checkout
         uses: actions/checkout@v4
@@ -42,6 +42,9 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
+
+
+
       - name: Log in to Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
         with:
@@ -92,3 +95,19 @@ jobs:
         env:
           TAG: ${{ github.ref_name }}
         run: cd tests/performance && docker-compose run k6s run /scripts/perf_test.js --quiet
+
+  api-security-check:
+    name: api-security-check
+    runs-on: ubuntu-latest
+    needs: [push_to_registry]
+    steps:
+      - name: Create network
+        run: docker network create zapnet
+
+      - name: Start target
+        env:
+          TAG: ${{ github.ref_name }}
+        run: docker run -d -p 8080:8080 --network zapnet t1mon1106/scheduler:${TAG}
+
+      - name: Run scan
+        run: docker run --user root --network zapnet -v $HOME:/zap/wrk/:rw -t owasp/zap2docker-stable zap-api-scan.py -t http://$(ip -f inet -o addr show docker0 | awk '{print $4}' | cut -d '/' -f 1):8080/openapi.json -f openapi -r report.html

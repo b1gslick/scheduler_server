@@ -1,39 +1,36 @@
 import http from "k6/http";
-import { check, sleep } from "k6";
+import { check } from "k6";
 import exec from "k6/execution";
 
 // test configuration
 export const options = {
   scenarios: {
     simple_perf_scenario: {
-      executor: "shared-iterations",
-
-      startTime: "1s",
-      gracefulStop: "5s",
-
-      vus: 1,
-      iterations: 30,
-      maxDuration: "2m",
+      executor: "constant-arrival-rate",
+      duration: "2m",
+      rate: 30,
+      timeUnit: "1m",
+      preAllocatedVUs: 1,
     },
   },
   thresholds: {
     checks: [
       {
-        threshold: "rate>0.95",
+        threshold: "rate>0.99", // check should be pass more then 99%
         abortOnFail: true,
         delayAbortEval: "10s",
       },
     ],
     http_req_duration: [
       {
-        threshold: "p(99) < 200",
+        threshold: "p(99) < 20", // below < 20ms
         abortOnFail: true,
         delayAbortEval: "10s",
       },
     ],
     http_req_failed: [
       {
-        threshold: "rate<0.01",
+        threshold: "rate<0.01", // http error less than 1%
         abortOnFail: true,
         delayAbortEval: "10s",
       },
@@ -54,7 +51,6 @@ export default function () {
 
   let add = http.post(`${baseUrl}/activities`, JSON.stringify(body));
   check(add, { "status was 200": (r) => r.status === 200 });
-  sleep(0.5);
 
   const time_body = {
     time: parseInt(`${exec.vu.iterationInInstance}`),
@@ -63,7 +59,6 @@ export default function () {
 
   let add_time = http.post(`${baseUrl}/time_spent`, JSON.stringify(time_body));
   check(add_time, { "status was 200": (r) => r.status === 200 });
-  sleep(0.5);
 
   const update_body = {
     id: `${exec.vu.iterationInInstance}`,
@@ -77,5 +72,4 @@ export default function () {
     JSON.stringify(update_body),
   );
   check(update, { "status was 200": (r) => r.status === 200 });
-  sleep(0.5);
 }
