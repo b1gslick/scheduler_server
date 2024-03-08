@@ -10,7 +10,7 @@
       "name": "Positive-critical-path",
       "item": [
         {
-          "name": "add_activity",
+          "name": "AddActivities",
           "event": [
             {
               "listen": "prerequest",
@@ -104,7 +104,7 @@
           "response": []
         },
         {
-          "name": "check_activity_added",
+          "name": "CheckActivitiesAdded",
           "event": [
             {
               "listen": "prerequest",
@@ -169,7 +169,7 @@
           "response": []
         },
         {
-          "name": "update_activity_1",
+          "name": "UpdateActivities",
           "event": [
             {
               "listen": "prerequest",
@@ -241,7 +241,7 @@
           "response": []
         },
         {
-          "name": "check_activity_updated",
+          "name": "TestActivitiesUpdated",
           "event": [
             {
               "listen": "prerequest",
@@ -307,7 +307,8 @@
           "response": []
         },
         {
-          "name": "add_time_spent",
+
+          "name": "TimeOff",
           "event": [
             {
               "listen": "prerequest",
@@ -358,7 +359,7 @@
           "response": []
         },
         {
-          "name": "check_time_spent_aded",
+          "name": "GetTimeOff",
           "event": [
             {
               "listen": "test",
@@ -387,6 +388,7 @@
               }
             }
           ],
+
           "request": {
             "method": "GET",
             "header": [],
