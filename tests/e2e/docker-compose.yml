@@ -6,7 +6,13 @@ services:
 
   postman_checks:
     image: postman/newman
-    command: run ./e2e-regression.postman_collection.json
+    command: run e2e-regression.postman_collection.json
+      --env-var "url=http://backend:8080"
+      -r cli,htmlextra --reporter-cli-no-failures
+      --reporter-htmlextra-export report.html
+      --reporter-htmlextra-title "Schedulre App API testing"
+      -n 10
+      --timeout-request 200
     volumes:
       - .:/etc/newman
     depends_on:
