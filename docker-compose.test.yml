@@ -10,6 +10,8 @@ services:
       - RUST_LOG=debug
     networks:
       - postgres
+    depends_on:
+      - postgres
 
   postgres:
     container_name: postgres_container
@@ -72,12 +74,14 @@ services:
     ports:
       - "4545:4545"
     environment:
-      "DB_USER": scheduler
-      "DB_PASSWORD": scheduler
-      "DB_HOST": postgres_container
-      "DB_PORT": 5432
-      "DB_NAME": schedulerdb
+      DB_USER: scheduler
+      DB_PASSWORD: scheduler
+      DB_HOST: postgres_container
+      DB_PORT: 5432
+      DB_NAME: schedulerdb
     networks:
+      - postgres
+    depends_on:
       - postgres
 
 volumes:
