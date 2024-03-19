@@ -113,4 +113,10 @@ jobs:
         run: pip install wapiti3
 
       - name: run scanner
-        run: wapiti -u http://localhost:8080
+        run: wapiti -u http://localhost:8080 -o report
+
+      - name: store report
+        uses: actions/upload-artifact@v4
+        with:
+          name: wapiti-report
+          path: report/*
