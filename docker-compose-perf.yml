@@ -46,7 +46,6 @@ services:
       POSTGRES_PASSWORD: "scheduler"
       PGDATA: "/var/lib/postgresql/data/pgdata"
     volumes:
-      - ../../db/init.sql:/docker-entrypoint-initdb.d/init.sql
       - scheduler-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
@@ -65,11 +64,11 @@ services:
     networks:
       - postgres
 
-  postman_checks:
-    image: postman/newman
-    command: run ./e2e-regression.postman_collection.json
+  k6s:
+    image: grafana/k6
+    command: k6 run /scripts/perf_test.js --quiet
     volumes:
-      - .:/etc/newman
+      - ./tests/performance/:/scripts
     depends_on:
       - backend
     networks:
