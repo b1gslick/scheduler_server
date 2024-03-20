@@ -1,0 +1,493 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="e2e-regression" tests="26" time="0.137">
+  <testsuite name="Positive-critical-path / add_activity" id="973efa4a-84db-4f87-b895-bfeb78f39a20" timestamp="2024-03-20T07:26:20.765Z" tests="6" failures="6" errors="1" time="0.000">
+    <system-err><![CDATA[Iteration: 0
+RequestError: Error: connect ECONNREFUSED 172.24.0.3:8080
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1278:16)
+
+---
+]]></system-err>
+    <testcase name="Status code is 200" time="0.000" classname="E2ERegression">
+      <failure type="AssertionFailure" message="expected undefined to deeply equal 200">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: b0c3c496-91ab-4155-8da5-21bf3a25bf0d.]]>
+        <![CDATA[Collection name: e2e-regression.]]>
+        <![CDATA[Request name: Positive-critical-path / add_activity.]]>
+        <![CDATA[Test description: Status code is 200.]]>
+        <![CDATA[Error message: expected undefined to deeply equal 200.]]>
+        <![CDATA[Stacktrace: AssertionError: expected undefined to deeply equal 200
+   at Object.eval sandbox-script.js:1:1).]]>
+      </failure>
+    </testcase>
+    <testcase name="Text about add new activity" time="0.000" classname="E2ERegression">
+      <failure type="AssertionFailure" message="the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: b0c3c496-91ab-4155-8da5-21bf3a25bf0d.]]>
+        <![CDATA[Collection name: e2e-regression.]]>
+        <![CDATA[Request name: Positive-critical-path / add_activity.]]>
+        <![CDATA[Test description: Text about add new activity.]]>
+        <![CDATA[Error message: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string.]]>
+        <![CDATA[Stacktrace: AssertionError: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string
+   at Object.eval sandbox-script.js:2:1).]]>
+      </failure>
+    </testcase>
+    <testcase name="The response has title" time="0.000" classname="E2ERegression">
+      <failure type="AssertionFailure" message="the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: b0c3c496-91ab-4155-8da5-21bf3a25bf0d.]]>
+        <![CDATA[Collection name: e2e-regression.]]>
+        <![CDATA[Request name: Positive-critical-path / add_activity.]]>
+        <![CDATA[Test description: The response has title.]]>
+        <![CDATA[Error message: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string.]]>
+        <![CDATA[Stacktrace: AssertionError: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string
+   at Object.eval sandbox-script.js:3:1).]]>
+      </failure>
+    </testcase>
+    <testcase name="The response has content" time="0.000" classname="E2ERegression">
+      <failure type="AssertionFailure" message="the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: b0c3c496-91ab-4155-8da5-21bf3a25bf0d.]]>
+        <![CDATA[Collection name: e2e-regression.]]>
+        <![CDATA[Request name: Positive-critical-path / add_activity.]]>
+        <![CDATA[Test description: The response has content.]]>
+        <![CDATA[Error message: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string.]]>
+        <![CDATA[Stacktrace: AssertionError: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string
+   at Object.eval sandbox-script.js:4:1).]]>
+      </failure>
+    </testcase>
+    <testcase name="The response has time" time="0.000" classname="E2ERegression">
+      <failure type="AssertionFailure" message="the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: b0c3c496-91ab-4155-8da5-21bf3a25bf0d.]]>
+        <![CDATA[Collection name: e2e-regression.]]>
+        <![CDATA[Request name: Positive-critical-path / add_activity.]]>
+        <![CDATA[Test description: The response has time.]]>
+        <![CDATA[Error message: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string.]]>
+        <![CDATA[Stacktrace: AssertionError: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string
+   at Object.eval sandbox-script.js:5:1).]]>
+      </failure>
+    </testcase>
+    <testcase name="Reponse time is less than 200ms" time="0.000" classname="E2ERegression">
+      <failure type="AssertionFailure" message="expected undefined to be a number or a date">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: b0c3c496-91ab-4155-8da5-21bf3a25bf0d.]]>
+        <![CDATA[Collection name: e2e-regression.]]>
+        <![CDATA[Request name: Positive-critical-path / add_activity.]]>
+        <![CDATA[Test description: Reponse time is less than 200ms.]]>
+        <![CDATA[Error message: expected undefined to be a number or a date.]]>
+        <![CDATA[Stacktrace: AssertionError: expected undefined to be a number or a date
+   at Object.eval sandbox-script.js:6:1).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="Positive-critical-path / slq_query_after_add" id="aeca37ef-5f32-43fb-8a0c-3b05650f18c1" timestamp="2024-03-20T07:26:20.765Z" tests="2" failures="2" errors="1" time="0.000">
+    <system-err><![CDATA[Iteration: 0
+RequestError: Error: connect ECONNREFUSED 172.24.0.4:4545
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1278:16)
+
+---
+]]></system-err>
+    <testcase name="Response code is 200" time="0.000" classname="E2ERegression">
+      <failure type="AssertionFailure" message="expected undefined to deeply equal 200">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: b0c3c496-91ab-4155-8da5-21bf3a25bf0d.]]>
+        <![CDATA[Collection name: e2e-regression.]]>
+        <![CDATA[Request name: Positive-critical-path / slq_query_after_add.]]>
+        <![CDATA[Test description: Response code is 200.]]>
+        <![CDATA[Error message: expected undefined to deeply equal 200.]]>
+        <![CDATA[Stacktrace: AssertionError: expected undefined to deeply equal 200
+   at Object.eval sandbox-script.js:1:2).]]>
+      </failure>
+    </testcase>
+    <testcase name="Title which added, equal title in db" time="0.000" classname="E2ERegression">
+      <failure type="AssertionFailure" message="the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: b0c3c496-91ab-4155-8da5-21bf3a25bf0d.]]>
+        <![CDATA[Collection name: e2e-regression.]]>
+        <![CDATA[Request name: Positive-critical-path / slq_query_after_add.]]>
+        <![CDATA[Test description: Title which added, equal title in db.]]>
+        <![CDATA[Error message: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string.]]>
+        <![CDATA[Stacktrace: AssertionError: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string
+   at Object.eval sandbox-script.js:2:2).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="Positive-critical-path / check_activity_added" id="e0830ff3-0a66-42dc-815b-dfc367dd82c8" timestamp="2024-03-20T07:26:20.765Z" tests="1" failures="1" errors="2" time="0.000">
+    <system-err><![CDATA[Iteration: 0
+RequestError: Error: connect ECONNREFUSED 172.24.0.3:8080
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1278:16)
+
+---
+testScriptError: Unexpected token u in JSON at position 0
+---
+]]></system-err>
+    <testcase name="Status code is 200" time="0.000" classname="E2ERegression">
+      <failure type="AssertionFailure" message="expected undefined to deeply equal 200">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: b0c3c496-91ab-4155-8da5-21bf3a25bf0d.]]>
+        <![CDATA[Collection name: e2e-regression.]]>
+        <![CDATA[Request name: Positive-critical-path / check_activity_added.]]>
+        <![CDATA[Test description: Status code is 200.]]>
+        <![CDATA[Error message: expected undefined to deeply equal 200.]]>
+        <![CDATA[Stacktrace: AssertionError: expected undefined to deeply equal 200
+   at Object.eval sandbox-script.js:1:3).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="Positive-critical-path / update_activity_1" id="4ab71f32-dc1b-41a2-a678-00001b536fa7" timestamp="2024-03-20T07:26:20.765Z" tests="1" failures="1" errors="2" time="0.000">
+    <system-err><![CDATA[Iteration: 0
+RequestError: Error: connect ECONNREFUSED 172.24.0.3:8080
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1278:16)
+
+---
+testScriptError: Unexpected token u in JSON at position 0
+---
+]]></system-err>
+    <testcase name="Status code is 200" time="0.000" classname="E2ERegression">
+      <failure type="AssertionFailure" message="expected undefined to deeply equal 200">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: b0c3c496-91ab-4155-8da5-21bf3a25bf0d.]]>
+        <![CDATA[Collection name: e2e-regression.]]>
+        <![CDATA[Request name: Positive-critical-path / update_activity_1.]]>
+        <![CDATA[Test description: Status code is 200.]]>
+        <![CDATA[Error message: expected undefined to deeply equal 200.]]>
+        <![CDATA[Stacktrace: AssertionError: expected undefined to deeply equal 200
+   at Object.eval sandbox-script.js:1:4).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="Positive-critical-path / slq_query_after_first_update" id="4d8b27de-e9e2-4521-92fb-1e933e86566f" timestamp="2024-03-20T07:26:20.765Z" tests="2" failures="2" errors="1" time="0.000">
+    <system-err><![CDATA[Iteration: 0
+RequestError: Error: connect ECONNREFUSED 172.24.0.4:4545
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1278:16)
+
+---
+]]></system-err>
+    <testcase name="Response code is 200" time="0.000" classname="E2ERegression">
+      <failure type="AssertionFailure" message="expected undefined to deeply equal 200">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: b0c3c496-91ab-4155-8da5-21bf3a25bf0d.]]>
+        <![CDATA[Collection name: e2e-regression.]]>
+        <![CDATA[Request name: Positive-critical-path / slq_query_after_first_update.]]>
+        <![CDATA[Test description: Response code is 200.]]>
+        <![CDATA[Error message: expected undefined to deeply equal 200.]]>
+        <![CDATA[Stacktrace: AssertionError: expected undefined to deeply equal 200
+   at Object.eval sandbox-script.js:1:5).]]>
+      </failure>
+    </testcase>
+    <testcase name="Title which added, equal title in db" time="0.000" classname="E2ERegression">
+      <failure type="AssertionFailure" message="the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: b0c3c496-91ab-4155-8da5-21bf3a25bf0d.]]>
+        <![CDATA[Collection name: e2e-regression.]]>
+        <![CDATA[Request name: Positive-critical-path / slq_query_after_first_update.]]>
+        <![CDATA[Test description: Title which added, equal title in db.]]>
+        <![CDATA[Error message: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string.]]>
+        <![CDATA[Stacktrace: AssertionError: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string
+   at Object.eval sandbox-script.js:2:5).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="Positive-critical-path / check_activity_updated" id="5c67abfe-7886-4564-95eb-9356b9fde1df" timestamp="2024-03-20T07:26:20.765Z" tests="1" failures="1" errors="2" time="0.000">
+    <system-err><![CDATA[Iteration: 0
+RequestError: Error: connect ECONNREFUSED 172.24.0.3:8080
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1278:16)
+
+---
+testScriptError: Unexpected token u in JSON at position 0
+---
+]]></system-err>
+    <testcase name="Status code is 200" time="0.000" classname="E2ERegression">
+      <failure type="AssertionFailure" message="expected undefined to deeply equal 200">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: b0c3c496-91ab-4155-8da5-21bf3a25bf0d.]]>
+        <![CDATA[Collection name: e2e-regression.]]>
+        <![CDATA[Request name: Positive-critical-path / check_activity_updated.]]>
+        <![CDATA[Test description: Status code is 200.]]>
+        <![CDATA[Error message: expected undefined to deeply equal 200.]]>
+        <![CDATA[Stacktrace: AssertionError: expected undefined to deeply equal 200
+   at Object.eval sandbox-script.js:1:6).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="Positive-critical-path / add_time_spent" id="8ac24599-9dde-4c58-9923-06b06c9b6e5a" timestamp="2024-03-20T07:26:20.765Z" tests="2" failures="2" errors="1" time="0.000">
+    <system-err><![CDATA[Iteration: 0
+RequestError: Error: connect ECONNREFUSED 172.24.0.3:8080
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1278:16)
+
+---
+]]></system-err>
+    <testcase name="Status code is 200" time="0.000" classname="E2ERegression">
+      <failure type="AssertionFailure" message="expected undefined to deeply equal 200">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: b0c3c496-91ab-4155-8da5-21bf3a25bf0d.]]>
+        <![CDATA[Collection name: e2e-regression.]]>
+        <![CDATA[Request name: Positive-critical-path / add_time_spent.]]>
+        <![CDATA[Test description: Status code is 200.]]>
+        <![CDATA[Error message: expected undefined to deeply equal 200.]]>
+        <![CDATA[Stacktrace: AssertionError: expected undefined to deeply equal 200
+   at Object.eval sandbox-script.js:1:7).]]>
+      </failure>
+    </testcase>
+    <testcase name="Anwser has text about time added" time="0.000" classname="E2ERegression">
+      <failure type="AssertionFailure" message="the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: b0c3c496-91ab-4155-8da5-21bf3a25bf0d.]]>
+        <![CDATA[Collection name: e2e-regression.]]>
+        <![CDATA[Request name: Positive-critical-path / add_time_spent.]]>
+        <![CDATA[Test description: Anwser has text about time added.]]>
+        <![CDATA[Error message: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string.]]>
+        <![CDATA[Stacktrace: AssertionError: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string
+   at Object.eval sandbox-script.js:2:7).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="Positive-critical-path / slq_query_after_add_time_spent" id="fd29f1c9-67f0-4417-a3ac-83826fc8e3eb" timestamp="2024-03-20T07:26:20.765Z" tests="2" failures="2" errors="1" time="0.000">
+    <system-err><![CDATA[Iteration: 0
+RequestError: Error: connect ECONNREFUSED 172.24.0.4:4545
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1278:16)
+
+---
+]]></system-err>
+    <testcase name="Response code is 200" time="0.000" classname="E2ERegression">
+      <failure type="AssertionFailure" message="expected undefined to deeply equal 200">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: b0c3c496-91ab-4155-8da5-21bf3a25bf0d.]]>
+        <![CDATA[Collection name: e2e-regression.]]>
+        <![CDATA[Request name: Positive-critical-path / slq_query_after_add_time_spent.]]>
+        <![CDATA[Test description: Response code is 200.]]>
+        <![CDATA[Error message: expected undefined to deeply equal 200.]]>
+        <![CDATA[Stacktrace: AssertionError: expected undefined to deeply equal 200
+   at Object.eval sandbox-script.js:1:8).]]>
+      </failure>
+    </testcase>
+    <testcase name="Response not empty" time="0.000" classname="E2ERegression">
+      <failure type="AssertionFailure" message="Cannot read properties of undefined (reading 'length')">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: b0c3c496-91ab-4155-8da5-21bf3a25bf0d.]]>
+        <![CDATA[Collection name: e2e-regression.]]>
+        <![CDATA[Request name: Positive-critical-path / slq_query_after_add_time_spent.]]>
+        <![CDATA[Test description: Response not empty.]]>
+        <![CDATA[Error message: Cannot read properties of undefined (reading 'length').]]>
+        <![CDATA[Stacktrace: TypeError: Cannot read properties of undefined (reading 'length')
+   at Object.eval sandbox-script.js:2:8).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="Positive-critical-path / check_time_spent_aded" id="fd2aa115-05d0-4bd3-aecd-ff93b59ca7d1" timestamp="2024-03-20T07:26:20.765Z" tests="0" failures="0" errors="1" time="0.022">
+    <system-err><![CDATA[Iteration: 0
+
+---
+testScriptError: Unexpected token 'C' at 1:1
+Cannot update. invalid data.
+^
+---
+]]></system-err>
+  </testsuite>
+  <testsuite name="Positive-critical-path / update_activity_2" id="52c7252c-bed3-4322-810b-b4f4a329fceb" timestamp="2024-03-20T07:26:20.765Z" tests="1" failures="1" errors="1" time="0.010">
+    <system-err><![CDATA[Iteration: 0
+
+---
+testScriptError: Unexpected token 'C' at 1:1
+Cannot update. invalid data.
+^
+---
+]]></system-err>
+    <testcase name="Status code is 200" time="0.010" classname="E2ERegression">
+      <failure type="AssertionFailure" message="expected 422 to deeply equal 200">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: b0c3c496-91ab-4155-8da5-21bf3a25bf0d.]]>
+        <![CDATA[Collection name: e2e-regression.]]>
+        <![CDATA[Request name: Positive-critical-path / update_activity_2.]]>
+        <![CDATA[Test description: Status code is 200.]]>
+        <![CDATA[Error message: expected 422 to deeply equal 200.]]>
+        <![CDATA[Stacktrace: AssertionError: expected 422 to deeply equal 200
+   at Object.eval sandbox-script.js:1:10).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="Positive-critical-path / check_time_spent_exist_after_update" id="286762f3-d5bc-473f-9b0a-316d0bf91752" timestamp="2024-03-20T07:26:20.765Z" tests="0" failures="0" errors="1" time="0.007">
+    <system-err><![CDATA[Iteration: 0
+
+---
+testScriptError: Unexpected token 'C' at 1:1
+Cannot update. invalid data.
+^
+---
+]]></system-err>
+  </testsuite>
+  <testsuite name="Positive-critical-path / add_time_spent_more_than_exist" id="789eceb4-998a-474b-9594-151bf5f85ec4" timestamp="2024-03-20T07:26:20.765Z" tests="2" failures="2" errors="0" time="0.008">
+    <testcase name="Status code is 200" time="0.008" classname="E2ERegression">
+      <failure type="AssertionFailure" message="expected 422 to deeply equal 200">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: b0c3c496-91ab-4155-8da5-21bf3a25bf0d.]]>
+        <![CDATA[Collection name: e2e-regression.]]>
+        <![CDATA[Request name: Positive-critical-path / add_time_spent_more_than_exist.]]>
+        <![CDATA[Test description: Status code is 200.]]>
+        <![CDATA[Error message: expected 422 to deeply equal 200.]]>
+        <![CDATA[Stacktrace: AssertionError: expected 422 to deeply equal 200
+   at Object.eval sandbox-script.js:1:12).]]>
+      </failure>
+    </testcase>
+    <testcase name="Anwser has text about time added" time="0.008" classname="E2ERegression">
+      <failure type="AssertionFailure" message="expected 'Cannot update. invalid data.' to include 'Time added'">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: b0c3c496-91ab-4155-8da5-21bf3a25bf0d.]]>
+        <![CDATA[Collection name: e2e-regression.]]>
+        <![CDATA[Request name: Positive-critical-path / add_time_spent_more_than_exist.]]>
+        <![CDATA[Test description: Anwser has text about time added.]]>
+        <![CDATA[Error message: expected 'Cannot update. invalid data.' to include 'Time added'.]]>
+        <![CDATA[Stacktrace: AssertionError: expected 'Cannot update. invalid data.' to include 'Time added'
+   at Object.eval sandbox-script.js:2:12).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="Positive-critical-path / Delete_activity" id="bb08b717-1dea-4282-8615-b1658f9d9d31" timestamp="2024-03-20T07:26:20.765Z" tests="2" failures="0" errors="0" time="0.008">
+    <testcase name="Status code is 200" time="0.008" classname="E2ERegression"/>
+    <testcase name="Text should contain true information" time="0.008" classname="E2ERegression"/>
+  </testsuite>
+  <testsuite name="Positive-critical-path / slq_query_after_add_delete_activity" id="3b141ce6-342a-4b96-848a-c82e6cb8a03f" timestamp="2024-03-20T07:26:20.765Z" tests="2" failures="2" errors="1" time="0.000">
+    <system-err><![CDATA[Iteration: 0
+RequestError: Error: connect ECONNREFUSED 172.24.0.4:4545
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1278:16)
+
+---
+]]></system-err>
+    <testcase name="Response code is 200" time="0.000" classname="E2ERegression">
+      <failure type="AssertionFailure" message="expected undefined to deeply equal 200">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: b0c3c496-91ab-4155-8da5-21bf3a25bf0d.]]>
+        <![CDATA[Collection name: e2e-regression.]]>
+        <![CDATA[Request name: Positive-critical-path / slq_query_after_add_delete_activity.]]>
+        <![CDATA[Test description: Response code is 200.]]>
+        <![CDATA[Error message: expected undefined to deeply equal 200.]]>
+        <![CDATA[Stacktrace: AssertionError: expected undefined to deeply equal 200
+   at Object.eval sandbox-script.js:1:14).]]>
+      </failure>
+    </testcase>
+    <testcase name="Activities deleted from db, and response is empty" time="0.000" classname="E2ERegression">
+      <failure type="AssertionFailure" message="Cannot read properties of undefined (reading 'length')">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: b0c3c496-91ab-4155-8da5-21bf3a25bf0d.]]>
+        <![CDATA[Collection name: e2e-regression.]]>
+        <![CDATA[Request name: Positive-critical-path / slq_query_after_add_delete_activity.]]>
+        <![CDATA[Test description: Activities deleted from db, and response is empty.]]>
+        <![CDATA[Error message: Cannot read properties of undefined (reading 'length').]]>
+        <![CDATA[Stacktrace: TypeError: Cannot read properties of undefined (reading 'length')
+   at Object.eval sandbox-script.js:2:14).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="Positive-critical-path / check_time_spent_exist_after_delete" id="ab734aad-a2e8-4db2-b922-2d6bbf1d4e6d" timestamp="2024-03-20T07:26:20.765Z" tests="0" failures="0" errors="1" time="0.009">
+    <system-err><![CDATA[Iteration: 0
+
+---
+testScriptError: Unexpected token 'C' at 1:1
+Cannot update. invalid data.
+^
+---
+]]></system-err>
+  </testsuite>
+  <testsuite name="Positive-critical-path / add_time_spent_when_activity_not_exist" id="2ecba06d-4d32-40ea-b925-8619b64a33d3" timestamp="2024-03-20T07:26:20.765Z" tests="1" failures="1" errors="0" time="0.008">
+    <testcase name="Status code is 404" time="0.008" classname="E2ERegression">
+      <failure type="AssertionFailure" message="expected 422 to deeply equal 404">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: b0c3c496-91ab-4155-8da5-21bf3a25bf0d.]]>
+        <![CDATA[Collection name: e2e-regression.]]>
+        <![CDATA[Request name: Positive-critical-path / add_time_spent_when_activity_not_exist.]]>
+        <![CDATA[Test description: Status code is 404.]]>
+        <![CDATA[Error message: expected 422 to deeply equal 404.]]>
+        <![CDATA[Stacktrace: AssertionError: expected 422 to deeply equal 404
+   at Object.eval sandbox-script.js:1:16).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="NegativeCases / Add / miss_one_field" id="8cbf2005-674b-4b04-91ce-6e26e3e38101" timestamp="2024-03-20T07:26:20.765Z" tests="2" failures="0" errors="0" time="0.011">
+    <testcase name="Status code is 422" time="0.011" classname="E2ERegression"/>
+    <testcase name="Response text should exist information about field which missed" time="0.011" classname="E2ERegression"/>
+  </testsuite>
+  <testsuite name="NegativeCases / Add / miss_several_fields" id="4eda9d5c-9a4f-45ae-927c-da4ff9975d15" timestamp="2024-03-20T07:26:20.765Z" tests="3" failures="1" errors="0" time="0.008">
+    <testcase name="Status code is 422" time="0.008" classname="E2ERegression"/>
+    <testcase name="Response text should exist information about missed title" time="0.008" classname="E2ERegression"/>
+    <testcase name="Response text should exist information about missed Time" time="0.008" classname="E2ERegression">
+      <failure type="AssertionFailure" message="expected 'Request body deserialize error: missi…' to include 'missing field `time`'">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: b0c3c496-91ab-4155-8da5-21bf3a25bf0d.]]>
+        <![CDATA[Collection name: e2e-regression.]]>
+        <![CDATA[Request name: NegativeCases / Add / miss_several_fields.]]>
+        <![CDATA[Test description: Response text should exist information about missed Time.]]>
+        <![CDATA[Error message: expected 'Request body deserialize error: missi…' to include 'missing field `time`'.]]>
+        <![CDATA[Stacktrace: AssertionError: expected 'Request body deserialize error: missi…' to include 'missing field `time`'
+   at Object.eval sandbox-script.js:3:18).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="NegativeCases / Add / wrong_data_type" id="758d79ff-ac8d-40a2-98d2-81e03a180ae6" timestamp="2024-03-20T07:26:20.765Z" tests="2" failures="0" errors="0" time="0.006">
+    <testcase name="Status code is 422" time="0.006" classname="E2ERegression"/>
+    <testcase name="Response text should exist information about invalid type" time="0.006" classname="E2ERegression"/>
+  </testsuite>
+  <testsuite name="NegativeCases / Add / body_type_text" id="9336b160-914c-4246-bae2-00828d2ad111" timestamp="2024-03-20T07:26:20.765Z" tests="1" failures="1" errors="0" time="0.006">
+    <testcase name="Status code is 422" time="0.006" classname="E2ERegression">
+      <failure type="AssertionFailure" message="expected 404 to deeply equal 422">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: b0c3c496-91ab-4155-8da5-21bf3a25bf0d.]]>
+        <![CDATA[Collection name: e2e-regression.]]>
+        <![CDATA[Request name: NegativeCases / Add / body_type_text.]]>
+        <![CDATA[Test description: Status code is 422.]]>
+        <![CDATA[Error message: expected 404 to deeply equal 422.]]>
+        <![CDATA[Stacktrace: AssertionError: expected 404 to deeply equal 422
+   at Object.eval sandbox-script.js:1:20).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="NegativeCases / Add / miss_body" id="62a89394-fb54-4ebf-8f47-25f5e02d0748" timestamp="2024-03-20T07:26:20.765Z" tests="2" failures="0" errors="0" time="0.004">
+    <testcase name="Status code is 422" time="0.004" classname="E2ERegression"/>
+    <testcase name="Response text should exist information about missed body" time="0.004" classname="E2ERegression"/>
+  </testsuite>
+  <testsuite name="NegativeCases / Edit / update_activity_with_empty_value" id="40a2f38b-9684-4e55-b5c1-967cb542ee7a" timestamp="2024-03-20T07:26:20.765Z" tests="4" failures="0" errors="0" time="0.006">
+    <testcase name="response should be okay to process" time="0.006" classname="E2ERegression"/>
+    <testcase name="Status code is 422" time="0.006" classname="E2ERegression"/>
+    <testcase name="The response has text about missing time" time="0.006" classname="E2ERegression"/>
+  </testsuite>
+  <testsuite name="NegativeCases / Edit / update_activity_with_incorect_data_type" id="f4ac1b29-a302-4daa-9814-0eb0c02d0596" timestamp="2024-03-20T07:26:20.765Z" tests="4" failures="0" errors="0" time="0.006">
+    <testcase name="response should be okay to process" time="0.006" classname="E2ERegression"/>
+    <testcase name="Status code is 422" time="0.006" classname="E2ERegression"/>
+    <testcase name="The response has text about invalid type" time="0.006" classname="E2ERegression"/>
+  </testsuite>
+  <testsuite name="NegativeCases / Edit / update_activity_add_not_exist_field" id="357aa00b-33d1-4a12-bd75-5ae7ed34284d" timestamp="2024-03-20T07:26:20.765Z" tests="4" failures="0" errors="0" time="0.005">
+    <testcase name="response should be okay to process" time="0.005" classname="E2ERegression"/>
+    <testcase name="Status code is 422" time="0.005" classname="E2ERegression"/>
+    <testcase name="The response has information `Cannot update. invalid data.`" time="0.005" classname="E2ERegression"/>
+  </testsuite>
+  <testsuite name="NegativeCases / Delete / delete_not_exist_activity" id="6613752f-b2ec-454a-9471-7c88c3618f6b" timestamp="2024-03-20T07:26:20.765Z" tests="2" failures="2" errors="0" time="0.007">
+    <testcase name="Status code is 404" time="0.007" classname="E2ERegression">
+      <failure type="AssertionFailure" message="expected 200 to deeply equal 404">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: b0c3c496-91ab-4155-8da5-21bf3a25bf0d.]]>
+        <![CDATA[Collection name: e2e-regression.]]>
+        <![CDATA[Request name: NegativeCases / Delete / delete_not_exist_activity.]]>
+        <![CDATA[Test description: Status code is 404.]]>
+        <![CDATA[Error message: expected 200 to deeply equal 404.]]>
+        <![CDATA[Stacktrace: AssertionError: expected 200 to deeply equal 404
+   at Object.eval sandbox-script.js:1:25).]]>
+      </failure>
+    </testcase>
+    <testcase name="Text should contain true information" time="0.007" classname="E2ERegression">
+      <failure type="AssertionFailure" message="expected 'Activity 100001 deleted' to include 'Activities not Found'">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: b0c3c496-91ab-4155-8da5-21bf3a25bf0d.]]>
+        <![CDATA[Collection name: e2e-regression.]]>
+        <![CDATA[Request name: NegativeCases / Delete / delete_not_exist_activity.]]>
+        <![CDATA[Test description: Text should contain true information.]]>
+        <![CDATA[Error message: expected 'Activity 100001 deleted' to include 'Activities not Found'.]]>
+        <![CDATA[Stacktrace: AssertionError: expected 'Activity 100001 deleted' to include 'Activities not Found'
+   at Object.eval sandbox-script.js:2:25).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="NegativeCases / Write_off / add_time_spent_with_0" id="3373c555-6de8-491e-914e-e66249173697" timestamp="2024-03-20T07:26:20.765Z" tests="4" failures="0" errors="0" time="0.006">
+    <testcase name="response should be okay to process" time="0.006" classname="E2ERegression"/>
+    <testcase name="Status code is 422" time="0.006" classname="E2ERegression"/>
+    <testcase name="Response has valid text `Cannot update. invalid data.`" time="0.006" classname="E2ERegression"/>
+  </testsuite>
+</testsuites>
