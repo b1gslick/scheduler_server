@@ -10,10 +10,16 @@ services:
       - RUST_LOG=debug
     networks:
       - postgres
+    depends_on:
+      - postgres
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://backend:8080/activities"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
   postgres:
     container_name: postgres_container
     image: postgres:16.2-alpine3.18
-    hostname: localhost
     command:
       - "postgres"
       - "-c"
@@ -67,6 +73,8 @@ services:
   k6s:
     image: grafana/k6
     command: k6 run /scripts/perf_test.js --quiet
+    environment:
+      BASE_URL: http://backend:8080
     volumes:
       - ./tests/performance/:/scripts
     depends_on:
