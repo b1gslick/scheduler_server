@@ -92,7 +92,7 @@ jobs:
         uses: mikepenz/action-junit-report@v4
         if: success() || failure() # always run even if the previous step fails
         with:
-          report_paths: "**/tests/e2e/*.xml"
+          report_paths: "**/tests/e2e/report/*.xml"
 
   smoke-performance:
     name: smoke-performance
