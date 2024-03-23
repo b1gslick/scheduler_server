@@ -104,6 +104,9 @@ jobs:
       - name: run docker-compose
         env:
           TAG: ${{ github.ref_name }}
+          POSTGRES_DB: "schedulerdb"
+          POSTGRES_USER: "scheduler"
+          POSTGRES_PASSWORD: "scheduler"
         run: docker-compose -f docker-compose-perf.yml up -d
       - name: run-compose with tests
         env:
@@ -128,6 +131,9 @@ jobs:
 
       - name: run 100_000 rows test
         env:
+          POSTGRES_DB: "schedulerdb"
+          POSTGRES_USER: "scheduler"
+          POSTGRES_PASSWORD: "scheduler"
           TAG: ${{ github.ref_name }}
         run: docker-compose -f docker-compose-perf.yml up -d
       - name: run-compose with tests
