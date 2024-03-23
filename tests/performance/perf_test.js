@@ -23,7 +23,7 @@ export const options = {
     ],
     http_req_duration: [
       {
-        threshold: "p(99) < 100", // below < 100ms
+        threshold: "p(99) < 20", // below < 20ms
         abortOnFail: true,
         delayAbortEval: "10s",
       },

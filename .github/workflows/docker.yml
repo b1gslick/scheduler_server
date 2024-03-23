@@ -101,10 +101,37 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
+      - name: run docker-compose
+        env:
+          TAG: ${{ github.ref_name }}
+        run: docker-compose -f docker-compose-perf.yml up -d
       - name: run-compose with tests
         env:
           TAG: ${{ github.ref_name }}
         run: docker-compose -f docker-compose-perf.yml run k6s run /scripts/perf_test.js --quiet
+
+  one-handred-rows-test:
+    name: one-handred-rows-test
+    runs-on: ubuntu-latest
+    needs: [push_to_registry]
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+      - name: run empty db test
+        env:
+          TAG: ${{ github.ref_name }}
+        run:
+          docker-compose -f docker-compose-perf-no100k.yml run k6s run /scripts/get_activities.js --quiet \
+          && docker-compose -f docker-compose-perf-no100k down -v
+
+      - name: run 100_000 rows test
+        env:
+          TAG: ${{ github.ref_name }}
+        run: docker-compose -f docker-compose-perf.yml up -d
+      - name: run-compose with tests
+        env:
+          TAG: ${{ github.ref_name }}
+        run: docker-compose -f docker-compose-perf.yml run k6s run /scripts/get_activities.js --quiet
 
   api-security-check:
     name: api-security-check

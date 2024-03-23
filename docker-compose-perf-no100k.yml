@@ -72,26 +72,6 @@ services:
     networks:
       - postgres
 
-  database-start-scripts:
-    container_name: insert-100000
-    image: postgres:16.2-alpine3.18
-    environment:
-      - POSTGRES_DB="schedulerdb"
-      - POSTGRES_USER="scheduler"
-      - POSTGRES_PASSWORD="scheduler"
-    depends_on:
-      postgres:
-        condition: service_healthy
-    command:
-      - "bash"
-      - "-c"
-      - |
-        PGPASSWORD=$POSTGRES_PASSWORD psql -h postgres_container -p 5432 -U ${POSTGRES_USER} -d ${POSTGRES_DB} <<SQL
-        insert into activities (title, content, time) VALUES (gen_random_uuid(), gen_random_uuid(), generate_series(1,100000));
-        SQL
-    networks:
-      - postgres
-
   k6s:
     image: grafana/k6
     command: k6 run /scripts/perf_test.js --quiet
