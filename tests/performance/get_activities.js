@@ -58,4 +58,12 @@ export default function () {
   if (add.status !== 200) {
     console.log(add);
   }
+
+  let delete_activity = http.del(
+    `${baseUrl}/activities/${parseInt(`${exec.vu.iterationInInstance}`) + 1}`,
+  );
+  check(delete_activity, { "status was 200": (r) => r.status === 200 });
+  if (delete_activity.status !== 200) {
+    console.log(delete_activity);
+  }
 }
