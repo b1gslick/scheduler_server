@@ -1,21 +1,18 @@
 version: "3.9"
 services:
-  server:
+  backend:
+    image: t1mon1106/scheduler:${TAG}
     container_name: server
     hostname: localhost
-    image: t1mon1106/scheduler:${TAG}
     ports:
       - "8080:8080"
     environment:
       - RUST_LOG=debug
     networks:
       - postgres
-    depends_on:
-      - postgres
-
   postgres:
     container_name: postgres_container
-    image: postgres:16.2-alpine3.18
+    image: postgres:14.8-alpine3.18
     hostname: localhost
     command:
       - "postgres"
@@ -49,6 +46,7 @@ services:
       POSTGRES_PASSWORD: "scheduler"
       PGDATA: "/var/lib/postgresql/data/pgdata"
     volumes:
+      - ../../db/init.sql:/docker-entrypoint-initdb.d/init.sql
       - scheduler-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
@@ -67,26 +65,18 @@ services:
     networks:
       - postgres
 
-  http-to-sql:
-    container_name: http-to-sql
-    hostname: localhost
-    image: t1mon1106/http_to_sql
-    ports:
-      - "4545:4545"
-    environment:
-      DB_USER: scheduler
-      DB_PASSWORD: scheduler
-      DB_HOST: postgres_container
-      DB_PORT: 5432
-      DB_NAME: schedulerdb
-    networks:
-      - postgres
+  k6s:
+    image: grafana/k6
+    command: k6 run /scripts/perf_test.js --quiet
+    volumes:
+      - .:/scripts
     depends_on:
+      - backend
+    networks:
       - postgres
 
 volumes:
   scheduler-data:
-  pgadmin-data:
 
 networks:
   postgres:
