@@ -17,7 +17,7 @@ RUN --mount=type=bind,source=src,target=src \
   --mount=type=bind,source=migrations,target=migrations \
   <<EOF
 set -e
-cargo build --locked --release --target x86_64-unknown-linux-gnu
+cargo build --release --target x86_64-unknown-linux-gnu
 cp ./target/x86_64-unknown-linux-gnu/release/$APP_NAME /bin/server
 EOF
 
