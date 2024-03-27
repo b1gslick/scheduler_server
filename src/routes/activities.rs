@@ -81,13 +81,14 @@ pub mod activities {
             if let Err(e) = store.delete_activity(id, account_id).await {
                 return Err(warp::reject::custom(e));
             }
-            Ok(warp::reply::with_status(
+            return Ok(warp::reply::with_status(
                 format!("Activity {} deleted", id),
                 StatusCode::OK,
-            ))
-        } else {
-            Err(warp::reject::custom(handle_errors::Error::Unauthorized))
+            ));
         }
+        // } else {
+        //     Err::<T, Rejection>(warp::reject::custom(handle_errors::Error::Unauthorized));
+        // }
         Ok(warp::reply::with_status(
             format!("Activity {} deleted", id),
             StatusCode::OK,

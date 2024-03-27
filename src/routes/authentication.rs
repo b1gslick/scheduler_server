@@ -60,7 +60,7 @@ fn verify_password(hash: &str, password: &str) -> Result<bool, argon2::Error> {
 
 fn issue_token(account_id: AccountID) -> String {
     let current_date_time = Utc::now();
-    let dt = current_date_time + chrono::Duration::days(1);
+    let dt = current_date_time + chrono::TimeDelta::try_days(1).unwrap();
 
     paseto::tokens::PasetoBuilder::new()
         .set_encryption_key(&Vec::from("RANDOM WORDS WINTER MACINTOSH PC".as_bytes()))
