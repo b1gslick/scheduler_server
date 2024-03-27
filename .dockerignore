@@ -1,0 +1,9 @@
+.git
+.gitignore
+Dockerfile
+.dockerignore
+README.md
+queries.yaml
+target
+.github
+Makefile

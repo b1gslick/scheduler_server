@@ -11,6 +11,7 @@ http://localhost:8080
 # --insecure
 # to read a header(s) from a file. File fromat should be like:
 # Header-Name: Header-Value
+Authorization: v2.local.hp28jZnUDdDzUD7VlQCTU1HDQAeKJ-0iNdPTqzZGLTKvTw88-M16A_UASEipcF-LnntSPES5pp4MecEW7_hwNQyBAEOTieg2oOC0QX69fFQ-e5AzZ4b-bCXWMVT5ZVzBZHM4Pxa3OR-ndEh5n-fnUPycL_JQ3r44vWAEWzpZWabYo-VanyA
 # e.g Authorization: YOUR_AUTH_TOKEN_HERE
 # -H @/path/to/file.txt
 #

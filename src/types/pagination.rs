@@ -29,40 +29,32 @@ pub fn extract_pagination(params: HashMap<String, String>) -> Result<Pagination,
     }
 
     Err(Error::MissingParameters)
-    // }
-    // #[cfg(test)]
-    // mod tests {
-    //     use super::*;
-    //
-    //     #[test]
-    //     fn test_extract_positive_pagination() {
-    //         let params = HashMap::from([
-    //             ("".to_string(), 1.to_string()),
-    //             ("end".to_string(), 2.to_string()),
-    //         ]);
-    //         assert_eq!(
-    //             extract_pagination(params).unwrap(),
-    //             Pagination {
-    //                 limit: Some(1),
-    //                 offset: 2
-    //             }
-    //         );
-    //     }
+}
+#[cfg(test)]
+mod pagination_tests {
+    use super::{extract_pagination, Error, HashMap, Pagination};
 
-    // #[test]
-    // fn test_doesnt_have_start() {
-    //     let params = HashMap::from([("offset".to_string(), 2.to_string())]);
-    //     assert_eq!(
-    //         extract_pagination(params).unwrap_err(),
-    //         Error::MissingParameters
-    //     );
-    // }
-    // #[test]
-    // fn test_doesnt_have_end() {
-    //     let params = HashMap::from([("limit".to_string(), 2.to_string())]);
-    //     assert_eq!(
-    //         extract_pagination(params).unwrap_err(),
-    //         Error::MissingParameters
-    //     );
-    // }
+    #[test]
+    fn valid_pagination() {
+        let mut params = HashMap::new();
+        params.insert(String::from("limit"), String::from("1"));
+        params.insert(String::from("offset"), String::from("1"));
+        let pagination_result = extract_pagination(params);
+        let expected = Pagination {
+            limit: Some(1),
+            offset: 1,
+        };
+        assert_eq!(pagination_result.unwrap(), expected);
+    }
+
+    #[test]
+    fn missing_offset_parameter() {
+        let mut params = HashMap::new();
+        params.insert(String::from("limit"), String::from("1"));
+
+        let pagination_result = format!("{}", extract_pagination(params).unwrap_err());
+        let expected = format!("{}", Error::MissingParameters);
+
+        assert_eq!(pagination_result, expected);
+    }
 }
