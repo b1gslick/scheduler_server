@@ -88,5 +88,9 @@ pub mod activities {
         } else {
             Err(warp::reject::custom(handle_errors::Error::Unauthorized))
         }
+        Ok(warp::reply::with_status(
+            format!("Activity {} deleted", id),
+            StatusCode::OK,
+        ))
     }
 }

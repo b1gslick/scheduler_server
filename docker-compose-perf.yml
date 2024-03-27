@@ -1,20 +1,27 @@
 version: "3.9"
 services:
-  server:
+  backend:
+    image: t1mon1106/scheduler:${TAG}
     container_name: server
     hostname: localhost
-    image: t1mon1106/scheduler:$TAG
     ports:
       - "8080:8080"
     environment:
       - RUST_LOG=debug
     networks:
       - postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://backend:8080/activities"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   postgres:
     container_name: postgres_container
     image: postgres:16.2-alpine3.18
-    hostname: localhost
     command:
       - "postgres"
       - "-c"
@@ -65,50 +72,40 @@ services:
     networks:
       - postgres
 
-  pgadmin:
-    container_name: pgadmin_container
-    image: dpage/pgadmin4:7.2
+  database-start-scripts:
+    container_name: insert-100000
+    image: postgres:16.2-alpine3.18
     environment:
-      PGADMIN_DEFAULT_EMAIL: "scheduler@test.io"
-      PGADMIN_DEFAULT_PASSWORD: "pgadminpwd4scheduler"
-      PGADMIN_CONFIG_SERVER_MODE: "False"
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin
-    ports:
-      - "5050:80"
-    restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 1G
+      - POSTGRES_DB="schedulerdb"
+      - POSTGRES_USER="scheduler"
+      - POSTGRES_PASSWORD="scheduler"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command:
+      - "bash"
+      - "-c"
+      - |
+        PGPASSWORD=$POSTGRES_PASSWORD psql -h postgres_container -p 5432 -U ${POSTGRES_USER} -d ${POSTGRES_DB} <<SQL
+        insert into activities (title, content, time) VALUES (gen_random_uuid(), gen_random_uuid(), generate_series(1,100000));
+        SQL
     networks:
       - postgres
 
-  postgres_exporter:
-    container_name: exporter_container
-    image: prometheuscommunity/postgres-exporter:v0.10.1
+  k6s:
+    image: grafana/k6
+    command: k6 run /scripts/perf_test.js --quiet
     environment:
-      DATA_SOURCE_URI: "postgres:5432/schedulerdb?sslmode=disable"
-      DATA_SOURCE_USER: "scheduler"
-      DATA_SOURCE_PASS: "scheduler"
-      PG_EXPORTER_EXTEND_QUERY_PATH: "/etc/postgres_exporter/queries.yaml"
+      BASE_URL: http://backend:8080
     volumes:
-      - ./queries.yaml:/etc/postgres_exporter/queries.yaml:ro
-    ports:
-      - "9187:9187"
-    restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          cpus: "0.2"
-          memory: 500M
+      - ./tests/performance/:/scripts
+    depends_on:
+      - backend
     networks:
       - postgres
 
 volumes:
   scheduler-data:
-  pgadmin-data:
 
 networks:
   postgres:
