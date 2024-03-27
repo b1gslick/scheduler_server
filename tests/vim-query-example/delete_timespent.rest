@@ -7,6 +7,7 @@ http://localhost:8080
 # include reponse headers
 --include
 # to ignore ssl when working with localhost
+# --verbose
 # --insecure
 # to read a header(s) from a file. File fromat should be like:
 # Header-Name: Header-Value
@@ -14,15 +15,18 @@ http://localhost:8080
 # -H @/path/to/file.txt
 #
 # headers
-Acept: application/json;
+Accept: application/json;
 Connection: keep-alive
 Content-Type: application/json; charset=utf-8
 User-Agent: VRC
 
 # query
-GET /activities
+DELETE /activities/8
 
 #body
 # {
-#   "test": 123
+#   "id": "3", 
+#   "title": "How?", 
+#   "content": "Please help!", 
+#   "time": 10
 # }

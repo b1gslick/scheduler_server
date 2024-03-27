@@ -34,7 +34,12 @@ async fn main() {
         )
     });
 
-    let store = Store::new();
+    let store =
+        Store::new("postgres://scheduler:scheduler@postgres_container:5432/schedulerdb").await;
+    sqlx::migrate!()
+        .run(&store.clone().connection)
+        .await
+        .expect("Cannot run migration");
     let store_filter = warp::any().map(move || store.clone());
 
     tracing_subscriber::fmt()
@@ -79,7 +84,7 @@ async fn main() {
 
     let update_activities = warp::put()
         .and(warp::path("activities"))
-        .and(warp::path::param::<String>())
+        .and(warp::path::param::<i32>())
         .and(warp::path::end())
         .and(store_filter.clone())
         .and(warp::body::json())
@@ -109,7 +114,7 @@ async fn main() {
         }));
     let get_time_spent = warp::get()
         .and(warp::path("time_spent"))
-        .and(warp::path::param::<u32>())
+        .and(warp::path::param::<i32>())
         .and(warp::path::end())
         .and(store_filter.clone())
         .and_then(get_tine_spen_by_id)
@@ -124,7 +129,7 @@ async fn main() {
 
     let deleted_activities = warp::delete()
         .and(warp::path("activities"))
-        .and(warp::path::param::<String>())
+        .and(warp::path::param::<i32>())
         .and(warp::path::end())
         .and(store_filter.clone())
         .and_then(deleted_activities)

@@ -1,0 +1,112 @@
+version: "3.9"
+services:
+  backend:
+    image: t1mon1106/scheduler:${TAG}
+    container_name: server
+    hostname: localhost
+    ports:
+      - "8080:8080"
+    environment:
+      - RUST_LOG=debug
+    networks:
+      - postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://backend:8080/activities"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  postgres:
+    container_name: postgres_container
+    image: postgres:16.2-alpine3.18
+    command:
+      - "postgres"
+      - "-c"
+      - "max_connections=50"
+      - "-c"
+      - "work_mem=16MB"
+      - "-c"
+      - "maintenance_work_mem=512MB"
+      - "-c"
+      - "random_page_cost=1.1"
+      - "-c"
+      - "temp_file_limit=10GB"
+      - "-c"
+      - "log_min_duration_statement=200ms"
+      - "-c"
+      - "idle_in_transaction_session_timeout=10s"
+      - "-c"
+      - "lock_timeout=1s"
+      - "-c"
+      - "statement_timeout=60s"
+      - "-c"
+      - "shared_preload_libraries=pg_stat_statements"
+      - "-c"
+      - "pg_stat_statements.max=10000"
+      - "-c"
+      - "pg_stat_statements.track=all"
+    environment:
+      POSTGRES_DB: "schedulerdb"
+      POSTGRES_USER: "scheduler"
+      POSTGRES_PASSWORD: "scheduler"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      - scheduler-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U scheduler -d schedulerdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 2G
+    networks:
+      - postgres
+
+  database-start-scripts:
+    container_name: insert-100000
+    image: postgres:16.2-alpine3.18
+    environment:
+      - POSTGRES_DB="schedulerdb"
+      - POSTGRES_USER="scheduler"
+      - POSTGRES_PASSWORD="scheduler"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command:
+      - "bash"
+      - "-c"
+      - |
+        PGPASSWORD=$POSTGRES_PASSWORD psql -h postgres_container -p 5432 -U ${POSTGRES_USER} -d ${POSTGRES_DB} <<SQL
+        insert into activities (title, content, time) VALUES (gen_random_uuid(), gen_random_uuid(), generate_series(1,100000));
+        SQL
+    networks:
+      - postgres
+
+  k6s:
+    image: grafana/k6
+    command: k6 run /scripts/perf_test.js --quiet
+    environment:
+      BASE_URL: http://backend:8080
+    volumes:
+      - ./tests/performance/:/scripts
+    depends_on:
+      - backend
+    networks:
+      - postgres
+
+volumes:
+  scheduler-data:
+
+networks:
+  postgres:
+    driver: bridge
