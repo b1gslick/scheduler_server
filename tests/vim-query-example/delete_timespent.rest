@@ -21,10 +21,12 @@ Content-Type: application/json; charset=utf-8
 User-Agent: VRC
 
 # query
-POST /login
+DELETE /activities/8
 
 #body
-{
-  "email": "test2@test.iv",
-  "password": "passfdsfsf"
-}
+# {
+#   "id": "3", 
+#   "title": "How?", 
+#   "content": "Please help!", 
+#   "time": 10
+# }

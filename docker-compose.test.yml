@@ -3,16 +3,14 @@ services:
   server:
     container_name: server
     hostname: localhost
-    build:
-      context: .
-      target: final
-      dockerfile: Dockerfile
-    env_file: .env
+    image: t1mon1106/scheduler:${TAG}
     ports:
       - "8080:8080"
     environment:
       - RUST_LOG=debug
     networks:
+      - postgres
+    depends_on:
       - postgres
 
   postgres:
@@ -69,45 +67,21 @@ services:
     networks:
       - postgres
 
-  pgadmin:
-    container_name: pgadmin_container
-    image: dpage/pgadmin4:7.2
-    environment:
-      PGADMIN_DEFAULT_EMAIL: "scheduler@test.io"
-      PGADMIN_DEFAULT_PASSWORD: "pgadminpwd4scheduler"
-      PGADMIN_CONFIG_SERVER_MODE: "False"
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin
+  http-to-sql:
+    container_name: http-to-sql
+    hostname: localhost
+    image: t1mon1106/http_to_sql
     ports:
-      - "5050:80"
-    restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 1G
+      - "4545:4545"
+    environment:
+      DB_USER: scheduler
+      DB_PASSWORD: scheduler
+      DB_HOST: postgres_container
+      DB_PORT: 5432
+      DB_NAME: schedulerdb
     networks:
       - postgres
-
-  postgres_exporter:
-    container_name: exporter_container
-    image: prometheuscommunity/postgres-exporter:v0.10.1
-    environment:
-      DATA_SOURCE_URI: "postgres:5432/schedulerdb?sslmode=disable"
-      DATA_SOURCE_USER: "scheduler"
-      DATA_SOURCE_PASS: "scheduler"
-      PG_EXPORTER_EXTEND_QUERY_PATH: "/etc/postgres_exporter/queries.yaml"
-    volumes:
-      - ./queries.yaml:/etc/postgres_exporter/queries.yaml:ro
-    ports:
-      - "9187:9187"
-    restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          cpus: "0.2"
-          memory: 500M
-    networks:
+    depends_on:
       - postgres
 
 volumes:

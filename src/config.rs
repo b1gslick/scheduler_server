@@ -25,7 +25,7 @@ pub struct Config {
     #[clap(long, default_value = "5432")]
     pub database_port: u16,
     /// Database name
-    #[clap(long, default_value = "schedeulerdb")]
+    #[clap(long, default_value = "schedulerdb")]
     pub database_name: String,
 }
 impl Config {
