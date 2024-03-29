@@ -9,8 +9,7 @@ use crate::store::Store;
 use crate::types::account::{Account, AccountID, Session};
 
 pub async fn register(store: Store, account: Account) -> Result<impl warp::Reply, warp::Rejection> {
-    // let hashed_password = hash_password(account.password.as_bytes());
-    let hashed_password = account.password;
+    let hashed_password = hash_password(account.password.as_bytes());
     let account = Account {
         id: account.id,
         email: account.email,
@@ -30,8 +29,7 @@ pub fn hash_password(password: &[u8]) -> String {
 
 pub async fn login(store: Store, login: Account) -> Result<impl warp::Reply, warp::Rejection> {
     match store.get_account(login.email).await {
-        // Ok(account) => match verify_password(&account.password, login.password.as_bytes()) {
-        Ok(account) => match verify_password(&account.password, &login.password) {
+        Ok(account) => match verify_password(&account.password, login.password.as_bytes()) {
             Ok(verified) => {
                 if verified {
                     Ok(warp::reply::json(&issue_token(
@@ -48,17 +46,13 @@ pub async fn login(store: Store, login: Account) -> Result<impl warp::Reply, war
         Err(e) => Err(warp::reject::custom(e)),
     }
 }
-// fn verify_password(hash: &str, password: &[u8]) -> Result<bool, argon2::Error> {
-fn verify_password(hash: &str, password: &str) -> Result<bool, argon2::Error> {
-    if hash == password {
-        return Ok(true);
-    }
-    argon2::verify_encoded(hash, password.as_bytes())
+fn verify_password(hash: &str, password: &[u8]) -> Result<bool, argon2::Error> {
+    argon2::verify_encoded(hash, password)
 }
 
 fn issue_token(account_id: AccountID) -> String {
     let current_date_time = Utc::now();
-    let dt = current_date_time + chrono::Duration::days(1);
+    let dt = current_date_time + chrono::TimeDelta::try_days(1).unwrap();
     let key = env::var("PASETO_KEY").unwrap();
 
     paseto::tokens::PasetoBuilder::new()

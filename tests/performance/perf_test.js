@@ -40,10 +40,9 @@ export const options = {
 
 // Simulate user behavior
 export default function () {
-  let baseUrl = "http://backend:8080";
+  const baseUrl = `${__ENV.BASE_URL}`;
 
   const body = {
-    id: `${exec.vu.iterationInInstance}`,
     title: `${exec.scenario.name}`,
     content: `${exec.scenario.startTime}`,
     time: parseInt(`${exec.vu.iterationInInstance}`),
@@ -51,25 +50,35 @@ export default function () {
 
   let add = http.post(`${baseUrl}/activities`, JSON.stringify(body));
   check(add, { "status was 200": (r) => r.status === 200 });
+  if (add.status !== 200) {
+    console.log(add);
+  }
 
   const time_body = {
     time: parseInt(`${exec.vu.iterationInInstance}`),
-    activity_id: `${exec.vu.iterationInInstance}`,
+    activity_id: parseInt(`${exec.vu.iterationInInstance}`) + 1,
   };
 
   let add_time = http.post(`${baseUrl}/time_spent`, JSON.stringify(time_body));
   check(add_time, { "status was 200": (r) => r.status === 200 });
+  if (add_time.status !== 200) {
+    console.log(add_time);
+  }
 
+  const id = parseInt(`${exec.vu.iterationInInstance}`) + 1;
   const update_body = {
-    id: `${exec.vu.iterationInInstance}`,
+    id: id,
     title: `updated`,
     content: `${exec.scenario.startTime}`,
     time: parseInt(`${exec.vu.iterationInInstance}`),
   };
 
   let update = http.put(
-    `${baseUrl}/activities/${exec.vu.iterationInInstance}`,
+    `${baseUrl}/activities/${id}`,
     JSON.stringify(update_body),
   );
+  if (update.status !== 200) {
+    console.log(update);
+  }
   check(update, { "status was 200": (r) => r.status === 200 });
 }

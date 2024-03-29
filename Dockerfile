@@ -26,8 +26,8 @@ RUN --mount=type=bind,source=src,target=src \
   --mount=type=bind,source=migrations,target=migrations \
   <<EOF
 set -e
-cargo build --locked --release --target ${TARGET}
-cp ./target/${TARGET}/release/server /bin/server
+cargo build --release --target ${TARGET}
+cp ./target/${TARGET}/release/${APP_NAME} /bin/server
 EOF
 
 FROM debian:bullseye-slim AS final

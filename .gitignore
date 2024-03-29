@@ -15,3 +15,7 @@ Cargo.lock
 *.pdb
 
 queries.yaml
+tests/e2e/node_modules
+tests/e2e/report.html
+.venv
+*.xml
