@@ -1,5 +1,4 @@
 use clap::Parser;
-use dotenv;
 use std::env;
 
 /// Scheduler web service API
@@ -31,7 +30,7 @@ pub struct Config {
 impl Config {
     pub fn new() -> Result<Config, handle_errors::Error> {
         dotenv::dotenv().ok();
-        if let Err(_) = env::var("PASETO_KEY") {
+        if env::var("PASETO_KEY").is_err() {
             panic!("PASETO key not set");
         }
         let config = Config::parse();
@@ -40,7 +39,7 @@ impl Config {
             .ok()
             .map(|val| val.parse::<u16>())
             .unwrap_or(Ok(8080))
-            .map_err(|e| handle_errors::Error::ParseError(e))?;
+            .map_err(handle_errors::Error::ParseError)?;
 
         let db_user = env::var("DATABASE_USER").unwrap_or(config.database_user.to_owned());
         let db_password = env::var("DATABASE_PASSWORD").unwrap();
@@ -55,7 +54,7 @@ impl Config {
             database_host: db_host,
             database_port: db_port
                 .parse::<u16>()
-                .map_err(|e| handle_errors::Error::ParseError(e))?,
+                .map_err(handle_errors::Error::ParseError)?,
             database_name: db_name,
         })
     }

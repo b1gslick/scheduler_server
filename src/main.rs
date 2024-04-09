@@ -29,7 +29,7 @@ async fn main() -> Result<(), handle_errors::Error> {
         config.database_name
     ))
     .await
-    .map_err(|e| handle_errors::Error::DatabaseQueryError(e))?;
+    .map_err(handle_errors::Error::DatabaseQueryError)?;
 
     sqlx::migrate!()
         .run(&store.clone().connection)
