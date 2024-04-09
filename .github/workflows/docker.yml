@@ -16,10 +16,7 @@ jobs:
       - name: Setup | Checkout
         uses: actions/checkout@v4
       - name: Setup | Rust
-        uses: ATiltedTree/setup-rust@v1
-        with:
-          rust-version: stable
-          components: clippy
+        uses: actions-rust-lang/setup-rust-toolchain@v1
       - name: Build | Lint | Test
         run: |
           cargo clippy
@@ -32,9 +29,7 @@ jobs:
       - name: Setup | Checkout
         uses: actions/checkout@v4
       - name: Setup | Rust
-        uses: ATiltedTree/setup-rust@v1
-        with:
-          rust-version: stable
+        uses: actions-rust-lang/setup-rust-toolchain@v1
       - name: Build | Compile
         run: |
           cargo install cargo-audit
