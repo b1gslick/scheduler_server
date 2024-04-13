@@ -87,7 +87,7 @@ impl Store {
         match sqlx::query(
             r#"UPDATE activities
             SET title = $1, content = $2, time = $3
-            WHERE id = $4 and account_id =-$5
+            WHERE id = $4 and account_id = $5
             RETURNING id, title, content, time"#,
         )
         .bind(activity.title)
