@@ -1,3 +1,3 @@
 -- Add up migration script here
-ALTER TABLE time_spent;
-DROP COLUMN account_id;
+ALTER TABLE time_spent
+ADD COLUMN account_id serial;
