@@ -85,7 +85,7 @@ async fn main() -> Result<(), handle_errors::Error> {
         .and(warp::path::end())
         .and(routes::authentication::auth())
         .and(store_filter.clone())
-        .and_then(routes::time_spent::get_tine_spen_by_id);
+        .and_then(routes::time_spent::get_time_spen_by_id);
 
     let deleted_activities = warp::delete()
         .and(warp::path("activities"))
