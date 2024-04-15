@@ -21,13 +21,13 @@ export const options = {
         delayAbortEval: "5s",
       },
     ],
-    // http_req_duration: [
-    //   {
-    //     threshold: "p(99) < 200", // below < 100ms
-    //     abortOnFail: true,
-    //     delayAbortEval: "5s",
-    //   },
-    // ],
+    http_req_duration: [
+      {
+        threshold: "p(99) < 300", // below < 300ms
+        abortOnFail: true,
+        delayAbortEval: "5s",
+      },
+    ],
     http_req_failed: [
       {
         threshold: "rate<0.01", // http error less than 1%
