@@ -231,9 +231,7 @@
                   "    pm.expect(pm.response.responseTime).to.be.below(200);",
                   "})",
                   "",
-                  "const oldId = pm.collectionVariables.get(\"id\") == \"\" ? 1 : parseInt(pm.collectionVariables.get(\"id\")) + 1",
-                  "",
-                  "pm.collectionVariables.set(\"id\", oldId)"
+                  ""
                 ],
                 "type": "text/javascript",
                 "packages": {}
@@ -276,15 +274,17 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "const response = pm.response.text();",
+                  "const response = pm.response.json();",
                   "",
                   "pm.test(\"Response code is 200\", ()=>{",
                   "    pm.expect(pm.response.code).eql(200)",
                   "})",
                   "",
                   "pm.test(\"Title which added, equal title in db\", () => {",
-                  "    pm.expect(response).include(pm.collectionVariables.get(\"title\"))",
-                  "})"
+                  "    pm.expect(response[0].title).eq(pm.collectionVariables.get(\"title\"))",
+                  "})",
+                  "",
+                  "pm.collectionVariables.set(\"id\", parseInt(response[0].id))"
                 ],
                 "type": "text/javascript",
                 "packages": {}
@@ -1885,7 +1885,6 @@
                 "type": "text/javascript",
                 "exec": [
                   "",
-                  "//const url = pm.collectionVariables.get(\"url\")",
                   "const url = \"http://backend:8080\" // crunch for autotests",
                   "const id = parseInt(pm.collectionVariables.get(\"id\")) + 1",
                   "const reqBody = {",
@@ -1932,7 +1931,6 @@
                 "type": "text/javascript",
                 "exec": [
                   "",
-                  "//const url = pm.collectionVariables.get(\"url\")",
                   "const url = \"http://backend:8080\" // crunch for autotests",
                   "const id = parseInt(pm.collectionVariables.get(\"id\")) + 1",
                   "",
@@ -2026,7 +2024,6 @@
                   "listen": "prerequest",
                   "script": {
                     "exec": [
-                      "//const url = pm.collectionVariables.get(\"url\")",
                       "const url = \"http://backend:8080\" // crunch for autotests",
                       "const id = parseInt(pm.collectionVariables.get(\"id\")) + 1",
                       "pm.collectionVariables.set(\"id\", id)",
@@ -2169,7 +2166,6 @@
                 "type": "text/javascript",
                 "exec": [
                   "",
-                  "//const url = pm.collectionVariables.get(\"url\")",
                   "const url = \"http://backend:8080\" // crunch for autotests",
                   "const id = parseInt(pm.collectionVariables.get(\"id\")) + 1",
                   "const reqBody = {",
@@ -2217,7 +2213,6 @@
                 "type": "text/javascript",
                 "exec": [
                   "",
-                  "//const url = pm.collectionVariables.get(\"url\")",
                   "const url = \"http://backend:8080\" // crunch for autotests",
                   "const id = parseInt(pm.collectionVariables.get(\"id\"))",
                   "",
@@ -2278,7 +2273,6 @@
               "",
               "const password = Util.getRandomString(pm.collectionVariables.get(\"passwordLength\"))",
               "",
-              "//const url = pm.collectionVariables.get(\"url\")",
               "const url = \"http://backend:8080\" // crunch for autotests",
               "const reqBody = {",
               "    \"email\": email,",
@@ -2665,7 +2659,6 @@
                   "pm.collectionVariables.set(\"email\", email)",
                   "pm.collectionVariables.set(\"password\", password)",
                   "",
-                  "//const url = pm.collectionVariables.get(\"url\")",
                   "const url = \"http://backend:8080\" // crunch for autotests",
                   "const reqBody = {",
                   "    \"email\": email,",
@@ -2866,4 +2859,3 @@
     }
   ]
 }
-
