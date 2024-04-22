@@ -3,7 +3,7 @@ services:
   server:
     container_name: server
     hostname: localhost
-    image: t1mon1106/scheduler:lesson-2
+    image: t1mon1106/scheduler:${TAG}
     ports:
       - "8080:8080"
     environment:

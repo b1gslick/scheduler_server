@@ -1,3 +1,4 @@
+use sqlx;
 use warp::{
     filters::{body::BodyDeserializeError, cors::CorsForbidden},
     http::StatusCode,
@@ -5,14 +6,20 @@ use warp::{
     Rejection, Reply,
 };
 
+use argon2::Error as ArgonError;
 use tracing::{event, instrument, Level};
 
 #[derive(Debug)]
 pub enum Error {
     ParseError(std::num::ParseIntError),
+    MigrationError(sqlx::migrate::MigrateError),
     MissingParameters,
     TimeSpentNotFound,
-    DatabaseQueryError,
+    DatabaseQueryError(sqlx::Error),
+    WrongPassword,
+    ArgonLibraryError(ArgonError),
+    CannotDecryptionToken,
+    Unauthorized,
 }
 
 impl std::fmt::Display for Error {
@@ -21,10 +28,21 @@ impl std::fmt::Display for Error {
             Error::ParseError(ref err) => {
                 write!(f, "Cannot parse parameter: {}", err)
             }
+            Error::Unauthorized => write!(f, "No permission to change the underlying resource"),
+            Error::MigrationError(_) => write!(f, "Cannot migrate data"),
             Error::MissingParameters => write!(f, "Missing parameter"),
             Error::TimeSpentNotFound => write!(f, "Time spent not Found"),
-            Error::DatabaseQueryError => {
+            Error::DatabaseQueryError(_) => {
                 write!(f, "Cannot update. invalid data.")
+            }
+            Error::WrongPassword => {
+                write!(f, "Wrong password")
+            }
+            Error::ArgonLibraryError(_) => {
+                write!(f, "Cannot verifiy password")
+            }
+            Error::CannotDecryptionToken => {
+                write!(f, "Cannot decrypt token provide")
             }
         }
     }
@@ -32,14 +50,32 @@ impl std::fmt::Display for Error {
 
 impl Reject for Error {}
 
+const DUPLICATE_KEY: u32 = 23505;
+
 #[instrument]
 pub async fn return_error(r: Rejection) -> Result<impl Reply, Rejection> {
-    if let Some(crate::Error::DatabaseQueryError) = r.find() {
+    if let Some(crate::Error::DatabaseQueryError(e)) = r.find() {
         event!(Level::ERROR, "Database query error");
-        Ok(warp::reply::with_status(
-            crate::Error::DatabaseQueryError.to_string(),
-            StatusCode::UNPROCESSABLE_ENTITY,
-        ))
+
+        match e {
+            sqlx::Error::Database(err) => {
+                if err.code().unwrap().parse::<u32>().unwrap() == DUPLICATE_KEY {
+                    Ok(warp::reply::with_status(
+                        "Account already exsists".to_string(),
+                        StatusCode::UNPROCESSABLE_ENTITY,
+                    ))
+                } else {
+                    Ok(warp::reply::with_status(
+                        "Cannot update data".to_string(),
+                        StatusCode::UNPROCESSABLE_ENTITY,
+                    ))
+                }
+            }
+            _ => Ok(warp::reply::with_status(
+                "Cannot update data".to_string(),
+                StatusCode::UNPROCESSABLE_ENTITY,
+            )),
+        }
     } else if let Some(error) = r.find::<Error>() {
         Ok(warp::reply::with_status(
             error.to_string(),
@@ -54,6 +90,24 @@ pub async fn return_error(r: Rejection) -> Result<impl Reply, Rejection> {
         Ok(warp::reply::with_status(
             error.to_string(),
             StatusCode::UNPROCESSABLE_ENTITY,
+        ))
+    } else if let Some(crate::Error::WrongPassword) = r.find() {
+        event!(Level::ERROR, "Entered wrong password");
+        Ok(warp::reply::with_status(
+            "Wrong E-Mail/Password combination".to_string(),
+            StatusCode::UNAUTHORIZED,
+        ))
+    } else if let Some(crate::Error::Unauthorized) = r.find() {
+        event!(Level::ERROR, "Not matching account id");
+        Ok(warp::reply::with_status(
+            "No permission to change underlying resource".to_string(),
+            StatusCode::UNAUTHORIZED,
+        ))
+    } else if let Some(crate::Error::CannotDecryptionToken) = r.find() {
+        event!(Level::ERROR, "Can't decryption provided token");
+        Ok(warp::reply::with_status(
+            "Not authorized".to_string(),
+            StatusCode::NETWORK_AUTHENTICATION_REQUIRED,
         ))
     } else {
         Ok(warp::reply::with_status(

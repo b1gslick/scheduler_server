@@ -1,4 +1,4 @@
-# host 
+#host 
 # https://httpbin:443
 http://localhost:8080
 
@@ -11,7 +11,7 @@ http://localhost:8080
 # --insecure
 # to read a header(s) from a file. File fromat should be like:
 # Header-Name: Header-Value
- Authorization: YOUR_AUTH_TOKEN_HERE
+# e.g Authorization: YOUR_AUTH_TOKEN_HERE
 # -H @/path/to/file.txt
 #
 # headers
@@ -21,11 +21,10 @@ Content-Type: application/json; charset=utf-8
 User-Agent: VRC
 
 # query
-PUT /activities/4
+POST /login
 
 #body
 {
-  "title": "How?",
-  "content": "Please help!",
-  "time": 10
+  "email": "test2@test1.iv",
+  "password": "passfdsfsf"
 }

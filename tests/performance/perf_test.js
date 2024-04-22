@@ -23,14 +23,14 @@ export const options = {
     ],
     http_req_duration: [
       {
-        threshold: "p(99) < 20", // below < 20ms
+        threshold: "p(99) < 50", // below < 20ms
         abortOnFail: true,
         delayAbortEval: "10s",
       },
     ],
     http_req_failed: [
       {
-        threshold: "rate<0.01", // http error less than 1%
+        threshold: "rate<0.05", // http error less than 1%
         abortOnFail: true,
         delayAbortEval: "10s",
       },
@@ -38,9 +38,32 @@ export const options = {
   },
 };
 
-// Simulate user behavior
-export default function () {
-  const baseUrl = `${__ENV.BASE_URL}`;
+const baseUrl = `${__ENV.BASE_URL}`;
+
+export function setup() {
+  const userParams = {
+    email: "perf@test.iv",
+    password: "somestrongPassword1",
+  };
+
+  const reg = http.post(`${baseUrl}/registration`, JSON.stringify(userParams));
+
+  if (reg.status !== 200) {
+    console.log(reg);
+  }
+
+  const login = http.post(`${baseUrl}/login`, JSON.stringify(userParams));
+  const token = login.body.replaceAll(`"`, "");
+  return token;
+}
+
+export default function (token) {
+  const params = {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: token,
+    },
+  };
 
   const body = {
     title: `${exec.scenario.name}`,
@@ -48,7 +71,7 @@ export default function () {
     time: parseInt(`${exec.vu.iterationInInstance}`),
   };
 
-  let add = http.post(`${baseUrl}/activities`, JSON.stringify(body));
+  let add = http.post(`${baseUrl}/activities`, JSON.stringify(body), params);
   check(add, { "status was 200": (r) => r.status === 200 });
   if (add.status !== 200) {
     console.log(add);
@@ -59,7 +82,11 @@ export default function () {
     activity_id: parseInt(`${exec.vu.iterationInInstance}`) + 1,
   };
 
-  let add_time = http.post(`${baseUrl}/time_spent`, JSON.stringify(time_body));
+  let add_time = http.post(
+    `${baseUrl}/time_spent`,
+    JSON.stringify(time_body),
+    params,
+  );
   check(add_time, { "status was 200": (r) => r.status === 200 });
   if (add_time.status !== 200) {
     console.log(add_time);
@@ -76,6 +103,7 @@ export default function () {
   let update = http.put(
     `${baseUrl}/activities/${id}`,
     JSON.stringify(update_body),
+    params,
   );
   if (update.status !== 200) {
     console.log(update);

@@ -1,41 +1,36 @@
-use crate::routes::activities::activities::*;
-use crate::routes::time_spent::time_s::*;
-use crate::store::store::Store;
-use clap::Parser;
-use config::Config;
+#![warn(clippy::all)]
 use handle_errors::return_error;
+use std::env;
 use tracing_subscriber::fmt::format::FmtSpan;
 use warp::{http::Method, Filter};
 
+mod config;
 mod routes;
 mod store;
 mod types;
 
-#[derive(Parser, Debug, Default, serde::Deserialize, PartialEq)]
-struct Args {
-    /// Log level for app
-    log_level: String,
-    /// Web server port
-    port: u16,
-}
-
 #[tokio::main]
-async fn main() {
-    let config = Config::builder()
-        .add_source(config::File::with_name("setup"))
-        .build()
-        .unwrap();
-    let config = config.try_deserialize::<Args>().unwrap();
+async fn main() -> Result<(), handle_errors::Error> {
+    let config = config::Config::new().expect("Config can't be set");
 
-    let log_filter = std::env::var("RUST_LOG").unwrap_or_else(|_| {
+    let log_filter = env::var("RUST_LOG").unwrap_or_else(|_| {
         format!(
             "handle_errors={},activities-scheduler-server={},warp={}",
             config.log_level, config.log_level, config.log_level
         )
     });
 
-    let store =
-        Store::new("postgres://scheduler:scheduler@postgres_container:5432/schedulerdb").await;
+    let store = store::Store::new(&format!(
+        "postgres://{}:{}@{}:{}/{}",
+        config.database_user,
+        config.database_password,
+        config.database_host,
+        config.database_port,
+        config.database_name
+    ))
+    .await
+    .map_err(handle_errors::Error::DatabaseQueryError)?;
+
     sqlx::migrate!()
         .run(&store.clone().connection)
         .await
@@ -57,90 +52,62 @@ async fn main() {
         .and(warp::path::end())
         .and(warp::query())
         .and(store_filter.clone())
-        .and_then(get_activities)
-        .with(warp::trace(|info| {
-            tracing::info_span!(
-                  "get_activities request",
-                  method = %info.method(),
-                  path = %info.path(),
-                  id = %uuid::Uuid::new_v4(),
-            )
-        }));
+        .and_then(routes::activities::get_activities);
 
     let add_activity = warp::post()
         .and(warp::path("activities"))
         .and(warp::path::end())
+        .and(routes::authentication::auth())
         .and(store_filter.clone())
         .and(warp::body::json())
-        .and_then(add_activity)
-        .with(warp::trace(|info| {
-            tracing::info_span!(
-                  "add_activity request",
-                  method = %info.method(),
-                  path = %info.path(),
-                  id = %uuid::Uuid::new_v4(),
-            )
-        }));
+        .and_then(routes::activities::add_activity);
 
     let update_activities = warp::put()
         .and(warp::path("activities"))
         .and(warp::path::param::<i32>())
         .and(warp::path::end())
+        .and(routes::authentication::auth())
         .and(store_filter.clone())
         .and(warp::body::json())
-        .and_then(update_activities)
-        .with(warp::trace(|info| {
-            tracing::info_span!(
-                  "update_activities request",
-                  method = %info.method(),
-                  path = %info.path(),
-                  id = %uuid::Uuid::new_v4(),
-            )
-        }));
+        .and_then(routes::activities::update_activities);
 
     let add_time_spent = warp::post()
         .and(warp::path("time_spent"))
         .and(warp::path::end())
+        .and(routes::authentication::auth())
         .and(store_filter.clone())
         .and(warp::body::json())
-        .and_then(add_time_spent)
-        .with(warp::trace(|info| {
-            tracing::info_span!(
-                  "add_time_spent request",
-                  method = %info.method(),
-                  path = %info.path(),
-                  id = %uuid::Uuid::new_v4(),
-            )
-        }));
+        .and_then(routes::time_spent::add_time_spent);
+
     let get_time_spent = warp::get()
         .and(warp::path("time_spent"))
         .and(warp::path::param::<i32>())
         .and(warp::path::end())
+        .and(routes::authentication::auth())
         .and(store_filter.clone())
-        .and_then(get_tine_spen_by_id)
-        .with(warp::trace(|info| {
-            tracing::info_span!(
-                  "get_time_spent request",
-                  method = %info.method(),
-                  path = %info.path(),
-                  id = %uuid::Uuid::new_v4(),
-            )
-        }));
+        .and_then(routes::time_spent::get_time_spen_by_id);
 
     let deleted_activities = warp::delete()
         .and(warp::path("activities"))
         .and(warp::path::param::<i32>())
         .and(warp::path::end())
+        .and(routes::authentication::auth())
         .and(store_filter.clone())
-        .and_then(deleted_activities)
-        .with(warp::trace(|info| {
-            tracing::info_span!(
-                  "deleted_activities request",
-                  method = %info.method(),
-                  path = %info.path(),
-                  id = %uuid::Uuid::new_v4(),
-            )
-        }));
+        .and_then(routes::activities::deleted_activities);
+
+    let registration = warp::post()
+        .and(warp::path("registration"))
+        .and(warp::path::end())
+        .and(store_filter.clone())
+        .and(warp::body::json())
+        .and_then(routes::authentication::register);
+
+    let login = warp::post()
+        .and(warp::path("login"))
+        .and(warp::path::end())
+        .and(store_filter.clone())
+        .and(warp::body::json())
+        .and_then(routes::authentication::login);
 
     let routes = get_activities
         .or(add_activity)
@@ -148,9 +115,12 @@ async fn main() {
         .or(add_time_spent)
         .or(deleted_activities)
         .or(get_time_spent)
+        .or(registration)
+        .or(login)
         .with(cors)
         .with(warp::trace::request())
         .recover(return_error);
 
     warp::serve(routes).run(([0, 0, 0, 0], config.port)).await;
+    Ok(())
 }

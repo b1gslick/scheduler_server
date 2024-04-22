@@ -87,7 +87,7 @@ services:
       - "-c"
       - |
         PGPASSWORD=$POSTGRES_PASSWORD psql -h postgres_container -p 5432 -U ${POSTGRES_USER} -d ${POSTGRES_DB} <<SQL
-        insert into activities (title, content, time) VALUES (gen_random_uuid(), gen_random_uuid(), generate_series(1,100000));
+        insert into activities (title, content, time, account_id) VALUES (gen_random_uuid(), gen_random_uuid(), generate_series(1,100000), 1);
         SQL
     networks:
       - postgres
