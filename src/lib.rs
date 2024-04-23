@@ -79,7 +79,8 @@ async fn build_routes(store: store::Store) -> impl Filter<Extract = impl Reply> 
         .and(warp::body::json())
         .and_then(routes::authentication::login);
 
-    let routes = get_activities
+    
+    get_activities
         .or(add_activity)
         .or(update_activities)
         .or(add_time_spent)
@@ -89,8 +90,7 @@ async fn build_routes(store: store::Store) -> impl Filter<Extract = impl Reply> 
         .or(login)
         .with(cors)
         .with(warp::trace::request())
-        .recover(handle_errors::return_error);
-    routes
+        .recover(handle_errors::return_error)
 }
 
 pub async fn setup_store(config: &config::Config) -> Result<store::Store, handle_errors::Error> {
@@ -103,7 +103,7 @@ pub async fn setup_store(config: &config::Config) -> Result<store::Store, handle
         config.database_name
     ))
     .await
-    .map_err(|e| handle_errors::Error::DatabaseQueryError(e))?;
+    .map_err(handle_errors::Error::DatabaseQueryError)?;
 
     sqlx::migrate!()
         .run(&store.clone().connection)

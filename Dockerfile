@@ -54,7 +54,7 @@ HEALTHCHECK \
 # copy binaries
 COPY --from=build /bin/server /bin/
 # copy configuration file
-COPY .env /bin/.env
+COPY .env .env
 
 # expose port
 EXPOSE 8080
