@@ -1,5 +1,5 @@
 ARG RUST_VERSION=1.74.1
-ARG APP_NAME=activities-scheduler-server
+ARG APP_NAME=server
 ARG TARGET=x86_64-unknown-linux-musl
 FROM rust:${RUST_VERSION}-slim-bullseye AS build
 ARG APP_NAME
@@ -54,7 +54,7 @@ HEALTHCHECK \
 # copy binaries
 COPY --from=build /bin/server /bin/
 # copy configuration file
-COPY .env /bin/.env
+COPY .env .env
 
 # expose port
 EXPOSE 8080

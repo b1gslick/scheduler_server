@@ -13,31 +13,48 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     steps:
-      - name: Setup | Checkout
+      - name: Setup Checkout
         uses: actions/checkout@v4
-      - name: Setup | Rust
+      - name: Setup Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
-      - name: Build | Lint | Test
+      - name: Test
         run: |
           cargo clippy
-          cargo test
+          cargo +stable install cargo-llvm-cov --locked
+          cargo llvm-cov --lcov --output-path lcov.info
+      - name: Coverage report
+        uses: terencetcf/github-actions-lcov-minimum-coverage-checker@v1
+        with:
+          coverage-file: lcov.info
+          minimum-coverage: 60
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Checkout
+        uses: actions/checkout@v4
+      - name: Setup Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+      - name: Lint
+        run: |
+          cargo clippy
 
   security-audit:
     name: security-audit
     runs-on: ubuntu-latest
     steps:
-      - name: Setup | Checkout
+      - name: Setup Checkout
         uses: actions/checkout@v4
-      - name: Setup | Rust
+      - name: Setup Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
-      - name: Build | Compile
+      - name: Build Audit
         run: |
           cargo install cargo-audit
           cargo audit
 
   push_to_registry:
     name: Push Docker image to Docker Hub
-    # runs-on: self-hosted
     runs-on: ubuntu-latest
     timeout-minutes: 180
     needs: [test]
@@ -69,8 +86,14 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }},t1mon1106/scheduler:latest
           labels: ${{ steps.meta.outputs.labels }}
 
-  e2e:
-    name: e2e tests
+      - name: Scan for vulnerabilities
+        uses: crazy-max/ghaction-container-scan@v3
+        with:
+          image: ${{ steps.meta.outputs.tags }}
+          annotations: true
+
+  large-tests:
+    name: large tests
     runs-on: ubuntu-latest
     needs: [push_to_registry]
     steps:
@@ -79,7 +102,7 @@ jobs:
       - name: run-compose with tests
         uses: isbang/compose-action@v1.5.1
         with:
-          compose-file: "docker-compose-e2e.yml"
+          compose-file: "docker-compose-large-tests.yml"
           up-flags: "--abort-on-container-exit"
         env:
           TAG: ${{ github.ref_name }}
@@ -88,25 +111,6 @@ jobs:
         if: success() || failure() # always run even if the previous step fails
         with:
           report_paths: "**/tests/e2e/report/*.xml"
-
-  smoke-performance:
-    name: smoke-performance
-    runs-on: ubuntu-latest
-    needs: [push_to_registry]
-    steps:
-      - name: Check out the repo
-        uses: actions/checkout@v4
-      - name: run docker-compose
-        env:
-          TAG: ${{ github.ref_name }}
-          POSTGRES_DB: "schedulerdb"
-          POSTGRES_USER: "scheduler"
-          POSTGRES_PASSWORD: "scheduler"
-        run: docker-compose -f docker-compose-perf.yml up -d
-      - name: run-compose with tests
-        env:
-          TAG: ${{ github.ref_name }}
-        run: docker-compose -f docker-compose-perf.yml run k6s run /scripts/perf_test.js --quiet
 
   one-handredk-rows-test:
     name: one-handredk-rows-test

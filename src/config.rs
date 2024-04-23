@@ -29,7 +29,7 @@ pub struct Config {
 }
 impl Config {
     pub fn new() -> Result<Config, handle_errors::Error> {
-        dotenv::dotenv().ok();
+        dotenvy::dotenv().ok();
         if env::var("PASETO_KEY").is_err() {
             panic!("PASETO key not set");
         }
@@ -73,7 +73,7 @@ mod config_tests {
     }
 
     #[test]
-    fn set_paseto_key() {
+    fn small_test_set_paseto_key() {
         set_env();
 
         let expexted = Config {

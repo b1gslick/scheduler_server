@@ -4,7 +4,7 @@ use crate::types::activities::{Activity, NewActivity};
 use crate::types::pagination::extract_pagination;
 use crate::types::pagination::Pagination;
 use std::collections::HashMap;
-use tracing::{error, info, instrument};
+use tracing::{info, instrument};
 use warp::http::StatusCode;
 
 #[instrument]
@@ -85,5 +85,148 @@ pub async fn deleted_activities(
         ))
     } else {
         Err(warp::reject::custom(handle_errors::Error::Unauthorized))
+    }
+}
+
+#[cfg(test)]
+mod test_activities {
+    use crate::routes::activities::{add_activity, deleted_activities, update_activities};
+    use crate::tests::helpers::{create_postgres, get_session, prepare_store};
+    use crate::types::activities::NewActivity;
+    use crate::types::activities::{Activity, ActivityId};
+    use testcontainers_modules::testcontainers::clients::Cli;
+    use warp::reply::Reply;
+
+    #[tokio::test]
+    async fn medium_test_add_activities() {
+        let docker = Cli::default();
+        let node = docker.run(create_postgres());
+        let store = prepare_store(node.get_host_port_ipv4(5432)).await.unwrap();
+        let account_id = 1;
+        store.clone().add_test_account(account_id).await;
+
+        let record = NewActivity {
+            title: "test".to_string(),
+            content: "test".to_string(),
+            time: 1,
+        };
+        let result = add_activity(get_session(account_id), store.clone(), record)
+            .await
+            .unwrap()
+            .into_response();
+        assert_eq!(result.status(), 200);
+    }
+
+    #[tokio::test]
+    async fn medium_test_user_should_get_owned_activities_with_limit() {
+        let docker = Cli::default();
+        let node = docker.run(create_postgres());
+        let store = prepare_store(node.get_host_port_ipv4(5432)).await.unwrap();
+        let account_id = 1;
+        let limit = 1;
+        store.clone().add_test_account(account_id).await;
+        store.clone().add_test_acctivities().await;
+        store.clone().add_test_acctivities().await;
+        let result = store.clone().get_activities(Some(limit), 0).await.unwrap();
+        assert_eq!(result.len() as i32, limit);
+    }
+
+    #[tokio::test]
+    async fn medium_test_user_should_get_owned_all_activities() {
+        let docker = Cli::default();
+        let node = docker.run(create_postgres());
+        let store = prepare_store(node.get_host_port_ipv4(5432)).await.unwrap();
+        let account_id = 1;
+        let num_activities = 10;
+        store.clone().add_test_account(account_id).await;
+        for _ in 0..num_activities {
+            store.clone().add_test_acctivities().await;
+        }
+
+        let result = store.clone().get_activities(None, 0).await.unwrap();
+        assert_eq!(result.len() as i32, num_activities);
+    }
+
+    #[tokio::test]
+    async fn medium_test_user_should_get_owned_activities_with_offset() {
+        let docker = Cli::default();
+        let node = docker.run(create_postgres());
+        let store = prepare_store(node.get_host_port_ipv4(5432)).await.unwrap();
+        let account_id = 1;
+        let num_activities = 10;
+        store.clone().add_test_account(account_id).await;
+        for _ in 0..num_activities {
+            store.clone().add_test_acctivities().await;
+        }
+
+        let result = store
+            .clone()
+            .get_activities(None, num_activities - 1)
+            .await
+            .unwrap();
+        assert_eq!(result.len() as i32, num_activities - (num_activities - 1));
+    }
+
+    #[tokio::test]
+    async fn medium_test_update_activities() {
+        let docker = Cli::default();
+        let node = docker.run(create_postgres());
+        let store = prepare_store(node.get_host_port_ipv4(5432)).await.unwrap();
+        let account_id = 1;
+        let activity_id = 1;
+        store.clone().add_test_account(account_id).await;
+        store.clone().add_test_acctivities().await;
+        let for_update = Activity {
+            id: ActivityId(activity_id),
+            title: "updated".to_string(),
+            content: "full_update".to_string(),
+            time: 199999,
+        };
+        let result = update_activities(activity_id, get_session(account_id), store, for_update)
+            .await
+            .unwrap()
+            .into_response();
+        assert_eq!(result.status(), 200);
+    }
+    #[tokio::test]
+    async fn medium_test_update_not_exist_activities() {
+        let docker = Cli::default();
+        let node = docker.run(create_postgres());
+        let store = prepare_store(node.get_host_port_ipv4(5432)).await.unwrap();
+        let account_id = 1;
+        store.clone().add_test_account(account_id).await;
+        let for_update = Activity {
+            id: ActivityId(1),
+            title: "updated".to_string(),
+            content: "full_update".to_string(),
+            time: 199999,
+        };
+        let result = update_activities(1, get_session(account_id), store, for_update).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn medium_test_user_should_delete_owned_activities() {
+        let docker = Cli::default();
+        let node = docker.run(create_postgres());
+        let store = prepare_store(node.get_host_port_ipv4(5432)).await.unwrap();
+        let account_id = 1;
+        store.clone().add_test_account(account_id).await;
+        store.clone().add_test_acctivities().await;
+        let result = deleted_activities(1, get_session(account_id), store)
+            .await
+            .unwrap()
+            .into_response();
+        assert_eq!(result.status(), 200);
+    }
+    #[tokio::test]
+    async fn medium_test_user_should_not_delete_not_owned_activities() {
+        let docker = Cli::default();
+        let node = docker.run(create_postgres());
+        let store = prepare_store(node.get_host_port_ipv4(5432)).await.unwrap();
+        let account_id = 1;
+        store.clone().add_test_account(account_id).await;
+        let result = deleted_activities(1, get_session(account_id), store).await;
+        assert!(result.is_err());
     }
 }

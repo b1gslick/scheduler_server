@@ -1,7 +1,7 @@
 {
   "info": {
-    "_postman_id": "b0c3c496-91ab-4155-8da5-21bf3a25bf0d",
-    "name": "e2e-regression",
+    "_postman_id": "4e233240-b920-408f-8980-9459d8ad77fe",
+    "name": "Large_tests",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "4366696"
   },
@@ -16,9 +16,10 @@
               "listen": "prerequest",
               "script": {
                 "exec": [
-                  "emailPrefix = Util.getRandomString(pm.collectionVariables.get(\"emailLength\"))",
-                  "emailDomain = Util.getRandomString(pm.collectionVariables.get(\"passwordLength\"))",
-                  "emailProvider = pm.collectionVariables.get(\"emailProvider\")",
+                  "const emailPrefix = Util.getRandomString(pm.collectionVariables.get(\"emailLength\"))",
+                  "const emailDomain = Util.getRandomDomain(6)",
+                  "console.log(emailDomain)",
+                  "const emailProvider = pm.collectionVariables.get(\"emailProvider\")",
                   "",
                   "pm.collectionVariables.set(\"email\", `${emailPrefix}@${emailDomain}.${emailProvider}`)",
                   "",
@@ -137,10 +138,11 @@
                   "    pm.expect(pm.response.code).eql(200)",
                   "})",
                   "const id = parseInt(Util.getIntFromText(response))",
+                  "pm.collectionVariables.set(\"accountID\", id)",
                   "pm.test(\"Account id must be greater than 0\", ()=>{",
                   "    pm.expect(id).not.eq(0)",
                   "})",
-                  "pm.collectionVariables.set(\"accountID\", id)"
+                  ""
                 ],
                 "type": "text/javascript",
                 "packages": {}
@@ -152,7 +154,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "\"select id from accounts order by id DESC limit 1;\"\n",
+              "raw": "\"select id from accounts where email ='{{email}}';\"\n",
               "options": {
                 "raw": {
                   "language": "json"
@@ -186,20 +188,7 @@
                   "pm.collectionVariables.set(\"title\", title);",
                   "pm.collectionVariables.set(\"content\", content);",
                   "pm.collectionVariables.set(\"time\", time);",
-                  "",
-                  "/*unction getRandomString(lenght) {",
-                  "    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689!@#$%^&*()';\";",
-                  "    let charsLength = chars.length;",
-                  "    let result = '';",
-                  "    for (let i = 0; i < lenght; i++) {",
-                  "        result += chars.charAt(Math.floor(Math.random() * charsLength));",
-                  "    }",
-                  "    return result;",
-                  "}",
-                  "",
-                  "function getRandomInt(max) {",
-                  "    return Math.floor(Math.random() * max);",
-                  "}*/"
+                  ""
                 ],
                 "type": "text/javascript",
                 "packages": {}
@@ -283,8 +272,12 @@
                   "pm.test(\"Title which added, equal title in db\", () => {",
                   "    pm.expect(response[0].title).eq(pm.collectionVariables.get(\"title\"))",
                   "})",
+                  "pm.test(\"The array key lenght should be equal 1\", () => {",
+                  "    pm.expect(Object.keys(response).length).to.be.eql(1);",
+                  "})",
+                  "pm.collectionVariables.set(\"id\", parseInt(response[0].id))",
                   "",
-                  "pm.collectionVariables.set(\"id\", parseInt(response[0].id))"
+                  ""
                 ],
                 "type": "text/javascript",
                 "packages": {}
@@ -545,11 +538,7 @@
                   "})",
                   "pm.test(\"The response has time\", () => {",
                   "    pm.expect(responseJson.time).to.be.eql(parseInt(pm.collectionVariables.get(\"time\")))",
-                  "})",
-                  "",
-                  "const offset = parseInt(pm.collectionVariables.get('offset')) + 1",
-                  "",
-                  "pm.collectionVariables.set(\"offset\", offset)"
+                  "})"
                 ],
                 "type": "text/javascript",
                 "packages": {}
@@ -606,9 +595,8 @@
                   "pm.test(\"Anwser has text about time added\", ()=>{",
                   "    pm.expect(responseText).includes(`Time added`)",
                   "})",
-                  "const oldId = pm.collectionVariables.get(\"timeSpentID\")",
-                  "const timeSpentId = oldId == \"\" ? 1 : parseInt(oldId) + 1",
-                  "pm.collectionVariables.set(\"timeSpentID\", timeSpentId)"
+                  "",
+                  ""
                 ],
                 "type": "text/javascript",
                 "packages": {}
@@ -648,16 +636,17 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "const response = pm.response.text();",
+                  "const response = pm.response.json();",
                   "",
+                  "pm.collectionVariables.set(\"timeSpentID\", parseInt(response[0].id))",
                   "pm.test(\"Response code is 200\", ()=>{",
                   "    pm.expect(pm.response.code).eql(200)",
                   "})",
                   "",
-                  "pm.test(\"Response not empty\", () => {",
-                  "    const lengthEmptyQuery=2",
-                  "    pm.expect(response.length).above(lengthEmptyQuery)",
-                  "})"
+                  "pm.test(\"activity id equal correct value\", ()=>{",
+                  "    pm.expect(parseInt(response[0].activity_id)).to.eql(parseInt(pm.collectionVariables.get(\"id\")))",
+                  "})",
+                  ""
                 ],
                 "type": "text/javascript",
                 "packages": {}
@@ -669,7 +658,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "\"select id, activity_id from time_spent where id={{timeSpentID}};\"\n",
+              "raw": "\"select id, activity_id from time_spent where activity_id={{id}};\"\n",
               "options": {
                 "raw": {
                   "language": "json"
@@ -905,9 +894,7 @@
                   "pm.test(\"Anwser has text about time added\", ()=>{",
                   "    pm.expect(responseText).includes(`Time added`)",
                   "})",
-                  "const oldId = pm.collectionVariables.get(\"timeSpentID\")",
-                  "const timeSpentId = oldId == \"\" ? 1 : parseInt(oldId) + 1",
-                  "pm.collectionVariables.set(\"timeSpentID\", timeSpentId)"
+                  ""
                 ],
                 "type": "text/javascript",
                 "packages": {}
@@ -936,6 +923,49 @@
               "raw": "{{url}}/time_spent",
               "host": ["{{url}}"],
               "path": ["time_spent"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "slq_query_after_add_time_spent_2",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "",
+                  "pm.collectionVariables.set(\"timeSpentID\", parseInt(response[0].id))",
+                  "pm.test(\"Response code is 200\", ()=>{",
+                  "    pm.expect(pm.response.code).eql(200)",
+                  "})",
+                  "",
+                  "pm.test(\"activity id equal correct value\", ()=>{",
+                  "    pm.expect(parseInt(response[0].activity_id)).to.eql(parseInt(pm.collectionVariables.get(\"id\")))",
+                  "})",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "\"select id, activity_id from time_spent where activity_id={{id}} order by id DESC limit 1;\"\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{http-sql}}",
+              "host": ["{{http-sql}}"]
             }
           },
           "response": []
@@ -1020,58 +1050,6 @@
           "response": []
         },
         {
-          "name": "check_time_spent_exist_after_delete",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "let responseJson;",
-                  "try{",
-                  "    responseJson = pm.response.json()",
-                  "}",
-                  "catch(e){",
-                  "    console.error(e)",
-                  "}",
-                  "pm.test(\"Status code is 200\", () => {",
-                  "    pm.expect(pm.response.code).to.eql(200);",
-                  "})",
-                  "",
-                  "pm.test(\"The response has right timespent id\", () => {",
-                  "   const timeSpentId = parseInt(pm.collectionVariables.get('timeSpentID'))",
-                  "   pm.expect(responseJson.id).eql(timeSpentId)",
-                  "})",
-                  "pm.test(\"The response has right time\", () => {",
-                  "    pm.expect(responseJson.time).eql(parseInt(pm.collectionVariables.get(\"timeSpent\")))",
-                  "})",
-                  "pm.test(\"The response has right activity_id\", () => {",
-                  "    const activityId = parseInt(pm.collectionVariables.get('id'))",
-                  "    pm.expect(responseJson.activity_id).eql(activityId)",
-                  "})"
-                ],
-                "type": "text/javascript",
-                "packages": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "{{token}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{url}}/time_spent/{{timeSpentID}}",
-              "host": ["{{url}}"],
-              "path": ["time_spent", "{{timeSpentID}}"]
-            }
-          },
-          "response": []
-        },
-        {
           "name": "add_time_spent_when_activity_not_exist",
           "event": [
             {
@@ -1090,8 +1068,8 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test(\"Status code is 404\", () => {",
-                  "    pm.expect(pm.response.code).to.eql(404);",
+                  "pm.test(\"Status code is 422\", () => {",
+                  "    pm.expect(pm.response.code).to.eql(422);",
                   "})",
                   "// we need to add some crunch for",
                   "// stability other pieces of",
@@ -1143,7 +1121,16 @@
               "Util = {}",
               "",
               "Util.getRandomString = (lenght) => {",
-              "    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689!@#$%^&*()';\";",
+              "    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689\";",
+              "    let result = '';",
+              "    for (let i = 0; i < lenght; i++) {",
+              "        result += chars.charAt(Util.getRandomInt(chars.length));",
+              "    }",
+              "    return result;",
+              "}",
+              "",
+              "Util.getRandomDomain = (lenght) => {",
+              "    let chars = \"abcdeghijklmnopqrstuvwxyz\";",
               "    let result = '';",
               "    for (let i = 0; i < lenght; i++) {",
               "        result += chars.charAt(Util.getRandomInt(chars.length));",
@@ -1203,19 +1190,7 @@
                       "pm.collectionVariables.set(\"content\", content);",
                       "pm.collectionVariables.set(\"time\", time);",
                       "",
-                      "/*unction getRandomString(lenght) {",
-                      "    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689!@#$%^&*()';\";",
-                      "    let charsLength = chars.length;",
-                      "    let result = '';",
-                      "    for (let i = 0; i < lenght; i++) {",
-                      "        result += chars.charAt(Math.floor(Math.random() * charsLength));",
-                      "    }",
-                      "    return result;",
-                      "}",
-                      "",
-                      "function getRandomInt(max) {",
-                      "    return Math.floor(Math.random() * max);",
-                      "}*/"
+                      ""
                     ],
                     "type": "text/javascript",
                     "packages": {}
@@ -1291,20 +1266,7 @@
                       "pm.collectionVariables.set(\"title\", title);",
                       "pm.collectionVariables.set(\"content\", content);",
                       "pm.collectionVariables.set(\"time\", time);",
-                      "",
-                      "/*unction getRandomString(lenght) {",
-                      "    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689!@#$%^&*()';\";",
-                      "    let charsLength = chars.length;",
-                      "    let result = '';",
-                      "    for (let i = 0; i < lenght; i++) {",
-                      "        result += chars.charAt(Math.floor(Math.random() * charsLength));",
-                      "    }",
-                      "    return result;",
-                      "}",
-                      "",
-                      "function getRandomInt(max) {",
-                      "    return Math.floor(Math.random() * max);",
-                      "}*/"
+                      ""
                     ],
                     "type": "text/javascript",
                     "packages": {}
@@ -1323,11 +1285,7 @@
                       "    const responseText = pm.response.text();",
                       "    pm.expect(responseText).includes(\"missing field `title`\")",
                       "})",
-                      "",
-                      "pm.test(\"Response text should exist information about missed Time\", () => {",
-                      "    const responseText = pm.response.text();",
-                      "    pm.expect(responseText).includes(\"missing field `time`\")",
-                      "})"
+                      ""
                     ],
                     "type": "text/javascript",
                     "packages": {}
@@ -1377,20 +1335,7 @@
                       "pm.collectionVariables.set(\"title\", title);",
                       "pm.collectionVariables.set(\"content\", content);",
                       "pm.collectionVariables.set(\"time\", time);",
-                      "",
-                      "/*unction getRandomString(lenght) {",
-                      "    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689!@#$%^&*()';\";",
-                      "    let charsLength = chars.length;",
-                      "    let result = '';",
-                      "    for (let i = 0; i < lenght; i++) {",
-                      "        result += chars.charAt(Math.floor(Math.random() * charsLength));",
-                      "    }",
-                      "    return result;",
-                      "}",
-                      "",
-                      "function getRandomInt(max) {",
-                      "    return Math.floor(Math.random() * max);",
-                      "}*/"
+                      ""
                     ],
                     "type": "text/javascript",
                     "packages": {}
@@ -1459,34 +1404,23 @@
                       "pm.collectionVariables.set(\"title\", title);",
                       "pm.collectionVariables.set(\"content\", content);",
                       "pm.collectionVariables.set(\"time\", time);",
-                      "",
-                      "/*unction getRandomString(lenght) {",
-                      "    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689!@#$%^&*()';\";",
-                      "    let charsLength = chars.length;",
-                      "    let result = '';",
-                      "    for (let i = 0; i < lenght; i++) {",
-                      "        result += chars.charAt(Math.floor(Math.random() * charsLength));",
-                      "    }",
-                      "    return result;",
-                      "}",
-                      "",
-                      "function getRandomInt(max) {",
-                      "    return Math.floor(Math.random() * max);",
-                      "}*/"
+                      ""
                     ],
-                    "type": "text/javascript"
+                    "type": "text/javascript",
+                    "packages": {}
                   }
                 },
                 {
                   "listen": "test",
                   "script": {
                     "exec": [
-                      "pm.test(\"Status code is 422\", () => {",
-                      "    pm.expect(pm.response.code).to.eql(422);",
+                      "pm.test(\"Status code is 415\", () => {",
+                      "    pm.expect(pm.response.code).to.eql(415);",
                       "})",
                       ""
                     ],
-                    "type": "text/javascript"
+                    "type": "text/javascript",
+                    "packages": {}
                   }
                 }
               ],
@@ -1532,21 +1466,7 @@
                       "pm.collectionVariables.set(\"id\", id);",
                       "pm.collectionVariables.set(\"title\", title);",
                       "pm.collectionVariables.set(\"content\", content);",
-                      "pm.collectionVariables.set(\"time\", time);",
-                      "",
-                      "/*unction getRandomString(lenght) {",
-                      "    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689!@#$%^&*()';\";",
-                      "    let charsLength = chars.length;",
-                      "    let result = '';",
-                      "    for (let i = 0; i < lenght; i++) {",
-                      "        result += chars.charAt(Math.floor(Math.random() * charsLength));",
-                      "    }",
-                      "    return result;",
-                      "}",
-                      "",
-                      "function getRandomInt(max) {",
-                      "    return Math.floor(Math.random() * max);",
-                      "}*/"
+                      "pm.collectionVariables.set(\"time\", time);"
                     ],
                     "type": "text/javascript"
                   }
@@ -1621,14 +1541,14 @@
                   "listen": "test",
                   "script": {
                     "exec": [
-                      "pm.test(\"Status code is 401\", () => {",
-                      "    pm.expect(pm.response.code).to.eql(401);",
+                      "pm.test(\"Status code is 404\", () => {",
+                      "    pm.expect(pm.response.code).to.eql(404);",
                       "})",
                       "",
                       "",
                       "pm.test(\"Unauthorized information in text\", () => {",
                       "    const responseText = pm.response.text();",
-                      "    pm.expect(responseText).includes(\"Can't add activity: Unauthorized\")",
+                      "    pm.expect(responseText).includes(\"Route not found\")",
                       "})",
                       ""
                     ],
@@ -1813,69 +1733,6 @@
                 }
               },
               "response": []
-            },
-            {
-              "name": "update_activity_add_not_exist_field",
-              "event": [
-                {
-                  "listen": "prerequest",
-                  "script": {
-                    "exec": [
-                      "let title = pm.collectionVariables.get(\"title\");",
-                      "let content = pm.collectionVariables.get(\"content\");",
-                      "let time = pm.collectionVariables.get(\"time\");",
-                      "",
-                      "title = Util.getRandomString(Util.getRandomInt(60))",
-                      "content = Util.getRandomString(Util.getRandomInt(Math.pow(2, 12)))",
-                      "const timeRange = 12 * 60;",
-                      "time = Util.getRandomInt(timeRange);",
-                      "",
-                      "pm.collectionVariables.set(\"title\", title);",
-                      "pm.collectionVariables.set(\"content\", content);",
-                      "pm.collectionVariables.set(\"time\", time);"
-                    ],
-                    "type": "text/javascript",
-                    "packages": {}
-                  }
-                },
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Status code is 422\", () => {",
-                      "    pm.expect(pm.response.code).to.eql(422);",
-                      "})",
-                      "const reponseText = pm.response.text();",
-                      "",
-                      "pm.test(\"The response has information `Cannot update. invalid data.`\", () => {",
-                      "    pm.expect(reponseText.includes(`Cannot update. invalid data.`)).to.be.true",
-                      "})",
-                      ""
-                    ],
-                    "type": "text/javascript",
-                    "packages": {}
-                  }
-                }
-              ],
-              "request": {
-                "method": "PUT",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"id\": {{id}},\n    \"title\": \"{{title}}\",\n    \"content\": \"{{content}}\",\n    \"time\": {{time}},\n    \"newField\": \"hello\"\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{url}}/activities/{{id}}",
-                  "host": ["{{url}}"],
-                  "path": ["activities", "{{id}}"]
-                }
-              },
-              "response": []
             }
           ],
           "event": [
@@ -1884,18 +1741,17 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
+                  "const url = pm.collectionVariables.get(\"urlInside\")",
+                  "const helperUrl = pm.collectionVariables.get(\"urlHelper\")",
                   "",
-                  "const url = \"http://backend:8080\" // crunch for autotests",
-                  "const id = parseInt(pm.collectionVariables.get(\"id\")) + 1",
                   "const reqBody = {",
-                  "    \"id\": id,",
                   "    \"title\": `${Util.getRandomString(60)}`,",
                   "    \"content\": `${Util.getRandomString(1024)}`,",
                   "    \"time\": Util.getRandomInt(12 * 60)",
                   "}",
                   "",
                   "const postRequest = {",
-                  "  url: `${url}/activities`,",
+                  "  url: `http://${url}:8080/activities`,",
                   "  method: 'POST',",
                   "  header: {",
                   "    'Content-Type': 'application/json',",
@@ -1913,6 +1769,7 @@
                   "    pm.expect(response).to.have.property('code', 200);",
                   "  })",
                   "});",
+                  "",
                   "pm.request.headers.add({",
                   "        key: \"Authorization\",",
                   "        value: pm.collectionVariables.get(\"token\")",
@@ -1921,7 +1778,30 @@
                   "pm.test(\"Header contain token\", ()=>{",
                   "    pm.expect(pm.request.headers.get(\"Authorization\").length).not.eql(0)",
                   "})",
-                  ""
+                  "",
+                  "const accountID = pm.collectionVariables.get(\"accountID\");",
+                  "const raw = JSON.stringify(`select title, id from activities where account_id=${accountID};`)",
+                  "",
+                  "const discoverID = {",
+                  "  url: `http://${helperUrl}:4545/query`,",
+                  "  method: 'POST',",
+                  "  header: {",
+                  "    'Content-Type': 'application/json',",
+                  "  },",
+                  "  body: {",
+                  "    mode: 'json',",
+                  "    raw: raw",
+                  "  }",
+                  "};",
+                  "",
+                  "pm.sendRequest(discoverID, (error, response) => {",
+                  "  pm.test('Post activities should be ok', () => {",
+                  "    pm.expect(error).to.equal(null);",
+                  "    pm.expect(response).to.have.property('code', 200);",
+                  "    console.log(response)",
+                  "    pm.collectionVariables.set(\"id\", parseInt(response.json()[0].id))",
+                  "  })",
+                  "});"
                 ]
               }
             },
@@ -1930,13 +1810,12 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "",
-                  "const url = \"http://backend:8080\" // crunch for autotests",
-                  "const id = parseInt(pm.collectionVariables.get(\"id\")) + 1",
+                  "const url = pm.collectionVariables.get(\"urlInside\")",
+                  "const id = parseInt(pm.collectionVariables.get(\"id\"))",
                   "",
                   "",
                   "const postRequest = {",
-                  "  url: `${url}/activities/${id}`,",
+                  "  url: `http://${url}:8080/activities/${id}`,",
                   "  method: 'DELETE',",
                   "  header: {",
                   "    'Content-Type': 'application/json',",
@@ -1967,12 +1846,12 @@
                   "listen": "test",
                   "script": {
                     "exec": [
-                      "pm.test(\"Status code is 404\", () => {",
-                      "    pm.expect(pm.response.code).to.eql(404);",
+                      "pm.test(\"Status code is 401\", () => {",
+                      "    pm.expect(pm.response.code).to.eql(401);",
                       "})",
                       "",
                       "pm.test(\"Text should contain true information\", () => {",
-                      "    pm.expect(pm.response.text()).include(\"Activities not Found\")",
+                      "    pm.expect(pm.response.text()).include(\"No permission to change underlying resource\")",
                       "})"
                     ],
                     "type": "text/javascript",
@@ -1997,83 +1876,6 @@
                   "raw": "{{url}}/activities/{{BadId}}",
                   "host": ["{{url}}"],
                   "path": ["activities", "{{BadId}}"]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "delete_not_owned_activity",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Status code is 401\", () => {",
-                      "    pm.expect(pm.response.code).to.eql(401);",
-                      "})",
-                      "",
-                      "pm.test(\"Text should contain true information\", () => {",
-                      "    pm.expect(pm.response.text()).include(\"No permission to change the underlying resource\")",
-                      "})"
-                    ],
-                    "type": "text/javascript",
-                    "packages": {}
-                  }
-                },
-                {
-                  "listen": "prerequest",
-                  "script": {
-                    "exec": [
-                      "const url = \"http://backend:8080\" // crunch for autotests",
-                      "const id = parseInt(pm.collectionVariables.get(\"id\")) + 1",
-                      "pm.collectionVariables.set(\"id\", id)",
-                      "const reqBody = {",
-                      "    \"id\": id,",
-                      "    \"title\": `${Util.getRandomString(60)}`,",
-                      "    \"content\": `${Util.getRandomString(1024)}`,",
-                      "    \"time\": Util.getRandomInt(12 * 60)",
-                      "}",
-                      "",
-                      "const postRequest = {",
-                      "  url: `${url}/activities`,",
-                      "  method: 'POST',",
-                      "  header: {",
-                      "    'Content-Type': 'application/json',",
-                      "    \"Authorization\": pm.collectionVariables.get(\"token\")",
-                      "  },",
-                      "  body: {",
-                      "    mode: 'json',",
-                      "    raw: JSON.stringify(reqBody)",
-                      "  }",
-                      "};",
-                      "",
-                      "pm.sendRequest(postRequest, (error, response) => {",
-                      "  pm.test('Post activities should be ok', () => {",
-                      "    pm.expect(error).to.equal(null);",
-                      "    pm.expect(response).to.have.property('code', 200);",
-                      "  })",
-                      "});",
-                      "pm.request.headers.add({",
-                      "        key: \"Authorization\",",
-                      "        value: pm.collectionVariables.get(\"token\")",
-                      "});",
-                      "",
-                      "pm.test(\"Header contain token\", ()=>{",
-                      "    pm.expect(pm.request.headers.get(\"Authorization\").length).not.eql(0)",
-                      "})"
-                    ],
-                    "type": "text/javascript",
-                    "packages": {}
-                  }
-                }
-              ],
-              "request": {
-                "method": "DELETE",
-                "header": [],
-                "url": {
-                  "raw": "{{url}}/activities/{{id}}",
-                  "host": ["{{url}}"],
-                  "path": ["activities", "{{id}}"]
                 }
               },
               "response": []
@@ -2116,7 +1918,7 @@
                 {
                   "listen": "prerequest",
                   "script": {
-                    "exec": ["", ""],
+                    "exec": [""],
                     "type": "text/javascript",
                     "packages": {}
                   }
@@ -2130,7 +1932,7 @@
                       "})",
                       "",
                       "pm.test(\"Response has valid text `Cannot update. invalid data.`\", ()=> {",
-                      "    pm.expect(pm.response.text()).include(`Cannot update. invalid data.`)",
+                      "    pm.expect(pm.response.text()).include(`Unprocessable entity`)",
                       "})"
                     ],
                     "type": "text/javascript",
@@ -2165,21 +1967,21 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
+                  "const url = pm.collectionVariables.get(\"urlInside\")",
+                  "const helperUrl = pm.collectionVariables.get(\"urlHelper\")",
                   "",
-                  "const url = \"http://backend:8080\" // crunch for autotests",
-                  "const id = parseInt(pm.collectionVariables.get(\"id\")) + 1",
                   "const reqBody = {",
-                  "    \"id\": `${id}`,",
                   "    \"title\": `${Util.getRandomString(60)}`,",
                   "    \"content\": `${Util.getRandomString(1024)}`,",
                   "    \"time\": Util.getRandomInt(12 * 60)",
                   "}",
                   "",
                   "const postRequest = {",
-                  "  url: `${url}/activities`,",
+                  "  url: `http://${url}:8080/activities`,",
                   "  method: 'POST',",
                   "  header: {",
                   "    'Content-Type': 'application/json',",
+                  "    \"Authorization\": pm.collectionVariables.get(\"token\")",
                   "  },",
                   "  body: {",
                   "    mode: 'json',",
@@ -2188,13 +1990,11 @@
                   "};",
                   "",
                   "pm.sendRequest(postRequest, (error, response) => {",
-                  "  pm.test('response should be okay to process', () => {",
+                  "  pm.test('Post activities should be ok', () => {",
                   "    pm.expect(error).to.equal(null);",
                   "    pm.expect(response).to.have.property('code', 200);",
                   "  })",
                   "});",
-                  "",
-                  "pm.collectionVariables.set(\"id\", id)",
                   "",
                   "pm.request.headers.add({",
                   "        key: \"Authorization\",",
@@ -2203,7 +2003,31 @@
                   "",
                   "pm.test(\"Header contain token\", ()=>{",
                   "    pm.expect(pm.request.headers.get(\"Authorization\").length).not.eql(0)",
-                  "})"
+                  "})",
+                  "",
+                  "const accountID = pm.collectionVariables.get(\"accountID\");",
+                  "const raw = JSON.stringify(`select title, id from activities where account_id=${accountID};`)",
+                  "",
+                  "const discoverID = {",
+                  "  url: `http://${helperUrl}:4545/query`,",
+                  "  method: 'POST',",
+                  "  header: {",
+                  "    'Content-Type': 'application/json',",
+                  "  },",
+                  "  body: {",
+                  "    mode: 'json',",
+                  "    raw: raw",
+                  "  }",
+                  "};",
+                  "",
+                  "pm.sendRequest(discoverID, (error, response) => {",
+                  "  pm.test('Post activities should be ok', () => {",
+                  "    pm.expect(error).to.equal(null);",
+                  "    pm.expect(response).to.have.property('code', 200);",
+                  "    console.log(response)",
+                  "    pm.collectionVariables.set(\"id\", parseInt(response.json()[0].id))",
+                  "  })",
+                  "});"
                 ]
               }
             },
@@ -2212,16 +2036,16 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "",
-                  "const url = \"http://backend:8080\" // crunch for autotests",
+                  "const url = pm.collectionVariables.get(\"urlInside\")",
                   "const id = parseInt(pm.collectionVariables.get(\"id\"))",
                   "",
                   "",
                   "const postRequest = {",
-                  "  url: `${url}/activities/${id}`,",
+                  "  url: `http://${url}:8080/activities/${id}`,",
                   "  method: 'DELETE',",
                   "  header: {",
                   "    'Content-Type': 'application/json',",
+                  "    \"Authorization\": pm.collectionVariables.get(\"token\")",
                   "  },",
                   "",
                   "};",
@@ -2248,7 +2072,16 @@
               "Util = {}",
               "",
               "Util.getRandomString = (lenght) => {",
-              "    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689!@#$%^&*()';\";",
+              "    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689\";",
+              "    let charsLength = chars.length;",
+              "    let result = '';",
+              "    for (let i = 0; i < lenght; i++) {",
+              "        result += chars.charAt(Math.floor(Math.random() * charsLength));",
+              "    }",
+              "    return result;",
+              "}",
+              "Util.getRandomDomain = (lenght) => {",
+              "    let chars = \"abcdeghijklmnopqrstuvwxyz\";",
               "    let charsLength = chars.length;",
               "    let result = '';",
               "    for (let i = 0; i < lenght; i++) {",
@@ -2266,14 +2099,16 @@
               "}",
               "",
               "emailPrefix = Util.getRandomString(pm.collectionVariables.get(\"emailLength\"))",
-              "emailDomain = Util.getRandomString(pm.collectionVariables.get(\"passwordLength\"))",
+              "emailDomain = Util.getRandomDomain(6)",
               "emailProvider = pm.collectionVariables.get(\"emailProvider\")",
               "",
               "const email = `${emailPrefix}@${emailDomain}.${emailProvider}`",
               "",
               "const password = Util.getRandomString(pm.collectionVariables.get(\"passwordLength\"))",
               "",
-              "const url = \"http://backend:8080\" // crunch for autotests",
+              "const url = pm.collectionVariables.get(\"urlInside\")",
+              "const helperUrl = pm.collectionVariables.get(\"urlHelper\")",
+              "",
               "const reqBody = {",
               "    \"email\": email,",
               "    \"password\": password,",
@@ -2281,7 +2116,7 @@
               "}",
               "",
               "const postRequest = {",
-              "  url: `${url}/registration`,",
+              "  url: `http://${url}:8080/registration`,",
               "  method: 'POST',",
               "  header: {",
               "    'Content-Type': 'application/json',",
@@ -2297,8 +2132,31 @@
               "    pm.expect(error).to.equal(null);",
               "    pm.expect(response).to.have.property('code', 200);",
               "",
+              "const raw = JSON.stringify(`select id from accounts where email ='${email}';`);",
+              "",
+              "const getAccountId = {",
+              "  url: `http://${helperUrl}:4545/query`,",
+              "  method: 'POST',",
+              "  header: {",
+              "    'Content-Type': 'application/json',",
+              "  },",
+              "  body: {",
+              "    mode: 'json',",
+              "    raw: raw",
+              "  }",
+              "};",
+              "",
+              "pm.sendRequest(getAccountId, (error, response) => {",
+              "  pm.test('get account id', () => {",
+              "    pm.expect(error).to.equal(null);",
+              "    pm.expect(response).to.have.property('code', 200);",
+              "const id = parseInt(Util.getIntFromText(response.text()))",
+              "pm.collectionVariables.set(\"accountID\", id)",
+              "  })",
+              "})",
+              "",
               "const postLogin = {",
-              "  url: `${url}/login`,",
+              "  url: `http://${url}:8080/login`,",
               "  method: 'POST',",
               "  header: {",
               "    'Content-Type': 'application/json',",
@@ -2350,9 +2208,9 @@
                   "listen": "prerequest",
                   "script": {
                     "exec": [
-                      "emailPrefix = Util.getRandomString(pm.collectionVariables.get(\"emailLength\"))",
-                      "emailDomain = Util.getRandomString(pm.collectionVariables.get(\"passwordLength\"))",
-                      "emailProvider = pm.collectionVariables.get(\"emailProvider\")",
+                      "const emailPrefix = Util.getRandomString(pm.collectionVariables.get(\"emailLength\"))",
+                      "const emailDomain = Util.getRandomDomain(6)",
+                      "const emailProvider = pm.collectionVariables.get(\"emailProvider\")",
                       "",
                       "pm.collectionVariables.set(\"email\", `${emailPrefix}${emailDomain}.${emailProvider}`)",
                       "",
@@ -2367,12 +2225,12 @@
                   "listen": "test",
                   "script": {
                     "exec": [
-                      "pm.test(\"Response code is 200\", ()=>{",
-                      "    pm.expect(pm.response.code).eql(200)",
+                      "pm.test(\"Response code is 406\", ()=>{",
+                      "    pm.expect(pm.response.code).eql(406)",
                       "})",
                       "",
                       "pm.test(\"Text about add new account\", () => {",
-                      "    pm.expect(pm.response.text()).includes(`Can't create account`)",
+                      "    pm.expect(pm.response.text()).includes(`Email not meet criteria`)",
                       "})"
                     ],
                     "type": "text/javascript",
@@ -2407,9 +2265,10 @@
                   "listen": "prerequest",
                   "script": {
                     "exec": [
-                      "emailPrefix = Util.getRandomString(pm.collectionVariables.get(\"emailLength\"))",
-                      "emailDomain = Util.getRandomString(pm.collectionVariables.get(\"passwordLength\"))",
-                      "emailProvider = pm.collectionVariables.get(\"emailProvider\")",
+                      "const emailPrefix = Util.getRandomString(pm.collectionVariables.get(\"emailLength\"))",
+                      "const emailDomain = Util.getRandomDomain(6)",
+                      "const emailProvider = pm.collectionVariables.get(\"emailProvider\")",
+                      "",
                       "",
                       "pm.collectionVariables.set(\"email\", `${emailPrefix}@${emailDomain}.${emailProvider}`)",
                       "",
@@ -2424,12 +2283,12 @@
                   "listen": "test",
                   "script": {
                     "exec": [
-                      "pm.test(\"Response code is 200\", ()=>{",
-                      "    pm.expect(pm.response.code).eql(200)",
+                      "pm.test(\"Response code is 406\", ()=>{",
+                      "    pm.expect(pm.response.code).eql(406)",
                       "})",
                       "",
                       "pm.test(\"Text about add new account\", () => {",
-                      "    pm.expect(pm.response.text()).includes(`Can't create account`)",
+                      "    pm.expect(pm.response.text()).includes(`Password not meet criteria`)",
                       "})"
                     ],
                     "type": "text/javascript",
@@ -2464,9 +2323,10 @@
                   "listen": "prerequest",
                   "script": {
                     "exec": [
-                      "emailPrefix = Util.getRandomString(pm.collectionVariables.get(\"emailLength\"))",
-                      "emailDomain = Util.getRandomString(pm.collectionVariables.get(\"emailLength\"))",
-                      "emailProvider = pm.collectionVariables.get(\"emailProvider\")",
+                      "const emailPrefix = Util.getRandomString(pm.collectionVariables.get(\"emailLength\"))",
+                      "const emailDomain = Util.getRandomDomain(6)",
+                      "const emailProvider = pm.collectionVariables.get(\"emailProvider\")",
+                      "",
                       "",
                       "pm.collectionVariables.set(\"email\", `${emailPrefix}@${emailDomain}.${emailProvider}`)",
                       "",
@@ -2481,12 +2341,12 @@
                   "listen": "test",
                   "script": {
                     "exec": [
-                      "pm.test(\"Response code is 200\", ()=>{",
-                      "    pm.expect(pm.response.code).eql(200)",
+                      "pm.test(\"Response code is 406\", ()=>{",
+                      "    pm.expect(pm.response.code).eql(406)",
                       "})",
                       "",
                       "pm.test(\"Text about add new account\", () => {",
-                      "    pm.expect(pm.response.text()).includes(`Can't create account`)",
+                      "    pm.expect(pm.response.text()).includes(`Password not meet criteria`)",
                       "})"
                     ],
                     "type": "text/javascript",
@@ -2534,8 +2394,8 @@
                   "listen": "test",
                   "script": {
                     "exec": [
-                      "pm.test(\"Response code is 200\", ()=>{",
-                      "    pm.expect(pm.response.code).eql(200)",
+                      "pm.test(\"Response code is 422\", ()=>{",
+                      "    pm.expect(pm.response.code).eql(422)",
                       "})",
                       "",
                       "let token;",
@@ -2551,7 +2411,7 @@
                       "})",
                       "",
                       "pm.test(\"Text about wrong email or password not provide sensitive information\", ()=>{",
-                      "    pm.expect(pm.response.text()).includes(\"Wrong login or password\")",
+                      "    pm.expect(pm.response.text()).includes(\"Cannot update data\")",
                       "})"
                     ],
                     "type": "text/javascript",
@@ -2564,7 +2424,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n    \"email\": \"{{email}}+1\",\n    \"password\":\"{{password}}\"\n}",
+                  "raw": "{\n    \"email\": \"{{email}}d\",\n    \"password\":\"{{password}}\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -2594,8 +2454,8 @@
                   "listen": "test",
                   "script": {
                     "exec": [
-                      "pm.test(\"Response code is 200\", ()=>{",
-                      "    pm.expect(pm.response.code).eql(200)",
+                      "pm.test(\"Response code is 401\", ()=>{",
+                      "    pm.expect(pm.response.code).eql(401)",
                       "})",
                       "",
                       "let token;",
@@ -2611,7 +2471,7 @@
                       "})",
                       "",
                       "pm.test(\"Text about wrong email or password not provide sensitive information\", ()=>{",
-                      "    pm.expect(pm.response.text()).includes(\"Wrong login or password\")",
+                      "    pm.expect(pm.response.text()).includes(\"Wrong E-Mail/Password combination\")",
                       "})"
                     ],
                     "type": "text/javascript",
@@ -2647,10 +2507,13 @@
                 "type": "text/javascript",
                 "packages": {},
                 "exec": [
+                  "const url = pm.collectionVariables.get(\"urlInside\")",
+                  "const helperUrl = pm.collectionVariables.get(\"urlHelper\")",
                   "",
-                  "emailPrefix = Util.getRandomString(pm.collectionVariables.get(\"emailLength\"))",
-                  "emailDomain = Util.getRandomString(pm.collectionVariables.get(\"passwordLength\"))",
-                  "emailProvider = pm.collectionVariables.get(\"emailProvider\")",
+                  "",
+                  "const emailPrefix = Util.getRandomString(pm.collectionVariables.get(\"emailLength\"))",
+                  "const emailDomain = Util.getRandomDomain(6)",
+                  "const emailProvider = pm.collectionVariables.get(\"emailProvider\")",
                   "",
                   "const email = `${emailPrefix}@${emailDomain}.${emailProvider}`",
                   "",
@@ -2659,7 +2522,7 @@
                   "pm.collectionVariables.set(\"email\", email)",
                   "pm.collectionVariables.set(\"password\", password)",
                   "",
-                  "const url = \"http://backend:8080\" // crunch for autotests",
+                  "",
                   "const reqBody = {",
                   "    \"email\": email,",
                   "    \"password\": password,",
@@ -2667,7 +2530,7 @@
                   "}",
                   "",
                   "const postRequest = {",
-                  "  url: `${url}/registration`,",
+                  "  url: `http://${url}:8080/registration`,",
                   "  method: 'POST',",
                   "  header: {",
                   "    'Content-Type': 'application/json',",
@@ -2707,7 +2570,16 @@
               "Util = {}",
               "",
               "Util.getRandomString = (lenght) => {",
-              "    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689!@#$%^&*()';\";",
+              "    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689\";",
+              "    let charsLength = chars.length;",
+              "    let result = '';",
+              "    for (let i = 0; i < lenght; i++) {",
+              "        result += chars.charAt(Math.floor(Math.random() * charsLength));",
+              "    }",
+              "    return result;",
+              "}",
+              "Util.getRandomDomain = (lenght) => {",
+              "    let chars = \"abcdeghijklmnopqrstuvwxyz\";",
               "    let charsLength = chars.length;",
               "    let result = '';",
               "    for (let i = 0; i < lenght; i++) {",
@@ -2780,7 +2652,7 @@
     },
     {
       "key": "limit",
-      "value": "1",
+      "value": "100",
       "type": "string"
     },
     {
@@ -2856,6 +2728,17 @@
       "key": "accountID",
       "value": "",
       "type": "string"
+    },
+    {
+      "key": "urlInside",
+      "value": "backend",
+      "type": "string"
+    },
+    {
+      "key": "urlHelper",
+      "value": "http-to-sql",
+      "type": "string"
     }
   ]
 }
+

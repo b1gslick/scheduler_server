@@ -116,13 +116,25 @@ impl Store {
         activity_id: i32,
         account_id: AccountID,
     ) -> Result<bool, Error> {
-        match sqlx::query(r#"DELETE FROM activities WHERE id = $1 and account_id = $2"#)
-            .bind(activity_id)
+        match ::sqlx::query(r#"DELETE FROM time_spent WHERE account_id = $1"#)
             .bind(account_id.0)
             .execute(&self.connection)
             .await
         {
-            Ok(_) => Ok(true),
+            Ok(_) => {
+                match sqlx::query(r#"DELETE FROM activities WHERE id = $1 and account_id = $2"#)
+                    .bind(activity_id)
+                    .bind(account_id.0)
+                    .execute(&self.connection)
+                    .await
+                {
+                    Ok(_) => Ok(true),
+                    Err(e) => {
+                        error!("Can't delete activity with {:?}", e);
+                        Err(Error::DatabaseQueryError(e))
+                    }
+                }
+            }
             Err(e) => {
                 error!("Can't delete activity with {:?}", e);
                 Err(Error::DatabaseQueryError(e))
@@ -162,7 +174,7 @@ impl Store {
         id: i32,
         account_id: AccountID,
     ) -> Result<TimeSpent, Error> {
-        match sqlx::query(r#"SELECT * from time_spent WHERE id = $1 and accound_id = $2"#)
+        match sqlx::query(r#"SELECT * from time_spent WHERE id = $1 and account_id = $2"#)
             .bind(id)
             .bind(account_id.0)
             .map(|row: PgRow| TimeSpent {

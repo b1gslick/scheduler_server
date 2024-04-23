@@ -1,12 +1,11 @@
-#![warn(clippy::all)]
 pub use handle_errors;
-use tokio::sync::{oneshot, oneshot::Sender};
 use tracing_subscriber::fmt::format::FmtSpan;
 use warp::{http::Method, Filter, Reply};
 
 pub mod config;
 pub mod routes;
 pub mod store;
+pub mod tests;
 mod types;
 
 async fn build_routes(store: store::Store) -> impl Filter<Extract = impl Reply> + Clone {
@@ -79,7 +78,7 @@ async fn build_routes(store: store::Store) -> impl Filter<Extract = impl Reply> 
         .and(warp::body::json())
         .and_then(routes::authentication::login);
 
-    let routes = get_activities
+    get_activities
         .or(add_activity)
         .or(update_activities)
         .or(add_time_spent)
@@ -89,8 +88,7 @@ async fn build_routes(store: store::Store) -> impl Filter<Extract = impl Reply> 
         .or(login)
         .with(cors)
         .with(warp::trace::request())
-        .recover(handle_errors::return_error);
-    routes
+        .recover(handle_errors::return_error)
 }
 
 pub async fn setup_store(config: &config::Config) -> Result<store::Store, handle_errors::Error> {
@@ -103,7 +101,7 @@ pub async fn setup_store(config: &config::Config) -> Result<store::Store, handle
         config.database_name
     ))
     .await
-    .map_err(|e| handle_errors::Error::DatabaseQueryError(e))?;
+    .map_err(handle_errors::Error::DatabaseQueryError)?;
 
     sqlx::migrate!()
         .run(&store.clone().connection)
@@ -128,24 +126,52 @@ pub async fn run(config: config::Config, store: store::Store) {
     warp::serve(routes).run(([0, 0, 0, 0], config.port)).await;
 }
 
-pub struct OneshotHandler {
-    pub sender: Sender<i32>,
-}
+#[cfg(test)]
+mod test_scheduler {
 
-pub async fn oneshot(store: store::Store) -> OneshotHandler {
-    let routes = build_routes(store).await;
-    let (tx, rx) = oneshot::channel::<i32>();
+    use testcontainers::clients::Cli;
 
-    let socket: std::net::SocketAddr = "127.0.0.1:3030"
-        .to_string()
-        .parse()
-        .expect("Not a valid address");
+    use crate::{
+        build_routes,
+        config::Config,
+        setup_store,
+        tests::helpers::{create_postgres, prepare_store},
+    };
 
-    let (_, server) = warp::serve(routes).bind_with_graceful_shutdown(socket, async {
-        rx.await.ok();
-    });
+    #[tokio::test]
+    async fn medium_test_configure_store() {
+        let docker = Cli::default();
+        let node = docker.run(create_postgres());
 
-    tokio::task::spawn(server);
+        let config = Config {
+            log_level: "DEBUG".to_string(),
+            port: 8080,
+            database_user: "postgres".to_string(),
+            database_password: "postgres".to_string(),
+            database_host: "127.0.0.1".to_string(),
+            database_port: node.get_host_port_ipv4(5432),
+            database_name: "postgres".to_string(),
+        };
+        let result = setup_store(&config).await;
+        assert!(result.is_ok())
+    }
 
-    OneshotHandler { sender: tx }
+    #[tokio::test]
+    async fn medium_test_get_empty_activities() {
+        // env::set_var("PASETO_KEY", "RANDOM WORDS WINTER MACINTOSH PC");
+        // let token = issue_token(AccountID(3));
+        let docker = Cli::default();
+        let node = docker.run(create_postgres());
+        let store = prepare_store(node.get_host_port_ipv4(5432)).await.unwrap();
+
+        let filter = build_routes(store).await;
+
+        let res = warp::test::request()
+            .method("GET")
+            .path("/activities?limit=1&offset=1")
+            .reply(&filter)
+            .await;
+        println!("{:?}", res.body());
+        assert_eq!(res.body().to_vec(), b"[]");
+    }
 }

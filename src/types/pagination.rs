@@ -9,8 +9,6 @@ pub struct Pagination {
 pub fn extract_pagination(params: HashMap<String, String>) -> Result<Pagination, Error> {
     if params.contains_key("limit") && params.contains_key("offset") {
         return Ok(Pagination {
-            // take the limit paramter in the query
-            // and tries to convert it to a number
             limit: Some(
                 params
                     .get("limit")
@@ -18,8 +16,6 @@ pub fn extract_pagination(params: HashMap<String, String>) -> Result<Pagination,
                     .parse::<i32>()
                     .map_err(Error::ParseError)?,
             ),
-            // takes the offset paramter in the query
-            // and tries to convert it to a number
             offset: params
                 .get("offset")
                 .unwrap()
@@ -35,7 +31,7 @@ mod pagination_tests {
     use super::{extract_pagination, Error, HashMap, Pagination};
 
     #[test]
-    fn valid_pagination() {
+    fn small_test_valid_pagination() {
         let mut params = HashMap::new();
         params.insert(String::from("limit"), String::from("1"));
         params.insert(String::from("offset"), String::from("1"));
@@ -48,7 +44,7 @@ mod pagination_tests {
     }
 
     #[test]
-    fn missing_offset_parameter() {
+    fn small_test_missing_offset_parameter() {
         let mut params = HashMap::new();
         params.insert(String::from("limit"), String::from("1"));
 

@@ -22,10 +22,12 @@ Content-Type: application/json; charset=utf-8
 User-Agent: VRC
 
 # query
-POST /time_spent
+DELETE /activities/1
 
 #body
-{
-  "time": 10,
-  "activity_id": 1
-}
+# {
+#   "id": "3", 
+#   "title": "How?", 
+#   "content": "Please help!", 
+#   "time": 10
+# }

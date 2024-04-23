@@ -2,6 +2,7 @@
 use argon2::{self, Config};
 use chrono::prelude::*;
 use rand::Rng;
+use regex::Regex;
 use std::{env, future};
 use warp::Filter;
 
@@ -9,6 +10,12 @@ use crate::store::Store;
 use crate::types::account::{Account, AccountID, Session};
 
 pub async fn register(store: Store, account: Account) -> Result<impl warp::Reply, warp::Rejection> {
+    if account.password.len() < 3 || account.email.len() < 3 {
+        return Err(warp::reject::custom(handle_errors::Error::PasswordInvalid));
+    }
+    if !is_email_valid(&account.email) {
+        return Err(warp::reject::custom(handle_errors::Error::WrongEmailType));
+    }
     let hashed_password = hash_password(account.password.as_bytes());
     let account = Account {
         id: account.id,
@@ -25,6 +32,14 @@ pub fn hash_password(password: &[u8]) -> String {
     let salt = rand::thread_rng().gen::<[u8; 32]>();
     let config = Config::default();
     argon2::hash_encoded(password, &salt, &config).unwrap()
+}
+
+pub fn is_email_valid(email: &str) -> bool {
+    let email_regex = Regex::new(
+        r"^([a-zA-Z0-9_+]([a-zA-Z0-9_+.]*[a-zA-Z0-9_+])?)@([a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,6})",
+    )
+    .unwrap();
+    email_regex.is_match(email)
 }
 
 pub async fn login(store: Store, login: Account) -> Result<impl warp::Reply, warp::Rejection> {
@@ -90,10 +105,20 @@ pub fn auth() -> impl Filter<Extract = (Session,), Error = warp::Rejection> + Cl
 
 #[cfg(test)]
 mod authentication_tests {
+
+    use crate::routes::authentication::{is_email_valid, login, register};
+    use testcontainers::clients::Cli;
+    use warp::reply::Reply;
+
+    use crate::{
+        tests::helpers::{create_postgres, prepare_store},
+        types::account::Account,
+    };
+
     use super::{auth, env, issue_token, AccountID};
 
     #[tokio::test]
-    async fn post_activities_auth() {
+    async fn small_test_post_activities_auth() {
         env::set_var("PASETO_KEY", "RANDOM WORDS WINTER MACINTOSH PC");
         let token = issue_token(AccountID(3));
 
@@ -104,5 +129,104 @@ mod authentication_tests {
             .filter(&filter);
 
         assert_eq!(res.await.unwrap().account_id, AccountID(3));
+    }
+
+    #[tokio::test]
+    async fn small_test_post_activities_wrong_token() {
+        env::set_var("PASETO_KEY", "RANDOM WORDS WINTER MACINTOSH PC");
+        let mut token = issue_token(AccountID(3));
+        token.push('a');
+
+        let filter = auth();
+
+        let res = warp::test::request()
+            .header("Authorization", token)
+            .filter(&filter)
+            .await;
+
+        assert!(res.is_err());
+    }
+
+    #[tokio::test]
+    async fn medium_test_user_should_have_possibilities_for_registration() {
+        let docker = Cli::default();
+        let node = docker.run(create_postgres());
+        let store = prepare_store(node.get_host_port_ipv4(5432)).await.unwrap();
+        let account = Account {
+            id: Some(AccountID(1)),
+            email: "test@email.iv".to_string(),
+            password: "test".to_string(),
+        };
+        let result = register(store, account).await.unwrap().into_response();
+        assert_eq!(result.status(), 200)
+    }
+
+    #[tokio::test]
+    async fn medium_test_user_can_login() {
+        env::set_var("PASETO_KEY", "RANDOM WORDS WINTER MACINTOSH PC");
+        let docker = Cli::default();
+        let node = docker.run(create_postgres());
+        let store = prepare_store(node.get_host_port_ipv4(5432)).await.unwrap();
+        let account = store.clone().add_test_account(2).await.unwrap();
+        let result = login(store, account).await.unwrap().into_response();
+        assert_eq!(result.status(), 200)
+    }
+
+    #[tokio::test]
+    async fn medium_test_not_registered_cant_login() {
+        let docker = Cli::default();
+        let node = docker.run(create_postgres());
+        let store = prepare_store(node.get_host_port_ipv4(5432)).await.unwrap();
+        let account = Account {
+            id: Some(AccountID(1)),
+            email: "test@email.iv".to_string(),
+            password: "test".to_string(),
+        };
+        let result = login(store, account).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn medium_test_user_cant_login_with_wrong_password() {
+        let docker = Cli::default();
+        let node = docker.run(create_postgres());
+        let store = prepare_store(node.get_host_port_ipv4(5432)).await.unwrap();
+        let mut account = store.clone().add_test_account(2).await.unwrap();
+        account.password = "test".to_string();
+        let result = login(store, account).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn medium_test_user_cant_login_with_wrong_email() {
+        let docker = Cli::default();
+        let node = docker.run(create_postgres());
+        let store = prepare_store(node.get_host_port_ipv4(5432)).await.unwrap();
+        let mut account = store.clone().add_test_account(2).await.unwrap();
+        account.password = "test".to_string();
+        let result = login(store, account).await;
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn small_test_is_email_valid() {
+        let email_addresses = [
+            "foo@bar.com",
+            "foo.bar42@c.com",
+            "42@c.com",
+            "f@42.co",
+            "foo@4-2.team",
+            "foo_bar@bar.com",
+            "_bar@bar.com",
+            "foo_@bar.com",
+            "foo+bar@bar.com",
+            "+bar@bar.com",
+            "foo+@bar.com",
+            "foo.lastname@bar.com",
+            "dYDPFjl5bBwaJvE@scheduler.iv",
+        ];
+        for email_address in &email_addresses {
+            assert!(is_email_valid(email_address));
+        }
     }
 }
