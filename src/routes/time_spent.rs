@@ -4,7 +4,7 @@ use crate::types::time_spent::{NewTimeSpent, TimeSpent};
 use tracing::info;
 use warp::http::StatusCode;
 
-pub async fn get_tine_spen_by_id(
+pub async fn get_time_spent_by_id(
     id: i32,
     session: Session,
     store: Store,

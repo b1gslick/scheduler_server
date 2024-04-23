@@ -30,7 +30,7 @@ pub struct Config {
 impl Config {
     pub fn new() -> Result<Config, handle_errors::Error> {
         dotenv::dotenv().ok();
-        if let Err(_) = env::var("PASETO_KEY") {
+        if env::var("PASETO_KEY").is_err() {
             panic!("PASETO key not set");
         }
         let config = Config::parse();
@@ -39,14 +39,13 @@ impl Config {
             .ok()
             .map(|val| val.parse::<u16>())
             .unwrap_or(Ok(8080))
-            .map_err(|e| handle_errors::Error::ParseError(e))?;
+            .map_err(handle_errors::Error::ParseError)?;
 
         let db_user = env::var("DATABASE_USER").unwrap_or(config.database_user.to_owned());
         let db_password = env::var("DATABASE_PASSWORD").unwrap();
         let db_host = env::var("DATABASE_HOST").unwrap_or(config.database_host.to_owned());
         let db_port = env::var("DATABASE_PORT").unwrap_or(config.database_port.to_string());
-        // let db_name = env::var("DATABASE_NAME").unwrap_or(config.database_name.to_owned());
-        let db_name = env::var("DATABASE_NAME").unwrap_or(config.database_name.to_owned());
+        let db_name = env::var("DATABASE_DB").unwrap_or(config.database_name.to_owned());
         Ok(Config {
             log_level: config.log_level,
             port,
@@ -55,7 +54,7 @@ impl Config {
             database_host: db_host,
             database_port: db_port
                 .parse::<u16>()
-                .map_err(|e| handle_errors::Error::ParseError(e))?,
+                .map_err(handle_errors::Error::ParseError)?,
             database_name: db_name,
         })
     }
@@ -68,7 +67,7 @@ mod config_tests {
         env::set_var("PASETO_KEY", "yes");
         env::set_var("DATABASE_USER", "user");
         env::set_var("DATABASE_PASSWORD", "pass");
-        env::set_var("DATABASE_NAME", "userdb");
+        env::set_var("DATABASE_DB", "userdb");
         env::set_var("DATABASE_HOST", "localhost");
         env::set_var("DATABASE_PORT", "5432");
     }

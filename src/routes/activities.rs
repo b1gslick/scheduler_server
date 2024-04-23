@@ -38,13 +38,14 @@ pub async fn add_activity(
 ) -> Result<impl warp::Reply, warp::Rejection> {
     info!("add activity");
     let account_id = session.account_id;
-    match store.add_activity(new_activity.clone(), account_id).await {
-        Ok(activity) => Ok(warp::reply::json(&activity)),
-        Err(e) => {
-            error!("Add activity not added {:?}", new_activity.clone());
-            return Err(warp::reject::custom(e));
-        }
+    if let Err(e) = store.add_activity(new_activity.clone(), account_id).await {
+        info!("Add activity not added{:?}", new_activity.clone());
+        return Err(warp::reject::custom(e));
     }
+    Ok(warp::reply::with_status(
+        format!("Activity added: {:?}", new_activity),
+        StatusCode::OK,
+    ))
 }
 
 pub async fn update_activities(
