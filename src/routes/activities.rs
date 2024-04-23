@@ -4,7 +4,7 @@ use crate::types::activities::{Activity, NewActivity};
 use crate::types::pagination::extract_pagination;
 use crate::types::pagination::Pagination;
 use std::collections::HashMap;
-use tracing::{error, info, instrument};
+use tracing::{info, instrument};
 use warp::http::StatusCode;
 
 #[instrument]

@@ -98,7 +98,7 @@ async fn main() -> Result<(), handle_errors::Error> {
         }
     }
 
-    print!("Running post_question...");
+    print!("Running post_activities...");
     match std::panic::AssertUnwindSafe(post_activities(token))
         .catch_unwind()
         .await
@@ -146,7 +146,7 @@ async fn login(user: &User) -> Token {
 
 async fn post_activities(token: Token) {
     let q = Activity {
-        title: "First Question".to_string(),
+        title: "First activitiess".to_string(),
         content: "How can I test?".to_string(),
         time: 10,
     };
