@@ -13,13 +13,14 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     steps:
-      - name: Setup | Checkout
+      - name: Setup Checkout
         uses: actions/checkout@v4
-      - name: Setup | Rust
+      - name: Setup Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
-      - name: Build | Lint | Test
+      - name: Test
         run: |
           cargo clippy
+          cargo +stable install cargo-llvm-cov --locked
           cargo llvm-cov --lcov --output-path lcov.info
       - name: Coverage report
         uses: terencetcf/github-actions-lcov-minimum-coverage-checker@v1
@@ -27,22 +28,33 @@ jobs:
           coverage-file: lcov.info
           minimum-coverage: 70
 
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Checkout
+        uses: actions/checkout@v4
+      - name: Setup Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+      - name: Lint
+        run: |
+          cargo clippy
+
   security-audit:
     name: security-audit
     runs-on: ubuntu-latest
     steps:
-      - name: Setup | Checkout
+      - name: Setup Checkout
         uses: actions/checkout@v4
-      - name: Setup | Rust
+      - name: Setup Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
-      - name: Build | Compile
+      - name: Build Audit
         run: |
           cargo install cargo-audit
           cargo audit
 
   push_to_registry:
     name: Push Docker image to Docker Hub
-    # runs-on: self-hosted
     runs-on: ubuntu-latest
     timeout-minutes: 180
     needs: [test]
