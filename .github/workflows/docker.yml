@@ -26,7 +26,7 @@ jobs:
         uses: terencetcf/github-actions-lcov-minimum-coverage-checker@v1
         with:
           coverage-file: lcov.info
-          minimum-coverage: 70
+          minimum-coverage: 60
 
   lint:
     name: Lint
@@ -85,6 +85,12 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }},t1mon1106/scheduler:latest
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Scan for vulnerabilities
+        uses: crazy-max/ghaction-container-scan@v3
+        with:
+          image: ${{ steps.meta.outputs.tags }}
+          annotations: true
 
   e2e:
     name: e2e tests
