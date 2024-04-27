@@ -20,7 +20,12 @@ jobs:
       - name: Build | Lint | Test
         run: |
           cargo clippy
-          cargo test
+          cargo llvm-cov --lcov --output-path lcov.info
+      - name: Coverage report
+        uses: terencetcf/github-actions-lcov-minimum-coverage-checker@v1
+        with:
+          coverage-file: lcov.info
+          minimum-coverage: 70
 
   security-audit:
     name: security-audit

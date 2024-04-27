@@ -4,22 +4,8 @@ use crate::types::activities::{Activity, NewActivity};
 use crate::types::pagination::extract_pagination;
 use crate::types::pagination::Pagination;
 use std::collections::HashMap;
-use std::fmt::Debug;
 use tracing::{info, instrument};
 use warp::http::StatusCode;
-
-pub trait HelperTrait: Debug {
-    fn helper_method(&mut self);
-}
-
-impl<T> HelperTrait for T
-where
-    T: Debug,
-{
-    fn helper_method(&mut self) {
-        println!("{:?}", self);
-    }
-}
 
 #[instrument]
 pub async fn get_activities(
@@ -49,7 +35,7 @@ pub async fn add_activity(
     session: Session,
     store: Store,
     new_activity: NewActivity,
-) -> Result<impl warp::Reply + HelperTrait, warp::Rejection> {
+) -> Result<impl warp::Reply, warp::Rejection> {
     info!("add activity");
     let account_id = session.account_id;
     if let Err(e) = store.add_activity(new_activity.clone(), account_id).await {
@@ -197,6 +183,56 @@ mod test_activities {
     }
 
     #[tokio::test]
+    async fn test_user_should_get_owned_activities_with_limit() {
+        let docker = Cli::default();
+        let node = docker.run(create_postgres());
+        let store = prepare_store(node.get_host_port_ipv4(5432)).await.unwrap();
+        let account_id = 1;
+        let limit = 1;
+        store.clone().add_test_account(account_id).await;
+        store.clone().add_test_acctivities().await;
+        store.clone().add_test_acctivities().await;
+        let result = store.clone().get_activities(Some(limit), 0).await.unwrap();
+        assert_eq!(result.len() as i32, limit);
+    }
+
+    #[tokio::test]
+    async fn test_user_should_get_owned_all_activities() {
+        let docker = Cli::default();
+        let node = docker.run(create_postgres());
+        let store = prepare_store(node.get_host_port_ipv4(5432)).await.unwrap();
+        let account_id = 1;
+        let num_activities = 10;
+        store.clone().add_test_account(account_id).await;
+        for _ in 0..num_activities {
+            store.clone().add_test_acctivities().await;
+        }
+
+        let result = store.clone().get_activities(None, 0).await.unwrap();
+        assert_eq!(result.len() as i32, num_activities);
+    }
+
+    #[tokio::test]
+    async fn test_user_should_get_owned_activities_with_ofset() {
+        let docker = Cli::default();
+        let node = docker.run(create_postgres());
+        let store = prepare_store(node.get_host_port_ipv4(5432)).await.unwrap();
+        let account_id = 1;
+        let num_activities = 10;
+        store.clone().add_test_account(account_id).await;
+        for _ in 0..num_activities {
+            store.clone().add_test_acctivities().await;
+        }
+
+        let result = store
+            .clone()
+            .get_activities(None, num_activities - 1)
+            .await
+            .unwrap();
+        assert_eq!(result.len() as i32, num_activities - (num_activities - 1));
+    }
+
+    #[tokio::test]
     async fn test_update_activities() {
         let docker = Cli::default();
         let node = docker.run(create_postgres());
@@ -218,7 +254,7 @@ mod test_activities {
         assert_eq!(result.status(), 200);
     }
     #[tokio::test]
-    async fn test_update_not_exsist_activities() {
+    async fn test_update_not_exist_activities() {
         let docker = Cli::default();
         let node = docker.run(create_postgres());
         let store = prepare_store(node.get_host_port_ipv4(5432)).await.unwrap();
