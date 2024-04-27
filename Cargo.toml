@@ -31,8 +31,8 @@ rpath = false
 tokio = { version = "1.37.0", features = ["full"] }
 warp = { version = "0.3.7" }
 # data serilization library
-serde = { version = "1.0.197", features = ["derive"] }
-serde_json = "1.0.115"
+serde = { version = "1.0.198", features = ["derive"] }
+serde_json = "1.0.116"
 h2 = { version = "^0.4.4" }
 
 # uuid 
@@ -47,7 +47,7 @@ handle-errors = { path = "handle-errors" }
 
 # config
 clap = { version = "4.5.4", features = ["derive"] }
-proc-macro2 = "1.0.79"
+proc-macro2 = "1.0.81"
 dotenv = { version = "0.15.0" }
 
 # db
@@ -67,4 +67,7 @@ openssl-sys = "0.9.102"
 openssl = { version = "0.10.64", features = ["vendored"] }
 
 # time 
-chrono = { version = "0.4.37" }
+chrono = { version = "0.4.38" }
+
+testcontainers = { version = "0.15.0" }                                 # test
+testcontainers-modules = { version = "0.3.7", features = ["postgres"] }

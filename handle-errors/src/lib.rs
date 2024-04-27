@@ -1,4 +1,3 @@
-use sqlx;
 use warp::{
     filters::{body::BodyDeserializeError, cors::CorsForbidden},
     http::StatusCode,
@@ -7,6 +6,7 @@ use warp::{
 };
 
 use argon2::Error as ArgonError;
+use std::fmt::Debug;
 use tracing::{event, instrument, Level};
 
 #[derive(Debug)]
@@ -20,6 +20,27 @@ pub enum Error {
     ArgonLibraryError(ArgonError),
     CannotDecryptionToken,
     Unauthorized,
+}
+
+// so that two trait bounds essentially collapse into one.
+pub trait HelperTrait: Debug {
+    // + PartialEq + warp::Reply {
+    fn helper_method(&mut self);
+    // fn eq(&self, other: &Self) -> bool;
+}
+
+impl<T> HelperTrait for T
+where
+    T: Debug,
+    // T: PartialEq,
+    // T: warp::Reply,
+{
+    fn helper_method(&mut self) {
+        println!("{:?}", self);
+    }
+    // fn eq(&self, other: &Self) -> bool {
+    //     self == other
+    // }
 }
 
 impl std::fmt::Display for Error {
@@ -53,7 +74,7 @@ impl Reject for Error {}
 const DUPLICATE_KEY: u32 = 23505;
 
 #[instrument]
-pub async fn return_error(r: Rejection) -> Result<impl Reply, Rejection> {
+pub async fn return_error(r: Rejection) -> Result<impl Reply + HelperTrait, Rejection> {
     if let Some(crate::Error::DatabaseQueryError(e)) = r.find() {
         event!(Level::ERROR, "Database query error");
 
@@ -114,5 +135,21 @@ pub async fn return_error(r: Rejection) -> Result<impl Reply, Rejection> {
             "Route not found".to_string(),
             StatusCode::NOT_FOUND,
         ))
+    }
+}
+
+#[cfg(test)]
+mod handle_error_tests {
+
+    use super::*;
+
+    #[tokio::test]
+    async fn test() {
+        let error_code = warp::reject::custom(Error::Unauthorized);
+        let answer = return_error(error_code).await.unwrap();
+        // assert_eq!(
+        // answer,
+        // warp::reply::with_status("".to_string(), StatusCode::NOT_FOUND)
+        // );
     }
 }
