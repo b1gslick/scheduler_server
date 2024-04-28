@@ -117,6 +117,22 @@ mod authentication_tests {
     }
 
     #[tokio::test]
+    async fn small_test_post_activities_wrong_token() {
+        env::set_var("PASETO_KEY", "RANDOM WORDS WINTER MACINTOSH PC");
+        let mut token = issue_token(AccountID(3));
+        token.push('a');
+
+        let filter = auth();
+
+        let res = warp::test::request()
+            .header("Authorization", token)
+            .filter(&filter)
+            .await;
+
+        assert!(res.is_err());
+    }
+
+    #[tokio::test]
     async fn medium_test_user_should_have_possibilities_for_registration() {
         let docker = Cli::default();
         let node = docker.run(create_postgres());

@@ -1,2839 +1,2928 @@
 {
-  "info": {
-    "_postman_id": "68f2d830-670a-454f-95a4-6b90a7f265da",
-    "name": "e2e-regression",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "4366696"
-  },
-  "item": [
-    {
-      "name": "Positive-critical-path",
-      "item": [
-        {
-          "name": "registration",
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "exec": [
-                  "emailPrefix = Util.getRandomString(pm.collectionVariables.get(\"emailLength\"))",
-                  "emailDomain = Util.getRandomString(pm.collectionVariables.get(\"passwordLength\"))",
-                  "emailProvider = pm.collectionVariables.get(\"emailProvider\")",
-                  "",
-                  "pm.collectionVariables.set(\"email\", `${emailPrefix}@${emailDomain}.${emailProvider}`)",
-                  "",
-                  "password = Util.getRandomString(pm.collectionVariables.get(\"passwordLength\"))",
-                  "pm.collectionVariables.set(\"password\", password)"
-                ],
-                "type": "text/javascript",
-                "packages": {}
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Response code is 200\", ()=>{",
-                  "    pm.expect(pm.response.code).eql(200)",
-                  "})",
-                  "",
-                  "pm.test(\"Text about add new account\", () => {",
-                  "    pm.expect(pm.response.text()).includes(`Account added`)",
-                  "})"
-                ],
-                "type": "text/javascript",
-                "packages": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"email\": \"{{email}}\",\n    \"password\":\"{{password}}\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{url}}/registration",
-              "host": ["{{url}}"],
-              "path": ["registration"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "login",
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "exec": [""],
-                "type": "text/javascript",
-                "packages": {}
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Response code is 200\", ()=>{",
-                  "    pm.expect(pm.response.code).eql(200)",
-                  "})",
-                  "",
-                  "let token;",
-                  "",
-                  "try {",
-                  "    token = pm.response.json()",
-                  "}",
-                  "catch{",
-                  "    token = \"\"",
-                  "}",
-                  "pm.test(\"Token length not equal 0\", () => {",
-                  "    pm.expect(token.length).not.eql(0)",
-                  "})",
-                  "",
-                  "pm.collectionVariables.set(\"token\", token)"
-                ],
-                "type": "text/javascript",
-                "packages": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"email\": \"{{email}}\",\n    \"password\":\"{{password}}\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{url}}/login",
-              "host": ["{{url}}"],
-              "path": ["login"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "slq_query_after_add_account",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const response = pm.response.text();",
-                  "",
-                  "pm.test(\"Response code is 200\", ()=>{",
-                  "    pm.expect(pm.response.code).eql(200)",
-                  "})",
-                  "const id = parseInt(Util.getIntFromText(response))",
-                  "pm.test(\"Account id must be greater than 0\", ()=>{",
-                  "    pm.expect(id).not.eq(0)",
-                  "})",
-                  "pm.collectionVariables.set(\"accountID\", id)"
-                ],
-                "type": "text/javascript",
-                "packages": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "\"select id from accounts where email ='{{email}}';\"\n",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{http-sql}}",
-              "host": ["{{http-sql}}"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "add_activity",
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "exec": [
-                  "",
-                  "",
-                  "const titleLength = pm.collectionVariables.get(\"titleLength\")",
-                  "const contentLength = Math.pow(2, 10);",
-                  "const timeRange = 12 * 60;",
-                  "",
-                  "const title = Util.getRandomString(Util.getRandomInt(titleLength));",
-                  "const content = Util.getRandomString(Util.getRandomInt(contentLength));",
-                  "const time = Util.getRandomInt(timeRange);",
-                  "",
-                  "pm.collectionVariables.set(\"title\", title);",
-                  "pm.collectionVariables.set(\"content\", content);",
-                  "pm.collectionVariables.set(\"time\", time);",
-                  ""
-                ],
-                "type": "text/javascript",
-                "packages": {}
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200\", () => {",
-                  "    pm.expect(pm.response.code).to.eql(200);",
-                  "})",
-                  "const reponseText = pm.response.text();",
-                  "",
-                  "pm.test(\"Text about add new activity\", () => {",
-                  "    pm.expect(reponseText).includes(`Activity added: NewActivity`)",
-                  "})",
-                  "pm.test(\"The response has title\", () => {",
-                  "    pm.expect(reponseText).includes(pm.collectionVariables.get(\"title\"))",
-                  "})",
-                  "pm.test(\"The response has content\", () => {",
-                  "    pm.expect(reponseText).includes(pm.collectionVariables.get(\"content\"))",
-                  "})",
-                  "pm.test(\"The response has time\", () => {",
-                  "    pm.expect(reponseText).includes(pm.collectionVariables.get(\"time\"))",
-                  "})",
-                  "",
-                  "pm.test(\"Reponse time is less than 200ms\", () => {",
-                  "    pm.expect(pm.response.responseTime).to.be.below(200);",
-                  "})",
-                  "",
-                  ""
-                ],
-                "type": "text/javascript",
-                "packages": {}
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "noauth"
-            },
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "{{token}}",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"title\": \"{{title}}\",\n    \"content\": \"{{content}}\",\n    \"time\": {{time}}\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{url}}/activities",
-              "host": ["{{url}}"],
-              "path": ["activities"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "slq_query_after_add",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const response = pm.response.json();",
-                  "",
-                  "pm.test(\"Response code is 200\", ()=>{",
-                  "    pm.expect(pm.response.code).eql(200)",
-                  "})",
-                  "",
-                  "pm.test(\"Title which added, equal title in db\", () => {",
-                  "    pm.expect(response[0].title).eq(pm.collectionVariables.get(\"title\"))",
-                  "})",
-                  "pm.test(\"The array key lenght should be equal 1\", () => {",
-                  "    pm.expect(Object.keys(response).length).to.be.eql(1);",
-                  "})",
-                  "pm.collectionVariables.set(\"id\", parseInt(response[0].id))",
-                  "",
-                  ""
-                ],
-                "type": "text/javascript",
-                "packages": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "\"select title, id from activities where account_id={{accountID}};\"\n",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{http-sql}}",
-              "host": ["{{http-sql}}"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "check_activity_added",
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "exec": [""],
-                "type": "text/javascript",
-                "packages": {}
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200\", () => {",
-                  "    pm.expect(pm.response.code).to.eql(200);",
-                  "})",
-                  "",
-                  "const responseJson = pm.response.json()[0]",
-                  "",
-                  "pm.test(\"The array key lenght should be equal 4\", () => {",
-                  "    pm.expect(Object.keys(responseJson).length).to.be.eql(4);",
-                  "})",
-                  "",
-                  "pm.test(\"The response has id\", () => {",
-                  "    pm.expect(responseJson.id).to.be.eql(parseInt(pm.collectionVariables.get(\"id\")))",
-                  "})",
-                  "",
-                  "pm.test(\"The response has title\", () => {",
-                  "    pm.expect(responseJson.title).to.be.eql(pm.collectionVariables.get(\"title\"))",
-                  "})",
-                  "pm.test(\"The response has content\", () => {",
-                  "    pm.expect(responseJson.content).to.be.eql(pm.collectionVariables.get(\"content\"))",
-                  "})",
-                  "pm.test(\"The response has time\", () => {",
-                  "    pm.expect(responseJson.time).to.be.eql(parseInt(pm.collectionVariables.get(\"time\")))",
-                  "})",
-                  ""
-                ],
-                "type": "text/javascript",
-                "packages": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "",
-                "value": "",
-                "type": "text",
-                "disabled": true
-              }
-            ],
-            "url": {
-              "raw": "{{url}}/activities?limit={{limit}}&offset={{offset}}",
-              "host": ["{{url}}"],
-              "path": ["activities"],
-              "query": [
-                {
-                  "key": "limit",
-                  "value": "{{limit}}"
-                },
-                {
-                  "key": "offset",
-                  "value": "{{offset}}"
-                }
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "update_activity_1",
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "exec": [
-                  "const titleLength = pm.collectionVariables.get(\"titleLength\")",
-                  "const contentLength = Math.pow(2, 12)",
-                  "const timeRange = 12 * 60;",
-                  "",
-                  "const title = Util.getRandomString(Util.getRandomInt(titleLength))",
-                  "const content = Util.getRandomString(Util.getRandomInt(contentLength))",
-                  "const time = Util.getRandomInt(timeRange);",
-                  "",
-                  "pm.collectionVariables.set(\"title\", title);",
-                  "pm.collectionVariables.set(\"content\", content);",
-                  "pm.collectionVariables.set(\"time\", time);"
-                ],
-                "type": "text/javascript",
-                "packages": {}
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200\", () => {",
-                  "    pm.expect(pm.response.code).to.eql(200);",
-                  "})",
-                  "let responseJson = {}",
-                  "try{",
-                  " responseJson = pm.response.json();",
-                  "} catch(e){",
-                  "    pm.test(\"response is not json\", ()=>{",
-                  "        pm.expect(e.message.length).eq(0)",
-                  "    })",
-                  "}",
-                  "",
-                  "",
-                  "pm.test(\"The response has id\", () => {",
-                  "    pm.expect(responseJson.id).to.be.eql(parseInt(pm.collectionVariables.get(\"id\")))",
-                  "})",
-                  "pm.test(\"The response has title\", () => {",
-                  "    pm.expect(responseJson.title).to.be.eql(pm.collectionVariables.get(\"title\"))",
-                  "})",
-                  "pm.test(\"The response has content\", () => {",
-                  "    pm.expect(responseJson.content).to.be.eql(pm.collectionVariables.get(\"content\"))",
-                  "})",
-                  "pm.test(\"The response has time\", () => {",
-                  "    pm.expect(responseJson.time).to.be.eql(parseInt(pm.collectionVariables.get(\"time\")))",
-                  "})",
-                  ""
-                ],
-                "type": "text/javascript",
-                "packages": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "{{token}}",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"id\": {{id}},\n    \"title\": \"{{title}}\",\n    \"content\": \"{{content}}\",\n    \"time\": {{time}}\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{url}}/activities/{{id}}",
-              "host": ["{{url}}"],
-              "path": ["activities", "{{id}}"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "slq_query_after_first_update",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const response = pm.response.text();",
-                  "",
-                  "pm.test(\"Response code is 200\", ()=>{",
-                  "    pm.expect(pm.response.code).eql(200)",
-                  "})",
-                  "",
-                  "pm.test(\"Title which added, equal title in db\", () => {",
-                  "    pm.expect(response).include(pm.collectionVariables.get(\"title\"))",
-                  "})"
-                ],
-                "type": "text/javascript",
-                "packages": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "\"select title from activities where account_id={{accountID}};\"\n",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{http-sql}}",
-              "host": ["{{http-sql}}"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "check_activity_updated",
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "exec": [""],
-                "type": "text/javascript",
-                "packages": {}
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200\", () => {",
-                  "    pm.expect(pm.response.code).to.eql(200);",
-                  "})",
-                  "",
-                  "const responseJson = pm.response.json()[0]",
-                  "",
-                  "pm.test(\"The array key lenght should be equal 4\", () => {",
-                  "    pm.expect(Object.keys(responseJson).length).to.be.eql(4);",
-                  "})",
-                  "",
-                  "pm.test(\"The response has id\", () => {",
-                  "    pm.expect(responseJson.id).to.be.eql(parseInt(pm.collectionVariables.get(\"id\")))",
-                  "})",
-                  "pm.test(\"The response has title\", () => {",
-                  "    pm.expect(responseJson.title).to.be.eql(pm.collectionVariables.get(\"title\"))",
-                  "})",
-                  "pm.test(\"The response has content\", () => {",
-                  "    pm.expect(responseJson.content).to.be.eql(pm.collectionVariables.get(\"content\"))",
-                  "})",
-                  "pm.test(\"The response has time\", () => {",
-                  "    pm.expect(responseJson.time).to.be.eql(parseInt(pm.collectionVariables.get(\"time\")))",
-                  "})",
-                  ""
-                ],
-                "type": "text/javascript",
-                "packages": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{url}}/activities?limit={{limit}}&offset={{offset}}",
-              "host": ["{{url}}"],
-              "path": ["activities"],
-              "query": [
-                {
-                  "key": "limit",
-                  "value": "{{limit}}"
-                },
-                {
-                  "key": "offset",
-                  "value": "{{offset}}"
-                }
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "add_time_spent",
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "exec": [
-                  "",
-                  "const timeSpent = Util.getRandomInt(pm.collectionVariables.get(\"time\"))",
-                  "pm.collectionVariables.set(\"timeSpent\", timeSpent)",
-                  ""
-                ],
-                "type": "text/javascript",
-                "packages": {}
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const responseText = pm.response.text()",
-                  "",
-                  "pm.test(\"Status code is 200\", () => {",
-                  "    pm.expect(pm.response.code).to.eql(200);",
-                  "})",
-                  "",
-                  "pm.test(\"Anwser has text about time added\", ()=>{",
-                  "    pm.expect(responseText).includes(`Time added`)",
-                  "})",
-                  "",
-                  ""
-                ],
-                "type": "text/javascript",
-                "packages": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "{{token}}",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"time\": {{timeSpent}},\n    \"activity_id\": {{id}}\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{url}}/time_spent",
-              "host": ["{{url}}"],
-              "path": ["time_spent"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "slq_query_after_add_time_spent",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const response = pm.response.json();",
-                  "",
-                  "pm.collectionVariables.set(\"timeSpentID\", parseInt(response[0].id))",
-                  "pm.test(\"Response code is 200\", ()=>{",
-                  "    pm.expect(pm.response.code).eql(200)",
-                  "})",
-                  "",
-                  "pm.test(\"activity id equal correct value\", ()=>{",
-                  "    pm.expect(parseInt(response[0].activity_id)).to.eql(pm.collectionVariables.get(\"id\"))",
-                  "})",
-                  ""
-                ],
-                "type": "text/javascript",
-                "packages": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "\"select id, activity_id from time_spent where activity_id={{id}};\"\n",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{http-sql}}",
-              "host": ["{{http-sql}}"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "check_time_spent_aded",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "let responseJson;",
-                  "try{",
-                  "    responseJson = pm.response.json()",
-                  "}",
-                  "catch(e){",
-                  "    console.error(e)",
-                  "}",
-                  "",
-                  "",
-                  "pm.test(\"Status code is 200\", () => {",
-                  "    pm.expect(pm.response.code).to.eql(200);",
-                  "})",
-                  "",
-                  "pm.test(\"The response has right timespent id\", () => {",
-                  "   const timeSpentId = parseInt(pm.collectionVariables.get('timeSpentID'))",
-                  "   pm.expect(responseJson.id).eql(timeSpentId)",
-                  "})",
-                  "pm.test(\"The response has right time\", () => {",
-                  "    pm.expect(responseJson.time).eql(parseInt(pm.collectionVariables.get(\"timeSpent\")))",
-                  "})",
-                  "pm.test(\"The response has right activity_id\", () => {",
-                  "    const activityId = parseInt(pm.collectionVariables.get('id'))",
-                  "    pm.expect(responseJson.activity_id).eql(activityId)",
-                  "})"
-                ],
-                "type": "text/javascript",
-                "packages": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "{{token}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{url}}/time_spent/{{timeSpentID}}",
-              "host": ["{{url}}"],
-              "path": ["time_spent", "{{timeSpentID}}"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "update_activity_2",
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "exec": [
-                  "const titleLength = pm.collectionVariables.get(\"titleLength\")",
-                  "const contentLength = Math.pow(2, 12)",
-                  "const timeRange = 12 * 60;",
-                  "",
-                  "const title = Util.getRandomString(Util.getRandomInt(titleLength))",
-                  "const content = Util.getRandomString(Util.getRandomInt(contentLength))",
-                  "const time = Util.getRandomInt(timeRange);",
-                  "",
-                  "pm.collectionVariables.set(\"title\", title);",
-                  "pm.collectionVariables.set(\"content\", content);",
-                  "pm.collectionVariables.set(\"time\", time);"
-                ],
-                "type": "text/javascript",
-                "packages": {}
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200\", () => {",
-                  "    pm.expect(pm.response.code).to.eql(200);",
-                  "})",
-                  "",
-                  "let responseJson = {}",
-                  "try{",
-                  " responseJson = pm.response.json();",
-                  "} catch(e){",
-                  "    pm.test(\"response is not json\", ()=>{",
-                  "        pm.expect(e.message.length).eq(0)",
-                  "    })",
-                  "}",
-                  "",
-                  "",
-                  "pm.test(\"The response has id\", () => {",
-                  "    pm.expect(responseJson.id).to.be.eql(parseInt(pm.collectionVariables.get(\"id\")))",
-                  "})",
-                  "pm.test(\"The response has title\", () => {",
-                  "    pm.expect(responseJson.title).to.be.eql(pm.collectionVariables.get(\"title\"))",
-                  "})",
-                  "pm.test(\"The response has content\", () => {",
-                  "    pm.expect(responseJson.content).to.be.eql(pm.collectionVariables.get(\"content\"))",
-                  "})",
-                  "pm.test(\"The response has time\", () => {",
-                  "    pm.expect(responseJson.time).to.be.eql(parseInt(pm.collectionVariables.get(\"time\")))",
-                  "})",
-                  ""
-                ],
-                "type": "text/javascript",
-                "packages": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "{{token}}",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"id\": {{id}},\n    \"title\": \"{{title}}\",\n    \"content\": \"{{content}}\",\n    \"time\": {{time}}\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{url}}/activities/{{id}}",
-              "host": ["{{url}}"],
-              "path": ["activities", "{{id}}"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "check_time_spent_exist_after_update",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "let responseJson;",
-                  "try{",
-                  "    responseJson = pm.response.json()",
-                  "}",
-                  "catch(e){",
-                  "    console.error(e)",
-                  "}",
-                  "pm.test(\"Status code is 200\", () => {",
-                  "    pm.expect(pm.response.code).to.eql(200);",
-                  "})",
-                  "",
-                  "pm.test(\"The response has right timespent id\", () => {",
-                  "   const timeSpentId = parseInt(pm.collectionVariables.get('timeSpentID'))",
-                  "   pm.expect(responseJson.id).eql(timeSpentId)",
-                  "})",
-                  "pm.test(\"The response has right time\", () => {",
-                  "    pm.expect(responseJson.time).eql(parseInt(pm.collectionVariables.get(\"timeSpent\")))",
-                  "})",
-                  "pm.test(\"The response has right activity_id\", () => {",
-                  "    const activityId = parseInt(pm.collectionVariables.get('id'))",
-                  "    pm.expect(responseJson.activity_id).eql(activityId)",
-                  "})"
-                ],
-                "type": "text/javascript",
-                "packages": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "{{token}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{url}}/time_spent/{{timeSpentID}}",
-              "host": ["{{url}}"],
-              "path": ["time_spent", "{{timeSpentID}}"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "add_time_spent_more_than_exist",
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "exec": [
-                  "const time = pm.collectionVariables.get(\"time\")",
-                  "const timeSpent = Util.getRandomInt(time) + time",
-                  "",
-                  "pm.collectionVariables.set(\"timeSpent\", timeSpent)",
-                  ""
-                ],
-                "type": "text/javascript",
-                "packages": {}
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const responseText = pm.response.text()",
-                  "",
-                  "pm.test(\"Status code is 200\", () => {",
-                  "    pm.expect(pm.response.code).to.eql(200);",
-                  "})",
-                  "",
-                  "pm.test(\"Anwser has text about time added\", ()=>{",
-                  "    pm.expect(responseText).includes(`Time added`)",
-                  "})",
-                  ""
-                ],
-                "type": "text/javascript",
-                "packages": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "{{token}}",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"time\": {{timeSpent}},\n    \"activity_id\": {{id}}\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{url}}/time_spent",
-              "host": ["{{url}}"],
-              "path": ["time_spent"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "slq_query_after_add_time_spent_2",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const response = pm.response.json();",
-                  "",
-                  "pm.collectionVariables.set(\"timeSpentID\", parseInt(response[0].id))",
-                  "pm.test(\"Response code is 200\", ()=>{",
-                  "    pm.expect(pm.response.code).eql(200)",
-                  "})",
-                  "",
-                  "pm.test(\"activity id equal correct value\", ()=>{",
-                  "    pm.expect(parseInt(response[0].activity_id)).to.eql(pm.collectionVariables.get(\"id\"))",
-                  "})",
-                  ""
-                ],
-                "type": "text/javascript",
-                "packages": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "\"select id, activity_id from time_spent where activity_id={{id}} order by id DESC limit 1;\"\n",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{http-sql}}",
-              "host": ["{{http-sql}}"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Delete_activity",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200\", () => {",
-                  "    pm.expect(pm.response.code).to.eql(200);",
-                  "})",
-                  "",
-                  "pm.test(\"Text should contain true information\", () => {",
-                  "    pm.expect(pm.response.text()).include(`Activity ${pm.collectionVariables.get(\"id\")} deleted`)",
-                  "})"
-                ],
-                "type": "text/javascript",
-                "packages": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "DELETE",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "{{token}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{url}}/activities/{{id}}",
-              "host": ["{{url}}"],
-              "path": ["activities", "{{id}}"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "slq_query_after_add_delete_activity",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const response = pm.response.text();",
-                  "",
-                  "pm.test(\"Response code is 200\", ()=>{",
-                  "    pm.expect(pm.response.code).eql(200)",
-                  "})",
-                  "",
-                  "pm.test(\"Activities deleted from db, and response is empty\", () => {",
-                  "    const lengthEmptyQuery=2",
-                  "    pm.expect(response.length).eql(lengthEmptyQuery)",
-                  "})"
-                ],
-                "type": "text/javascript",
-                "packages": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "\"select title from activities where account_id={{accountID}};\"\n",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{http-sql}}",
-              "host": ["{{http-sql}}"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "add_time_spent_when_activity_not_exist",
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "exec": [
-                  "const timeSpent = Util.getRandomInt(pm.collectionVariables.get(\"time\"))",
-                  "pm.collectionVariables.set(\"timeSpent\", timeSpent)",
-                  ""
-                ],
-                "type": "text/javascript",
-                "packages": {}
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 422\", () => {",
-                  "    pm.expect(pm.response.code).to.eql(422);",
-                  "})",
-                  "// we need to add some crunch for",
-                  "// stability other pieces of",
-                  "// our tests",
-                  "if (pm.response.code === 200) {",
-                  "    const oldId = pm.collectionVariables.get(\"timeSpentID\")",
-                  "    const timeSpentId = oldId == \"\" ? 1 : parseInt(oldId) + 1",
-                  "    pm.collectionVariables.set(\"timeSpentID\", timeSpentId)",
-                  "}"
-                ],
-                "type": "text/javascript",
-                "packages": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "{{token}}",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"time\": {{timeSpent}},\n    \"activity_id\": {{id}}\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{url}}/time_spent",
-              "host": ["{{url}}"],
-              "path": ["time_spent"]
-            }
-          },
-          "response": []
-        }
-      ],
-      "event": [
-        {
-          "listen": "prerequest",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "Util = {}",
-              "",
-              "Util.getRandomString = (lenght) => {",
-              "    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689!@#$%^&*();\";",
-              "    let result = '';",
-              "    for (let i = 0; i < lenght; i++) {",
-              "        result += chars.charAt(Util.getRandomInt(chars.length));",
-              "    }",
-              "    return result;",
-              "}",
-              "",
-              "Util.getRandomInt = (max) => Math.floor(Math.random()* max)",
-              "",
-              "Util.getIntFromText = (string, index=0) => {",
-              "    const regex = /\\d+/g;",
-              "    const match = string.match(regex);",
-              "    if (index === -1){",
-              "        index = match.length - 1",
-              "    }",
-              "    return match[index]",
-              "}"
-            ]
-          }
-        },
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [""]
-          }
-        }
-      ]
-    },
-    {
-      "name": "NegativeCases",
-      "item": [
-        {
-          "name": "Add",
-          "item": [
-            {
-              "name": "miss_one_field",
-              "event": [
-                {
-                  "listen": "prerequest",
-                  "script": {
-                    "exec": [
-                      "",
-                      "const oldId = parseInt(pm.collectionVariables.get(\"id\"))",
-                      "let id = 1;",
-                      "if (oldId) {",
-                      "    id = (oldId + 1).toString()",
-                      "} ",
-                      "",
-                      "const title = Util.getRandomString(Util.getRandomInt(60));",
-                      "const content = Util.getRandomString(Util.getRandomInt(Math.pow(2, 10)));",
-                      "const timeRange = 12 * 60;",
-                      "const time = Util.getRandomInt(timeRange);",
-                      "",
-                      "pm.collectionVariables.set(\"id\", id);",
-                      "pm.collectionVariables.set(\"title\", title);",
-                      "pm.collectionVariables.set(\"content\", content);",
-                      "pm.collectionVariables.set(\"time\", time);",
-                      "",
-                      "/*unction getRandomString(lenght) {",
-                      "    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689!@#$%^&*()';\";",
-                      "    let charsLength = chars.length;",
-                      "    let result = '';",
-                      "    for (let i = 0; i < lenght; i++) {",
-                      "        result += chars.charAt(Math.floor(Math.random() * charsLength));",
-                      "    }",
-                      "    return result;",
-                      "}",
-                      "",
-                      "function getRandomInt(max) {",
-                      "    return Math.floor(Math.random() * max);",
-                      "}*/"
-                    ],
-                    "type": "text/javascript",
-                    "packages": {}
-                  }
-                },
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Status code is 422\", () => {",
-                      "    pm.expect(pm.response.code).to.eql(422);",
-                      "})",
-                      "",
-                      "",
-                      "pm.test(\"Response text should exist information about field which missed\", () => {",
-                      "    const responseText = pm.response.text();",
-                      "    pm.expect(responseText).includes(\"missing field `title`\")",
-                      "})",
-                      ""
-                    ],
-                    "type": "text/javascript",
-                    "packages": {}
-                  }
-                }
-              ],
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Authorization",
-                    "value": "{{token}}",
-                    "type": "text",
-                    "disabled": true
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    //\"title\": \"{{title}}\",\n    \"content\": \"{{content}}\",\n    \"time\": {{time}}\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{url}}/activities",
-                  "host": ["{{url}}"],
-                  "path": ["activities"]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "miss_several_fields",
-              "event": [
-                {
-                  "listen": "prerequest",
-                  "script": {
-                    "exec": [
-                      "",
-                      "const oldId = parseInt(pm.collectionVariables.get(\"id\"))",
-                      "let id = 1;",
-                      "if (oldId) {",
-                      "    id = (oldId + 1).toString()",
-                      "} ",
-                      "",
-                      "const title = Util.getRandomString(Util.getRandomInt(60));",
-                      "const content = Util.getRandomString(Util.getRandomInt(Math.pow(2, 10)));",
-                      "const timeRange = 12 * 60;",
-                      "const time = Util.getRandomInt(timeRange);",
-                      "",
-                      "pm.collectionVariables.set(\"id\", id);",
-                      "pm.collectionVariables.set(\"title\", title);",
-                      "pm.collectionVariables.set(\"content\", content);",
-                      "pm.collectionVariables.set(\"time\", time);",
-                      "",
-                      "/*unction getRandomString(lenght) {",
-                      "    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689!@#$%^&*()';\";",
-                      "    let charsLength = chars.length;",
-                      "    let result = '';",
-                      "    for (let i = 0; i < lenght; i++) {",
-                      "        result += chars.charAt(Math.floor(Math.random() * charsLength));",
-                      "    }",
-                      "    return result;",
-                      "}",
-                      "",
-                      "function getRandomInt(max) {",
-                      "    return Math.floor(Math.random() * max);",
-                      "}*/"
-                    ],
-                    "type": "text/javascript",
-                    "packages": {}
-                  }
-                },
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Status code is 422\", () => {",
-                      "    pm.expect(pm.response.code).to.eql(422);",
-                      "})",
-                      "",
-                      "",
-                      "pm.test(\"Response text should exist information about missed title\", () => {",
-                      "    const responseText = pm.response.text();",
-                      "    pm.expect(responseText).includes(\"missing field `title`\")",
-                      "})",
-                      "",
-                      "pm.test(\"Response text should exist information about missed Time\", () => {",
-                      "    const responseText = pm.response.text();",
-                      "    pm.expect(responseText).includes(\"missing field `time`\")",
-                      "})"
-                    ],
-                    "type": "text/javascript",
-                    "packages": {}
-                  }
-                }
-              ],
-              "request": {
-                "method": "POST",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    //\"title\": \"{{title}}\",\n    \"content\": \"{{content}}\"\n    //\"time\": {{time}}\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{url}}/activities",
-                  "host": ["{{url}}"],
-                  "path": ["activities"]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "wrong_data_type",
-              "event": [
-                {
-                  "listen": "prerequest",
-                  "script": {
-                    "exec": [
-                      "",
-                      "const oldId = parseInt(pm.collectionVariables.get(\"id\"))",
-                      "let id = 1;",
-                      "if (oldId) {",
-                      "    id = (oldId + 1).toString()",
-                      "} ",
-                      "",
-                      "const title = Util.getRandomString(Util.getRandomInt(60));",
-                      "const content = Util.getRandomString(Util.getRandomInt(Math.pow(2, 10)));",
-                      "const timeRange = 12 * 60;",
-                      "const time = Util.getRandomInt(timeRange);",
-                      "",
-                      "pm.collectionVariables.set(\"id\", id);",
-                      "pm.collectionVariables.set(\"title\", title);",
-                      "pm.collectionVariables.set(\"content\", content);",
-                      "pm.collectionVariables.set(\"time\", time);",
-                      "",
-                      "/*unction getRandomString(lenght) {",
-                      "    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689!@#$%^&*()';\";",
-                      "    let charsLength = chars.length;",
-                      "    let result = '';",
-                      "    for (let i = 0; i < lenght; i++) {",
-                      "        result += chars.charAt(Math.floor(Math.random() * charsLength));",
-                      "    }",
-                      "    return result;",
-                      "}",
-                      "",
-                      "function getRandomInt(max) {",
-                      "    return Math.floor(Math.random() * max);",
-                      "}*/"
-                    ],
-                    "type": "text/javascript",
-                    "packages": {}
-                  }
-                },
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Status code is 422\", () => {",
-                      "    pm.expect(pm.response.code).to.eql(422);",
-                      "})",
-                      "",
-                      "",
-                      "pm.test(\"Response text should exist information about invalid type\", () => {",
-                      "    const responseText = pm.response.text();",
-                      "    pm.expect(responseText).includes(\"invalid type: string\")",
-                      "})",
-                      ""
-                    ],
-                    "type": "text/javascript",
-                    "packages": {}
-                  }
-                }
-              ],
-              "request": {
-                "method": "POST",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"title\": \"{{title}}\",\n    \"content\": \"{{content}}\",\n    \"time\": \"{{time}}\"\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{url}}/activities",
-                  "host": ["{{url}}"],
-                  "path": ["activities"]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "body_type_text",
-              "event": [
-                {
-                  "listen": "prerequest",
-                  "script": {
-                    "exec": [
-                      "",
-                      "const oldId = parseInt(pm.collectionVariables.get(\"id\"))",
-                      "let id = 1;",
-                      "if (oldId) {",
-                      "    id = (oldId + 1).toString()",
-                      "} ",
-                      "",
-                      "const title = Util.getRandomString(Util.getRandomInt(60));",
-                      "const content = Util.getRandomString(Util.getRandomInt(Math.pow(2, 10)));",
-                      "const timeRange = 12 * 60;",
-                      "const time = Util.getRandomInt(timeRange);",
-                      "",
-                      "pm.collectionVariables.set(\"id\", id);",
-                      "pm.collectionVariables.set(\"title\", title);",
-                      "pm.collectionVariables.set(\"content\", content);",
-                      "pm.collectionVariables.set(\"time\", time);",
-                      "",
-                      "/*unction getRandomString(lenght) {",
-                      "    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689!@#$%^&*()';\";",
-                      "    let charsLength = chars.length;",
-                      "    let result = '';",
-                      "    for (let i = 0; i < lenght; i++) {",
-                      "        result += chars.charAt(Math.floor(Math.random() * charsLength));",
-                      "    }",
-                      "    return result;",
-                      "}",
-                      "",
-                      "function getRandomInt(max) {",
-                      "    return Math.floor(Math.random() * max);",
-                      "}*/"
-                    ],
-                    "type": "text/javascript"
-                  }
-                },
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Status code is 422\", () => {",
-                      "    pm.expect(pm.response.code).to.eql(422);",
-                      "})",
-                      ""
-                    ],
-                    "type": "text/javascript"
-                  }
-                }
-              ],
-              "request": {
-                "method": "POST",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"id\": \"{{id}}\",\n    \"title\": \"{{title}}\",\n    \"content\": \"{{content}}\",\n    \"time\": \"{{time}}\"\n}",
-                  "options": {
-                    "raw": {
-                      "language": "text"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{url}}/activities",
-                  "host": ["{{url}}"],
-                  "path": ["activities"]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "miss_body",
-              "event": [
-                {
-                  "listen": "prerequest",
-                  "script": {
-                    "exec": [
-                      "",
-                      "const oldId = parseInt(pm.collectionVariables.get(\"id\"))",
-                      "let id = 1;",
-                      "if (oldId) {",
-                      "    id = (oldId + 1).toString()",
-                      "} ",
-                      "",
-                      "const title = Util.getRandomString(Util.getRandomInt(60));",
-                      "const content = Util.getRandomString(Util.getRandomInt(Math.pow(2, 10)));",
-                      "const timeRange = 12 * 60;",
-                      "const time = Util.getRandomInt(timeRange);",
-                      "",
-                      "pm.collectionVariables.set(\"id\", id);",
-                      "pm.collectionVariables.set(\"title\", title);",
-                      "pm.collectionVariables.set(\"content\", content);",
-                      "pm.collectionVariables.set(\"time\", time);",
-                      "",
-                      "/*unction getRandomString(lenght) {",
-                      "    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689!@#$%^&*()';\";",
-                      "    let charsLength = chars.length;",
-                      "    let result = '';",
-                      "    for (let i = 0; i < lenght; i++) {",
-                      "        result += chars.charAt(Math.floor(Math.random() * charsLength));",
-                      "    }",
-                      "    return result;",
-                      "}",
-                      "",
-                      "function getRandomInt(max) {",
-                      "    return Math.floor(Math.random() * max);",
-                      "}*/"
-                    ],
-                    "type": "text/javascript"
-                  }
-                },
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Status code is 422\", () => {",
-                      "    pm.expect(pm.response.code).to.eql(422);",
-                      "})",
-                      "",
-                      "pm.test(\"Response text should exist information about missed body\", () => {",
-                      "    const responseText = pm.response.text();",
-                      "    pm.expect(responseText).includes(\"EOF while parsing a value\")",
-                      "})",
-                      ""
-                    ],
-                    "type": "text/javascript"
-                  }
-                }
-              ],
-              "request": {
-                "method": "POST",
-                "header": [],
-                "url": {
-                  "raw": "{{url}}/activities",
-                  "host": ["{{url}}"],
-                  "path": ["activities"]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "with_wrong_token",
-              "event": [
-                {
-                  "listen": "prerequest",
-                  "script": {
-                    "exec": [
-                      "",
-                      "const oldId = parseInt(pm.collectionVariables.get(\"id\"))",
-                      "let id = 1;",
-                      "if (oldId) {",
-                      "    id = (oldId + 1).toString()",
-                      "} ",
-                      "",
-                      "const title = Util.getRandomString(Util.getRandomInt(60));",
-                      "const content = Util.getRandomString(Util.getRandomInt(Math.pow(2, 10)));",
-                      "const timeRange = 12 * 60;",
-                      "const time = Util.getRandomInt(timeRange);",
-                      "",
-                      "pm.collectionVariables.set(\"title\", title);",
-                      "pm.collectionVariables.set(\"content\", content);",
-                      "pm.collectionVariables.set(\"time\", time);",
-                      "",
-                      "pm.request.headers.remove(\"Authorization\");",
-                      "",
-                      "pm.request.headers.add({",
-                      "    key: \"Authorization\",",
-                      "    value: \"wrong token\"",
-                      "})",
-                      "pm.test(\"Header contain token\", ()=>{",
-                      "    pm.expect(pm.request.headers.get(\"Authorization\")).includes(\"wrong token\")",
-                      "})"
-                    ],
-                    "type": "text/javascript",
-                    "packages": {}
-                  }
-                },
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Status code is 401\", () => {",
-                      "    pm.expect(pm.response.code).to.eql(401);",
-                      "})",
-                      "",
-                      "",
-                      "pm.test(\"Unauthorized information in text\", () => {",
-                      "    const responseText = pm.response.text();",
-                      "    pm.expect(responseText).includes(\"Can't add activity: Unauthorized\")",
-                      "})",
-                      ""
-                    ],
-                    "type": "text/javascript",
-                    "packages": {}
-                  }
-                }
-              ],
-              "request": {
-                "method": "POST",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"title\": \"{{title}}\",\n    \"content\": \"{{content}}\",\n    \"time\": {{time}}\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{url}}/activities",
-                  "host": ["{{url}}"],
-                  "path": ["activities"]
-                }
-              },
-              "response": []
-            }
-          ],
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "type": "text/javascript",
-                "packages": {},
-                "exec": [
-                  "pm.request.headers.add({",
-                  "        key: \"Authorization\",",
-                  "        value: pm.collectionVariables.get(\"token\")",
-                  "});",
-                  "",
-                  "pm.test(\"Header contain token\", ()=>{",
-                  "    pm.expect(pm.request.headers.get(\"Authorization\").length).not.eql(0)",
-                  "})"
-                ]
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "packages": {},
-                "exec": [""]
-              }
-            }
-          ]
-        },
-        {
-          "name": "Edit",
-          "item": [
-            {
-              "name": "update_activity_with_empty_value",
-              "event": [
-                {
-                  "listen": "prerequest",
-                  "script": {
-                    "exec": [
-                      "let title = pm.collectionVariables.get(\"title\");",
-                      "let content = pm.collectionVariables.get(\"content\");",
-                      "let time = pm.collectionVariables.get(\"time\");",
-                      "",
-                      "title = Util.getRandomString(Util.getRandomInt(60))",
-                      "content = Util.getRandomString(Util.getRandomInt(Math.pow(2, 12)))",
-                      "const timeRange = 12 * 60;",
-                      "time = Util.getRandomInt(timeRange);",
-                      "",
-                      "pm.collectionVariables.set(\"title\", title);",
-                      "pm.collectionVariables.set(\"content\", content);",
-                      "pm.collectionVariables.set(\"time\", time);"
-                    ],
-                    "type": "text/javascript",
-                    "packages": {}
-                  }
-                },
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Status code is 422\", () => {",
-                      "    pm.expect(pm.response.code).to.eql(422);",
-                      "})",
-                      "const reponseText = pm.response.text();",
-                      "",
-                      "pm.test(\"The response has text about missing time\", () => {",
-                      "pm.expect(reponseText).include(\"missing field `time`\")",
-                      "})",
-                      "",
-                      ""
-                    ],
-                    "type": "text/javascript",
-                    "packages": {}
-                  }
-                }
-              ],
-              "request": {
-                "method": "PUT",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"id\": {{id}},\n    \"title\": \"{{title}}\",\n    \"content\": \"{{content}}\"\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{url}}/activities/{{id}}",
-                  "host": ["{{url}}"],
-                  "path": ["activities", "{{id}}"]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "update_activity_with_incorect_data_type",
-              "event": [
-                {
-                  "listen": "prerequest",
-                  "script": {
-                    "exec": [
-                      "let title = pm.collectionVariables.get(\"title\");",
-                      "let content = pm.collectionVariables.get(\"content\");",
-                      "let time = pm.collectionVariables.get(\"time\");",
-                      "",
-                      "title = Util.getRandomString(Util.getRandomInt(60))",
-                      "content = Util.getRandomString(Util.getRandomInt(Math.pow(2, 12)))",
-                      "const timeRange = 12 * 60;",
-                      "time = Util.getRandomInt(timeRange);",
-                      "",
-                      "pm.collectionVariables.set(\"title\", title);",
-                      "pm.collectionVariables.set(\"content\", content);",
-                      "pm.collectionVariables.set(\"time\", time);"
-                    ],
-                    "type": "text/javascript"
-                  }
-                },
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Status code is 422\", () => {",
-                      "    pm.expect(pm.response.code).to.eql(422);",
-                      "})",
-                      "const reponseText = pm.response.text();",
-                      "",
-                      "pm.test(\"The response has text about invalid type\", () => {",
-                      "pm.expect(reponseText).include(\"invalid type: string\")",
-                      "})",
-                      ""
-                    ],
-                    "type": "text/javascript"
-                  }
-                }
-              ],
-              "request": {
-                "method": "PUT",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"id\": \"{{id}}\",\n    \"title\": \"{{title}}\",\n    \"content\": \"{{content}}\",\n    \"time\": \"{{time}}\"\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{url}}/activities/{{id}}",
-                  "host": ["{{url}}"],
-                  "path": ["activities", "{{id}}"]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "update_activity_add_not_exist_field",
-              "event": [
-                {
-                  "listen": "prerequest",
-                  "script": {
-                    "exec": [
-                      "let title = pm.collectionVariables.get(\"title\");",
-                      "let content = pm.collectionVariables.get(\"content\");",
-                      "let time = pm.collectionVariables.get(\"time\");",
-                      "",
-                      "title = Util.getRandomString(Util.getRandomInt(60))",
-                      "content = Util.getRandomString(Util.getRandomInt(Math.pow(2, 12)))",
-                      "const timeRange = 12 * 60;",
-                      "time = Util.getRandomInt(timeRange);",
-                      "",
-                      "pm.collectionVariables.set(\"title\", title);",
-                      "pm.collectionVariables.set(\"content\", content);",
-                      "pm.collectionVariables.set(\"time\", time);"
-                    ],
-                    "type": "text/javascript",
-                    "packages": {}
-                  }
-                },
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Status code is 422\", () => {",
-                      "    pm.expect(pm.response.code).to.eql(422);",
-                      "})",
-                      "const reponseText = pm.response.text();",
-                      "",
-                      "pm.test(\"The response has information `Cannot update. invalid data.`\", () => {",
-                      "    pm.expect(reponseText.includes(`Cannot update. invalid data.`)).to.be.true",
-                      "})",
-                      ""
-                    ],
-                    "type": "text/javascript",
-                    "packages": {}
-                  }
-                }
-              ],
-              "request": {
-                "method": "PUT",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"id\": {{id}},\n    \"title\": \"{{title}}\",\n    \"content\": \"{{content}}\",\n    \"time\": {{time}},\n    \"newField\": \"hello\"\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{url}}/activities/{{id}}",
-                  "host": ["{{url}}"],
-                  "path": ["activities", "{{id}}"]
-                }
-              },
-              "response": []
-            }
-          ],
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "",
-                  "const url = \"http://backend:8080\" // crunch for autotests",
-                  "const id = parseInt(pm.collectionVariables.get(\"id\")) + 1",
-                  "const reqBody = {",
-                  "    \"id\": id,",
-                  "    \"title\": `${Util.getRandomString(60)}`,",
-                  "    \"content\": `${Util.getRandomString(1024)}`,",
-                  "    \"time\": Util.getRandomInt(12 * 60)",
-                  "}",
-                  "",
-                  "const postRequest = {",
-                  "  url: `${url}/activities`,",
-                  "  method: 'POST',",
-                  "  header: {",
-                  "    'Content-Type': 'application/json',",
-                  "    \"Authorization\": pm.collectionVariables.get(\"token\")",
-                  "  },",
-                  "  body: {",
-                  "    mode: 'json',",
-                  "    raw: JSON.stringify(reqBody)",
-                  "  }",
-                  "};",
-                  "",
-                  "pm.sendRequest(postRequest, (error, response) => {",
-                  "  pm.test('Post activities should be ok', () => {",
-                  "    pm.expect(error).to.equal(null);",
-                  "    pm.expect(response).to.have.property('code', 200);",
-                  "  })",
-                  "});",
-                  "pm.request.headers.add({",
-                  "        key: \"Authorization\",",
-                  "        value: pm.collectionVariables.get(\"token\")",
-                  "});",
-                  "",
-                  "pm.test(\"Header contain token\", ()=>{",
-                  "    pm.expect(pm.request.headers.get(\"Authorization\").length).not.eql(0)",
-                  "})",
-                  ""
-                ]
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "",
-                  "const url = \"http://backend:8080\" // crunch for autotests",
-                  "const id = parseInt(pm.collectionVariables.get(\"id\")) + 1",
-                  "",
-                  "",
-                  "const postRequest = {",
-                  "  url: `${url}/activities/${id}`,",
-                  "  method: 'DELETE',",
-                  "  header: {",
-                  "    'Content-Type': 'application/json',",
-                  "    \"Authorization\": pm.collectionVariables.get(\"token\")",
-                  "  },",
-                  "",
-                  "};",
-                  "pm.sendRequest(postRequest, (error, response) => {",
-                  "  pm.test('response should be okay to process', () => {",
-                  "    pm.expect(error).to.equal(null);",
-                  "    pm.expect(response).to.have.property('code', 200);",
-                  "  })",
-                  "});",
-                  "",
-                  ""
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "Delete",
-          "item": [
-            {
-              "name": "delete_not_exist_activity",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Status code is 404\", () => {",
-                      "    pm.expect(pm.response.code).to.eql(404);",
-                      "})",
-                      "",
-                      "pm.test(\"Text should contain true information\", () => {",
-                      "    pm.expect(pm.response.text()).include(\"Activities not Found\")",
-                      "})"
-                    ],
-                    "type": "text/javascript",
-                    "packages": {}
-                  }
-                },
-                {
-                  "listen": "prerequest",
-                  "script": {
-                    "exec": [
-                      "pm.collectionVariables.set(\"BadId\", 1 + 100000)"
-                    ],
-                    "type": "text/javascript",
-                    "packages": {}
-                  }
-                }
-              ],
-              "request": {
-                "method": "DELETE",
-                "header": [],
-                "url": {
-                  "raw": "{{url}}/activities/{{BadId}}",
-                  "host": ["{{url}}"],
-                  "path": ["activities", "{{BadId}}"]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "delete_not_owned_activity",
-              "event": [
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Status code is 401\", () => {",
-                      "    pm.expect(pm.response.code).to.eql(401);",
-                      "})",
-                      "",
-                      "pm.test(\"Text should contain true information\", () => {",
-                      "    pm.expect(pm.response.text()).include(\"No permission to change the underlying resource\")",
-                      "})"
-                    ],
-                    "type": "text/javascript",
-                    "packages": {}
-                  }
-                },
-                {
-                  "listen": "prerequest",
-                  "script": {
-                    "exec": [
-                      "const url = \"http://backend:8080\" // crunch for autotests",
-                      "const id = parseInt(pm.collectionVariables.get(\"id\")) + 1",
-                      "pm.collectionVariables.set(\"id\", id)",
-                      "const reqBody = {",
-                      "    \"id\": id,",
-                      "    \"title\": `${Util.getRandomString(60)}`,",
-                      "    \"content\": `${Util.getRandomString(1024)}`,",
-                      "    \"time\": Util.getRandomInt(12 * 60)",
-                      "}",
-                      "",
-                      "const postRequest = {",
-                      "  url: `${url}/activities`,",
-                      "  method: 'POST',",
-                      "  header: {",
-                      "    'Content-Type': 'application/json',",
-                      "    \"Authorization\": pm.collectionVariables.get(\"token\")",
-                      "  },",
-                      "  body: {",
-                      "    mode: 'json',",
-                      "    raw: JSON.stringify(reqBody)",
-                      "  }",
-                      "};",
-                      "",
-                      "pm.sendRequest(postRequest, (error, response) => {",
-                      "  pm.test('Post activities should be ok', () => {",
-                      "    pm.expect(error).to.equal(null);",
-                      "    pm.expect(response).to.have.property('code', 200);",
-                      "  })",
-                      "});",
-                      "pm.request.headers.add({",
-                      "        key: \"Authorization\",",
-                      "        value: pm.collectionVariables.get(\"token\")",
-                      "});",
-                      "",
-                      "pm.test(\"Header contain token\", ()=>{",
-                      "    pm.expect(pm.request.headers.get(\"Authorization\").length).not.eql(0)",
-                      "})"
-                    ],
-                    "type": "text/javascript",
-                    "packages": {}
-                  }
-                }
-              ],
-              "request": {
-                "method": "DELETE",
-                "header": [],
-                "url": {
-                  "raw": "{{url}}/activities/{{id}}",
-                  "host": ["{{url}}"],
-                  "path": ["activities", "{{id}}"]
-                }
-              },
-              "response": []
-            }
-          ],
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "type": "text/javascript",
-                "packages": {},
-                "exec": [
-                  "pm.request.headers.add({",
-                  "        key: \"Authorization\",",
-                  "        value: pm.collectionVariables.get(\"token\")",
-                  "});",
-                  "",
-                  "pm.test(\"Header contain token\", ()=>{",
-                  "    pm.expect(pm.request.headers.get(\"Authorization\").length).not.eql(0)",
-                  "})"
-                ]
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "packages": {},
-                "exec": [""]
-              }
-            }
-          ]
-        },
-        {
-          "name": "Write_off",
-          "item": [
-            {
-              "name": "add_time_spent_with_0",
-              "event": [
-                {
-                  "listen": "prerequest",
-                  "script": {
-                    "exec": ["", ""],
-                    "type": "text/javascript",
-                    "packages": {}
-                  }
-                },
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Status code is 422\", () => {",
-                      "    pm.expect(pm.response.code).to.eql(422);",
-                      "})",
-                      "",
-                      "pm.test(\"Response has valid text `Cannot update. invalid data.`\", ()=> {",
-                      "    pm.expect(pm.response.text()).include(`Cannot update. invalid data.`)",
-                      "})"
-                    ],
-                    "type": "text/javascript",
-                    "packages": {}
-                  }
-                }
-              ],
-              "request": {
-                "method": "POST",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"time\": 0,\n    \"activity_id\": {{id}}\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{url}}/time_spent",
-                  "host": ["{{url}}"],
-                  "path": ["time_spent"]
-                }
-              },
-              "response": []
-            }
-          ],
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "",
-                  "const url = \"http://backend:8080\" // crunch for autotests",
-                  "const id = parseInt(pm.collectionVariables.get(\"id\")) + 1",
-                  "const reqBody = {",
-                  "    \"id\": `${id}`,",
-                  "    \"title\": `${Util.getRandomString(60)}`,",
-                  "    \"content\": `${Util.getRandomString(1024)}`,",
-                  "    \"time\": Util.getRandomInt(12 * 60)",
-                  "}",
-                  "",
-                  "const postRequest = {",
-                  "  url: `${url}/activities`,",
-                  "  method: 'POST',",
-                  "  header: {",
-                  "    'Content-Type': 'application/json',",
-                  "  },",
-                  "  body: {",
-                  "    mode: 'json',",
-                  "    raw: JSON.stringify(reqBody)",
-                  "  }",
-                  "};",
-                  "",
-                  "pm.sendRequest(postRequest, (error, response) => {",
-                  "  pm.test('response should be okay to process', () => {",
-                  "    pm.expect(error).to.equal(null);",
-                  "    pm.expect(response).to.have.property('code', 200);",
-                  "  })",
-                  "});",
-                  "",
-                  "pm.collectionVariables.set(\"id\", id)",
-                  "",
-                  "pm.request.headers.add({",
-                  "        key: \"Authorization\",",
-                  "        value: pm.collectionVariables.get(\"token\")",
-                  "});",
-                  "",
-                  "pm.test(\"Header contain token\", ()=>{",
-                  "    pm.expect(pm.request.headers.get(\"Authorization\").length).not.eql(0)",
-                  "})"
-                ]
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "",
-                  "const url = \"http://backend:8080\" // crunch for autotests",
-                  "const id = parseInt(pm.collectionVariables.get(\"id\"))",
-                  "",
-                  "",
-                  "const postRequest = {",
-                  "  url: `${url}/activities/${id}`,",
-                  "  method: 'DELETE',",
-                  "  header: {",
-                  "    'Content-Type': 'application/json',",
-                  "  },",
-                  "",
-                  "};",
-                  "pm.sendRequest(postRequest, (error, response) => {",
-                  "  pm.test('response should be okay to process', () => {",
-                  "    pm.expect(error).to.equal(null);",
-                  "    pm.expect(response).to.have.property('code', 200);",
-                  "  })",
-                  "});",
-                  "",
-                  ""
-                ]
-              }
-            }
-          ]
-        }
-      ],
-      "event": [
-        {
-          "listen": "prerequest",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "Util = {}",
-              "",
-              "Util.getRandomString = (lenght) => {",
-              "    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689!@#$%^&*()';\";",
-              "    let charsLength = chars.length;",
-              "    let result = '';",
-              "    for (let i = 0; i < lenght; i++) {",
-              "        result += chars.charAt(Math.floor(Math.random() * charsLength));",
-              "    }",
-              "    return result;",
-              "}",
-              "",
-              "Util.getRandomInt = (max) => Math.floor(Math.random()* max)",
-              "",
-              "Util.getIntFromText = (string) => {",
-              "    const regex = /\\d+/;",
-              "    const match = string.match(regex);",
-              "    return match[0]",
-              "}",
-              "",
-              "emailPrefix = Util.getRandomString(pm.collectionVariables.get(\"emailLength\"))",
-              "emailDomain = Util.getRandomString(pm.collectionVariables.get(\"passwordLength\"))",
-              "emailProvider = pm.collectionVariables.get(\"emailProvider\")",
-              "",
-              "const email = `${emailPrefix}@${emailDomain}.${emailProvider}`",
-              "",
-              "const password = Util.getRandomString(pm.collectionVariables.get(\"passwordLength\"))",
-              "",
-              "const url = \"http://backend:8080\" // crunch for autotests",
-              "const reqBody = {",
-              "    \"email\": email,",
-              "    \"password\": password,",
-              "",
-              "}",
-              "",
-              "const postRequest = {",
-              "  url: `${url}/registration`,",
-              "  method: 'POST',",
-              "  header: {",
-              "    'Content-Type': 'application/json',",
-              "  },",
-              "  body: {",
-              "    mode: 'json',",
-              "    raw: JSON.stringify(reqBody)",
-              "  }",
-              "};",
-              "",
-              "pm.sendRequest(postRequest, (error, response) => {",
-              "  pm.test('registration should be okay', () => {",
-              "    pm.expect(error).to.equal(null);",
-              "    pm.expect(response).to.have.property('code', 200);",
-              "",
-              "const postLogin = {",
-              "  url: `${url}/login`,",
-              "  method: 'POST',",
-              "  header: {",
-              "    'Content-Type': 'application/json',",
-              "  },",
-              "  body: {",
-              "    mode: 'json',",
-              "    raw: JSON.stringify(reqBody)",
-              "  }",
-              "};",
-              "",
-              "pm.sendRequest(postLogin, (error, response) => {",
-              "  pm.test('login should be ok', () => {",
-              "    pm.expect(error).to.equal(null);",
-              "    pm.expect(response).to.have.property('code', 200);",
-              "    const token = response.json()",
-              "    pm.collectionVariables.set(\"token\", token)",
-              "  })",
-              "",
-              "});",
-              "",
-              "  })",
-              "});",
-              " ",
-              "",
-              "",
-              ""
-            ]
-          }
-        },
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [""]
-          }
-        }
-      ]
-    },
-    {
-      "name": "NegativeCasesLoginRegistration",
-      "item": [
-        {
-          "name": "registration",
-          "item": [
-            {
-              "name": "registration_with_wrong_email_structure",
-              "event": [
-                {
-                  "listen": "prerequest",
-                  "script": {
-                    "exec": [
-                      "emailPrefix = Util.getRandomString(pm.collectionVariables.get(\"emailLength\"))",
-                      "emailDomain = Util.getRandomString(pm.collectionVariables.get(\"passwordLength\"))",
-                      "emailProvider = pm.collectionVariables.get(\"emailProvider\")",
-                      "",
-                      "pm.collectionVariables.set(\"email\", `${emailPrefix}${emailDomain}.${emailProvider}`)",
-                      "",
-                      "password = Util.getRandomString(pm.collectionVariables.get(\"passwordLength\"))",
-                      "pm.collectionVariables.set(\"password\", password)"
-                    ],
-                    "type": "text/javascript",
-                    "packages": {}
-                  }
-                },
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Response code is 200\", ()=>{",
-                      "    pm.expect(pm.response.code).eql(200)",
-                      "})",
-                      "",
-                      "pm.test(\"Text about add new account\", () => {",
-                      "    pm.expect(pm.response.text()).includes(`Can't create account`)",
-                      "})"
-                    ],
-                    "type": "text/javascript",
-                    "packages": {}
-                  }
-                }
-              ],
-              "request": {
-                "method": "POST",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"email\": \"{{email}}\",\n    \"password\":\"{{password}}\"\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{url}}/registration",
-                  "host": ["{{url}}"],
-                  "path": ["registration"]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "registration_with_empty_password",
-              "event": [
-                {
-                  "listen": "prerequest",
-                  "script": {
-                    "exec": [
-                      "emailPrefix = Util.getRandomString(pm.collectionVariables.get(\"emailLength\"))",
-                      "emailDomain = Util.getRandomString(pm.collectionVariables.get(\"passwordLength\"))",
-                      "emailProvider = pm.collectionVariables.get(\"emailProvider\")",
-                      "",
-                      "pm.collectionVariables.set(\"email\", `${emailPrefix}@${emailDomain}.${emailProvider}`)",
-                      "",
-                      "password = \"\"",
-                      "pm.collectionVariables.set(\"password\", password)"
-                    ],
-                    "type": "text/javascript",
-                    "packages": {}
-                  }
-                },
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Response code is 200\", ()=>{",
-                      "    pm.expect(pm.response.code).eql(200)",
-                      "})",
-                      "",
-                      "pm.test(\"Text about add new account\", () => {",
-                      "    pm.expect(pm.response.text()).includes(`Can't create account`)",
-                      "})"
-                    ],
-                    "type": "text/javascript",
-                    "packages": {}
-                  }
-                }
-              ],
-              "request": {
-                "method": "POST",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"email\": \"{{email}}\",\n    \"password\":\"{{password}}\"\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{url}}/registration",
-                  "host": ["{{url}}"],
-                  "path": ["registration"]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "registration_with_short_password",
-              "event": [
-                {
-                  "listen": "prerequest",
-                  "script": {
-                    "exec": [
-                      "emailPrefix = Util.getRandomString(pm.collectionVariables.get(\"emailLength\"))",
-                      "emailDomain = Util.getRandomString(pm.collectionVariables.get(\"emailLength\"))",
-                      "emailProvider = pm.collectionVariables.get(\"emailProvider\")",
-                      "",
-                      "pm.collectionVariables.set(\"email\", `${emailPrefix}@${emailDomain}.${emailProvider}`)",
-                      "",
-                      "password = Util.getRandomString(2)",
-                      "pm.collectionVariables.set(\"password\", password)"
-                    ],
-                    "type": "text/javascript",
-                    "packages": {}
-                  }
-                },
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Response code is 200\", ()=>{",
-                      "    pm.expect(pm.response.code).eql(200)",
-                      "})",
-                      "",
-                      "pm.test(\"Text about add new account\", () => {",
-                      "    pm.expect(pm.response.text()).includes(`Can't create account`)",
-                      "})"
-                    ],
-                    "type": "text/javascript",
-                    "packages": {}
-                  }
-                }
-              ],
-              "request": {
-                "method": "POST",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"email\": \"{{email}}\",\n    \"password\":\"{{password}}\"\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{url}}/registration",
-                  "host": ["{{url}}"],
-                  "path": ["registration"]
-                }
-              },
-              "response": []
-            }
-          ]
-        },
-        {
-          "name": "login",
-          "item": [
-            {
-              "name": "login_with_wrong_emai",
-              "event": [
-                {
-                  "listen": "prerequest",
-                  "script": {
-                    "exec": [""],
-                    "type": "text/javascript",
-                    "packages": {}
-                  }
-                },
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Response code is 200\", ()=>{",
-                      "    pm.expect(pm.response.code).eql(200)",
-                      "})",
-                      "",
-                      "let token;",
-                      "",
-                      "try {",
-                      "    token = pm.response.json()",
-                      "}",
-                      "catch{",
-                      "    token = \"\"",
-                      "}",
-                      "pm.test(\"Token length not equal 0\", () => {",
-                      "    pm.expect(token.length).eql(0)",
-                      "})",
-                      "",
-                      "pm.test(\"Text about wrong email or password not provide sensitive information\", ()=>{",
-                      "    pm.expect(pm.response.text()).includes(\"Wrong E-Mail/Password combination\")",
-                      "})"
-                    ],
-                    "type": "text/javascript",
-                    "packages": {}
-                  }
-                }
-              ],
-              "request": {
-                "method": "POST",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"email\": \"{{email}}+1\",\n    \"password\":\"{{password}}\"\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{url}}/login",
-                  "host": ["{{url}}"],
-                  "path": ["login"]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "login_with_wrong_pass",
-              "event": [
-                {
-                  "listen": "prerequest",
-                  "script": {
-                    "exec": [""],
-                    "type": "text/javascript",
-                    "packages": {}
-                  }
-                },
-                {
-                  "listen": "test",
-                  "script": {
-                    "exec": [
-                      "pm.test(\"Response code is 200\", ()=>{",
-                      "    pm.expect(pm.response.code).eql(200)",
-                      "})",
-                      "",
-                      "let token;",
-                      "",
-                      "try {",
-                      "    token = pm.response.json()",
-                      "}",
-                      "catch{",
-                      "    token = \"\"",
-                      "}",
-                      "pm.test(\"Token length not equal 0\", () => {",
-                      "    pm.expect(token.length).eql(0)",
-                      "})",
-                      "",
-                      "pm.test(\"Text about wrong email or password not provide sensitive information\", ()=>{",
-                      "    pm.expect(pm.response.text()).includes(\"Wrong login or password\")",
-                      "})"
-                    ],
-                    "type": "text/javascript",
-                    "packages": {}
-                  }
-                }
-              ],
-              "request": {
-                "method": "POST",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"email\": \"{{email}}\",\n    \"password\":\"{{password}}+1\"\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{url}}/login",
-                  "host": ["{{url}}"],
-                  "path": ["login"]
-                }
-              },
-              "response": []
-            }
-          ],
-          "event": [
-            {
-              "listen": "prerequest",
-              "script": {
-                "type": "text/javascript",
-                "packages": {},
-                "exec": [
-                  "",
-                  "emailPrefix = Util.getRandomString(pm.collectionVariables.get(\"emailLength\"))",
-                  "emailDomain = Util.getRandomString(pm.collectionVariables.get(\"passwordLength\"))",
-                  "emailProvider = pm.collectionVariables.get(\"emailProvider\")",
-                  "",
-                  "const email = `${emailPrefix}@${emailDomain}.${emailProvider}`",
-                  "",
-                  "const password = Util.getRandomString(pm.collectionVariables.get(\"passwordLength\"))",
-                  "",
-                  "pm.collectionVariables.set(\"email\", email)",
-                  "pm.collectionVariables.set(\"password\", password)",
-                  "",
-                  "const url = \"http://backend:8080\" // crunch for autotests",
-                  "const reqBody = {",
-                  "    \"email\": email,",
-                  "    \"password\": password,",
-                  "",
-                  "}",
-                  "",
-                  "const postRequest = {",
-                  "  url: `${url}/registration`,",
-                  "  method: 'POST',",
-                  "  header: {",
-                  "    'Content-Type': 'application/json',",
-                  "  },",
-                  "  body: {",
-                  "    mode: 'json',",
-                  "    raw: JSON.stringify(reqBody)",
-                  "  }",
-                  "};",
-                  "",
-                  "pm.sendRequest(postRequest, (error, response) => {",
-                  "  pm.test('registration should be okay', () => {",
-                  "    pm.expect(error).to.equal(null);",
-                  "    pm.expect(response).to.have.property('code', 200);",
-                  "  })",
-                  "});"
-                ]
-              }
-            },
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "packages": {},
-                "exec": [""]
-              }
-            }
-          ]
-        }
-      ],
-      "event": [
-        {
-          "listen": "prerequest",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "Util = {}",
-              "",
-              "Util.getRandomString = (lenght) => {",
-              "    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689!@#$%^&*()';\";",
-              "    let charsLength = chars.length;",
-              "    let result = '';",
-              "    for (let i = 0; i < lenght; i++) {",
-              "        result += chars.charAt(Math.floor(Math.random() * charsLength));",
-              "    }",
-              "    return result;",
-              "}",
-              "",
-              "Util.getRandomInt = (max) => Math.floor(Math.random()* max)",
-              "",
-              "Util.getIntFromText = (string) => {",
-              "    const regex = /\\d+/;",
-              "    const match = string.match(regex);",
-              "    return match[0]",
-              "}",
-              "",
-              " ",
-              "",
-              "",
-              ""
-            ]
-          }
-        },
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [""]
-          }
-        }
-      ]
-    }
-  ],
-  "event": [
-    {
-      "listen": "prerequest",
-      "script": {
-        "type": "text/javascript",
-        "exec": [""]
-      }
-    },
-    {
-      "listen": "test",
-      "script": {
-        "type": "text/javascript",
-        "exec": [""]
-      }
-    }
-  ],
-  "variable": [
-    {
-      "key": "id",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "title",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "content",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "time",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "limit",
-      "value": "100",
-      "type": "string"
-    },
-    {
-      "key": "url",
-      "value": "http://127.0.0.1:8080",
-      "type": "string"
-    },
-    {
-      "key": "timeSpentID",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "timeSpent",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "titleLength",
-      "value": "60",
-      "type": "string"
-    },
-    {
-      "key": "offset",
-      "value": "0",
-      "type": "string"
-    },
-    {
-      "key": "BadId",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "http-sql",
-      "value": "http://localhost:4545/query",
-      "type": "string"
-    },
-    {
-      "key": "email",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "password",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "token",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "emailLength",
-      "value": "15",
-      "type": "string"
-    },
-    {
-      "key": "passwordLength",
-      "value": "12",
-      "type": "string"
-    },
-    {
-      "key": "emailProvider",
-      "value": "iv",
-      "type": "string"
-    },
-    {
-      "key": "emal",
-      "value": ""
-    },
-    {
-      "key": "accountID",
-      "value": "",
-      "type": "string"
-    }
-  ]
+	"info": {
+		"_postman_id": "68f2d830-670a-454f-95a4-6b90a7f265da",
+		"name": "e2e-regression",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "4366696"
+	},
+	"item": [
+		{
+			"name": "Positive-critical-path",
+			"item": [
+				{
+					"name": "registration",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"emailPrefix = Util.getRandomString(pm.collectionVariables.get(\"emailLength\"))",
+									"emailDomain = Util.getRandomString(pm.collectionVariables.get(\"passwordLength\"))",
+									"emailProvider = pm.collectionVariables.get(\"emailProvider\")",
+									"",
+									"pm.collectionVariables.set(\"email\", `${emailPrefix}@${emailDomain}.${emailProvider}`)",
+									"",
+									"password = Util.getRandomString(pm.collectionVariables.get(\"passwordLength\"))",
+									"pm.collectionVariables.set(\"password\", password)"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response code is 200\", ()=>{",
+									"    pm.expect(pm.response.code).eql(200)",
+									"})",
+									"",
+									"pm.test(\"Text about add new account\", () => {",
+									"    pm.expect(pm.response.text()).includes(`Account added`)",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{email}}\",\n    \"password\":\"{{password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/registration",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"registration"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response code is 200\", ()=>{",
+									"    pm.expect(pm.response.code).eql(200)",
+									"})",
+									"",
+									"let token;",
+									"",
+									"try {",
+									"    token = pm.response.json()",
+									"}",
+									"catch{",
+									"    token = \"\"",
+									"}",
+									"pm.test(\"Token length not equal 0\", () => {",
+									"    pm.expect(token.length).not.eql(0)",
+									"})",
+									"",
+									"pm.collectionVariables.set(\"token\", token)"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{email}}\",\n    \"password\":\"{{password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "slq_query_after_add_account",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response.text();",
+									"",
+									"pm.test(\"Response code is 200\", ()=>{",
+									"    pm.expect(pm.response.code).eql(200)",
+									"})",
+									"const id = parseInt(Util.getIntFromText(response))",
+									"pm.collectionVariables.set(\"accountID\", id)",
+									"pm.test(\"Account id must be greater than 0\", ()=>{",
+									"    pm.expect(id).not.eq(0)",
+									"})",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "\"select id from accounts where email ='{{email}}';\"\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{http-sql}}",
+							"host": [
+								"{{http-sql}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add_activity",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"",
+									"",
+									"const titleLength = pm.collectionVariables.get(\"titleLength\")",
+									"const contentLength = Math.pow(2, 10);",
+									"const timeRange = 12 * 60;",
+									"",
+									"const title = Util.getRandomString(Util.getRandomInt(titleLength));",
+									"const content = Util.getRandomString(Util.getRandomInt(contentLength));",
+									"const time = Util.getRandomInt(timeRange);",
+									"",
+									"pm.collectionVariables.set(\"title\", title);",
+									"pm.collectionVariables.set(\"content\", content);",
+									"pm.collectionVariables.set(\"time\", time);",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"})",
+									"const reponseText = pm.response.text();",
+									"",
+									"pm.test(\"Text about add new activity\", () => {",
+									"    pm.expect(reponseText).includes(`Activity added: NewActivity`)",
+									"})",
+									"pm.test(\"The response has title\", () => {",
+									"    pm.expect(reponseText).includes(pm.collectionVariables.get(\"title\"))",
+									"})",
+									"pm.test(\"The response has content\", () => {",
+									"    pm.expect(reponseText).includes(pm.collectionVariables.get(\"content\"))",
+									"})",
+									"pm.test(\"The response has time\", () => {",
+									"    pm.expect(reponseText).includes(pm.collectionVariables.get(\"time\"))",
+									"})",
+									"",
+									"pm.test(\"Reponse time is less than 200ms\", () => {",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);",
+									"})",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"{{title}}\",\n    \"content\": \"{{content}}\",\n    \"time\": {{time}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/activities",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"activities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "slq_query_after_add",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response.json();",
+									"",
+									"pm.test(\"Response code is 200\", ()=>{",
+									"    pm.expect(pm.response.code).eql(200)",
+									"})",
+									"",
+									"pm.test(\"Title which added, equal title in db\", () => {",
+									"    pm.expect(response[0].title).eq(pm.collectionVariables.get(\"title\"))",
+									"})",
+									"pm.test(\"The array key lenght should be equal 1\", () => {",
+									"    pm.expect(Object.keys(response).length).to.be.eql(1);",
+									"})",
+									"pm.collectionVariables.set(\"id\", parseInt(response[0].id))",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "\"select title, id from activities where account_id={{accountID}};\"\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{http-sql}}",
+							"host": [
+								"{{http-sql}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "check_activity_added",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"})",
+									"",
+									"const responseJson = pm.response.json()[0]",
+									"",
+									"pm.test(\"The array key lenght should be equal 4\", () => {",
+									"    pm.expect(Object.keys(responseJson).length).to.be.eql(4);",
+									"})",
+									"",
+									"pm.test(\"The response has id\", () => {",
+									"    pm.expect(responseJson.id).to.be.eql(parseInt(pm.collectionVariables.get(\"id\")))",
+									"})",
+									"",
+									"pm.test(\"The response has title\", () => {",
+									"    pm.expect(responseJson.title).to.be.eql(pm.collectionVariables.get(\"title\"))",
+									"})",
+									"pm.test(\"The response has content\", () => {",
+									"    pm.expect(responseJson.content).to.be.eql(pm.collectionVariables.get(\"content\"))",
+									"})",
+									"pm.test(\"The response has time\", () => {",
+									"    pm.expect(responseJson.time).to.be.eql(parseInt(pm.collectionVariables.get(\"time\")))",
+									"})",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{url}}/activities?limit={{limit}}&offset={{offset}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"activities"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "{{limit}}"
+								},
+								{
+									"key": "offset",
+									"value": "{{offset}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update_activity_1",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const titleLength = pm.collectionVariables.get(\"titleLength\")",
+									"const contentLength = Math.pow(2, 12)",
+									"const timeRange = 12 * 60;",
+									"",
+									"const title = Util.getRandomString(Util.getRandomInt(titleLength))",
+									"const content = Util.getRandomString(Util.getRandomInt(contentLength))",
+									"const time = Util.getRandomInt(timeRange);",
+									"",
+									"pm.collectionVariables.set(\"title\", title);",
+									"pm.collectionVariables.set(\"content\", content);",
+									"pm.collectionVariables.set(\"time\", time);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"})",
+									"let responseJson = {}",
+									"try{",
+									" responseJson = pm.response.json();",
+									"} catch(e){",
+									"    pm.test(\"response is not json\", ()=>{",
+									"        pm.expect(e.message.length).eq(0)",
+									"    })",
+									"}",
+									"",
+									"",
+									"pm.test(\"The response has id\", () => {",
+									"    pm.expect(responseJson.id).to.be.eql(parseInt(pm.collectionVariables.get(\"id\")))",
+									"})",
+									"pm.test(\"The response has title\", () => {",
+									"    pm.expect(responseJson.title).to.be.eql(pm.collectionVariables.get(\"title\"))",
+									"})",
+									"pm.test(\"The response has content\", () => {",
+									"    pm.expect(responseJson.content).to.be.eql(pm.collectionVariables.get(\"content\"))",
+									"})",
+									"pm.test(\"The response has time\", () => {",
+									"    pm.expect(responseJson.time).to.be.eql(parseInt(pm.collectionVariables.get(\"time\")))",
+									"})",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": {{id}},\n    \"title\": \"{{title}}\",\n    \"content\": \"{{content}}\",\n    \"time\": {{time}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/activities/{{id}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"activities",
+								"{{id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "slq_query_after_first_update",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response.text();",
+									"",
+									"pm.test(\"Response code is 200\", ()=>{",
+									"    pm.expect(pm.response.code).eql(200)",
+									"})",
+									"",
+									"pm.test(\"Title which added, equal title in db\", () => {",
+									"    pm.expect(response).include(pm.collectionVariables.get(\"title\"))",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "\"select title from activities where account_id={{accountID}};\"\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{http-sql}}",
+							"host": [
+								"{{http-sql}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "check_activity_updated",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"})",
+									"",
+									"const responseJson = pm.response.json()[0]",
+									"",
+									"pm.test(\"The array key lenght should be equal 4\", () => {",
+									"    pm.expect(Object.keys(responseJson).length).to.be.eql(4);",
+									"})",
+									"",
+									"pm.test(\"The response has id\", () => {",
+									"    pm.expect(responseJson.id).to.be.eql(parseInt(pm.collectionVariables.get(\"id\")))",
+									"})",
+									"pm.test(\"The response has title\", () => {",
+									"    pm.expect(responseJson.title).to.be.eql(pm.collectionVariables.get(\"title\"))",
+									"})",
+									"pm.test(\"The response has content\", () => {",
+									"    pm.expect(responseJson.content).to.be.eql(pm.collectionVariables.get(\"content\"))",
+									"})",
+									"pm.test(\"The response has time\", () => {",
+									"    pm.expect(responseJson.time).to.be.eql(parseInt(pm.collectionVariables.get(\"time\")))",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/activities?limit={{limit}}&offset={{offset}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"activities"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "{{limit}}"
+								},
+								{
+									"key": "offset",
+									"value": "{{offset}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add_time_spent",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"",
+									"const timeSpent = Util.getRandomInt(pm.collectionVariables.get(\"time\"))",
+									"pm.collectionVariables.set(\"timeSpent\", timeSpent)",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseText = pm.response.text()",
+									"",
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"})",
+									"",
+									"pm.test(\"Anwser has text about time added\", ()=>{",
+									"    pm.expect(responseText).includes(`Time added`)",
+									"})",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"time\": {{timeSpent}},\n    \"activity_id\": {{id}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/time_spent",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"time_spent"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "slq_query_after_add_time_spent",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response.json();",
+									"",
+									"pm.collectionVariables.set(\"timeSpentID\", parseInt(response[0].id))",
+									"pm.test(\"Response code is 200\", ()=>{",
+									"    pm.expect(pm.response.code).eql(200)",
+									"})",
+									"",
+									"pm.test(\"activity id equal correct value\", ()=>{",
+									"    pm.expect(parseInt(response[0].activity_id)).to.eql(pm.collectionVariables.get(\"id\"))",
+									"})",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "\"select id, activity_id from time_spent where activity_id={{id}};\"\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{http-sql}}",
+							"host": [
+								"{{http-sql}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "check_time_spent_aded",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let responseJson;",
+									"try{",
+									"    responseJson = pm.response.json()",
+									"}",
+									"catch(e){",
+									"    console.error(e)",
+									"}",
+									"",
+									"",
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"})",
+									"",
+									"pm.test(\"The response has right timespent id\", () => {",
+									"   const timeSpentId = parseInt(pm.collectionVariables.get('timeSpentID'))",
+									"   pm.expect(responseJson.id).eql(timeSpentId)",
+									"})",
+									"pm.test(\"The response has right time\", () => {",
+									"    pm.expect(responseJson.time).eql(parseInt(pm.collectionVariables.get(\"timeSpent\")))",
+									"})",
+									"pm.test(\"The response has right activity_id\", () => {",
+									"    const activityId = parseInt(pm.collectionVariables.get('id'))",
+									"    pm.expect(responseJson.activity_id).eql(activityId)",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/time_spent/{{timeSpentID}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"time_spent",
+								"{{timeSpentID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update_activity_2",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const titleLength = pm.collectionVariables.get(\"titleLength\")",
+									"const contentLength = Math.pow(2, 12)",
+									"const timeRange = 12 * 60;",
+									"",
+									"const title = Util.getRandomString(Util.getRandomInt(titleLength))",
+									"const content = Util.getRandomString(Util.getRandomInt(contentLength))",
+									"const time = Util.getRandomInt(timeRange);",
+									"",
+									"pm.collectionVariables.set(\"title\", title);",
+									"pm.collectionVariables.set(\"content\", content);",
+									"pm.collectionVariables.set(\"time\", time);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"})",
+									"",
+									"let responseJson = {}",
+									"try{",
+									" responseJson = pm.response.json();",
+									"} catch(e){",
+									"    pm.test(\"response is not json\", ()=>{",
+									"        pm.expect(e.message.length).eq(0)",
+									"    })",
+									"}",
+									"",
+									"",
+									"pm.test(\"The response has id\", () => {",
+									"    pm.expect(responseJson.id).to.be.eql(parseInt(pm.collectionVariables.get(\"id\")))",
+									"})",
+									"pm.test(\"The response has title\", () => {",
+									"    pm.expect(responseJson.title).to.be.eql(pm.collectionVariables.get(\"title\"))",
+									"})",
+									"pm.test(\"The response has content\", () => {",
+									"    pm.expect(responseJson.content).to.be.eql(pm.collectionVariables.get(\"content\"))",
+									"})",
+									"pm.test(\"The response has time\", () => {",
+									"    pm.expect(responseJson.time).to.be.eql(parseInt(pm.collectionVariables.get(\"time\")))",
+									"})",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": {{id}},\n    \"title\": \"{{title}}\",\n    \"content\": \"{{content}}\",\n    \"time\": {{time}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/activities/{{id}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"activities",
+								"{{id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "check_time_spent_exist_after_update",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let responseJson;",
+									"try{",
+									"    responseJson = pm.response.json()",
+									"}",
+									"catch(e){",
+									"    console.error(e)",
+									"}",
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"})",
+									"",
+									"pm.test(\"The response has right timespent id\", () => {",
+									"   const timeSpentId = parseInt(pm.collectionVariables.get('timeSpentID'))",
+									"   pm.expect(responseJson.id).eql(timeSpentId)",
+									"})",
+									"pm.test(\"The response has right time\", () => {",
+									"    pm.expect(responseJson.time).eql(parseInt(pm.collectionVariables.get(\"timeSpent\")))",
+									"})",
+									"pm.test(\"The response has right activity_id\", () => {",
+									"    const activityId = parseInt(pm.collectionVariables.get('id'))",
+									"    pm.expect(responseJson.activity_id).eql(activityId)",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/time_spent/{{timeSpentID}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"time_spent",
+								"{{timeSpentID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add_time_spent_more_than_exist",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const time = pm.collectionVariables.get(\"time\")",
+									"const timeSpent = Util.getRandomInt(time) + time",
+									"",
+									"pm.collectionVariables.set(\"timeSpent\", timeSpent)",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseText = pm.response.text()",
+									"",
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"})",
+									"",
+									"pm.test(\"Anwser has text about time added\", ()=>{",
+									"    pm.expect(responseText).includes(`Time added`)",
+									"})",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"time\": {{timeSpent}},\n    \"activity_id\": {{id}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/time_spent",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"time_spent"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "slq_query_after_add_time_spent_2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response.json();",
+									"",
+									"pm.collectionVariables.set(\"timeSpentID\", parseInt(response[0].id))",
+									"pm.test(\"Response code is 200\", ()=>{",
+									"    pm.expect(pm.response.code).eql(200)",
+									"})",
+									"",
+									"pm.test(\"activity id equal correct value\", ()=>{",
+									"    pm.expect(parseInt(response[0].activity_id)).to.eql(pm.collectionVariables.get(\"id\"))",
+									"})",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "\"select id, activity_id from time_spent where activity_id={{id}} order by id DESC limit 1;\"\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{http-sql}}",
+							"host": [
+								"{{http-sql}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete_activity",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {",
+									"    pm.expect(pm.response.code).to.eql(200);",
+									"})",
+									"",
+									"pm.test(\"Text should contain true information\", () => {",
+									"    pm.expect(pm.response.text()).include(`Activity ${pm.collectionVariables.get(\"id\")} deleted`)",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/activities/{{id}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"activities",
+								"{{id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "slq_query_after_add_delete_activity",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response.text();",
+									"",
+									"pm.test(\"Response code is 200\", ()=>{",
+									"    pm.expect(pm.response.code).eql(200)",
+									"})",
+									"",
+									"pm.test(\"Activities deleted from db, and response is empty\", () => {",
+									"    const lengthEmptyQuery=2",
+									"    pm.expect(response.length).eql(lengthEmptyQuery)",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "\"select title from activities where account_id={{accountID}};\"\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{http-sql}}",
+							"host": [
+								"{{http-sql}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add_time_spent_when_activity_not_exist",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const timeSpent = Util.getRandomInt(pm.collectionVariables.get(\"time\"))",
+									"pm.collectionVariables.set(\"timeSpent\", timeSpent)",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", () => {",
+									"    pm.expect(pm.response.code).to.eql(422);",
+									"})",
+									"// we need to add some crunch for",
+									"// stability other pieces of",
+									"// our tests",
+									"if (pm.response.code === 200) {",
+									"    const oldId = pm.collectionVariables.get(\"timeSpentID\")",
+									"    const timeSpentId = oldId == \"\" ? 1 : parseInt(oldId) + 1",
+									"    pm.collectionVariables.set(\"timeSpentID\", timeSpentId)",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"time\": {{timeSpent}},\n    \"activity_id\": {{id}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/time_spent",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"time_spent"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"Util = {}",
+							"",
+							"Util.getRandomString = (lenght) => {",
+							"    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689!@#$%^&*();\";",
+							"    let result = '';",
+							"    for (let i = 0; i < lenght; i++) {",
+							"        result += chars.charAt(Util.getRandomInt(chars.length));",
+							"    }",
+							"    return result;",
+							"}",
+							"",
+							"Util.getRandomInt = (max) => Math.floor(Math.random()* max)",
+							"",
+							"Util.getIntFromText = (string, index=0) => {",
+							"    const regex = /\\d+/g;",
+							"    const match = string.match(regex);",
+							"    if (index === -1){",
+							"        index = match.length - 1",
+							"    }",
+							"    return match[index]",
+							"}"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "NegativeCases",
+			"item": [
+				{
+					"name": "Add",
+					"item": [
+						{
+							"name": "miss_one_field",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"",
+											"const oldId = parseInt(pm.collectionVariables.get(\"id\"))",
+											"let id = 1;",
+											"if (oldId) {",
+											"    id = (oldId + 1).toString()",
+											"} ",
+											"",
+											"const title = Util.getRandomString(Util.getRandomInt(60));",
+											"const content = Util.getRandomString(Util.getRandomInt(Math.pow(2, 10)));",
+											"const timeRange = 12 * 60;",
+											"const time = Util.getRandomInt(timeRange);",
+											"",
+											"pm.collectionVariables.set(\"id\", id);",
+											"pm.collectionVariables.set(\"title\", title);",
+											"pm.collectionVariables.set(\"content\", content);",
+											"pm.collectionVariables.set(\"time\", time);",
+											"",
+											"/*unction getRandomString(lenght) {",
+											"    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689!@#$%^&*()';\";",
+											"    let charsLength = chars.length;",
+											"    let result = '';",
+											"    for (let i = 0; i < lenght; i++) {",
+											"        result += chars.charAt(Math.floor(Math.random() * charsLength));",
+											"    }",
+											"    return result;",
+											"}",
+											"",
+											"function getRandomInt(max) {",
+											"    return Math.floor(Math.random() * max);",
+											"}*/"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", () => {",
+											"    pm.expect(pm.response.code).to.eql(422);",
+											"})",
+											"",
+											"",
+											"pm.test(\"Response text should exist information about field which missed\", () => {",
+											"    const responseText = pm.response.text();",
+											"    pm.expect(responseText).includes(\"missing field `title`\")",
+											"})",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{token}}",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    //\"title\": \"{{title}}\",\n    \"content\": \"{{content}}\",\n    \"time\": {{time}}\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/activities",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"activities"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "miss_several_fields",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"",
+											"const oldId = parseInt(pm.collectionVariables.get(\"id\"))",
+											"let id = 1;",
+											"if (oldId) {",
+											"    id = (oldId + 1).toString()",
+											"} ",
+											"",
+											"const title = Util.getRandomString(Util.getRandomInt(60));",
+											"const content = Util.getRandomString(Util.getRandomInt(Math.pow(2, 10)));",
+											"const timeRange = 12 * 60;",
+											"const time = Util.getRandomInt(timeRange);",
+											"",
+											"pm.collectionVariables.set(\"id\", id);",
+											"pm.collectionVariables.set(\"title\", title);",
+											"pm.collectionVariables.set(\"content\", content);",
+											"pm.collectionVariables.set(\"time\", time);",
+											"",
+											"/*unction getRandomString(lenght) {",
+											"    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689!@#$%^&*()';\";",
+											"    let charsLength = chars.length;",
+											"    let result = '';",
+											"    for (let i = 0; i < lenght; i++) {",
+											"        result += chars.charAt(Math.floor(Math.random() * charsLength));",
+											"    }",
+											"    return result;",
+											"}",
+											"",
+											"function getRandomInt(max) {",
+											"    return Math.floor(Math.random() * max);",
+											"}*/"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", () => {",
+											"    pm.expect(pm.response.code).to.eql(422);",
+											"})",
+											"",
+											"",
+											"pm.test(\"Response text should exist information about missed title\", () => {",
+											"    const responseText = pm.response.text();",
+											"    pm.expect(responseText).includes(\"missing field `title`\")",
+											"})",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    //\"title\": \"{{title}}\",\n    \"content\": \"{{content}}\"\n    //\"time\": {{time}}\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/activities",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"activities"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "wrong_data_type",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"",
+											"const oldId = parseInt(pm.collectionVariables.get(\"id\"))",
+											"let id = 1;",
+											"if (oldId) {",
+											"    id = (oldId + 1).toString()",
+											"} ",
+											"",
+											"const title = Util.getRandomString(Util.getRandomInt(60));",
+											"const content = Util.getRandomString(Util.getRandomInt(Math.pow(2, 10)));",
+											"const timeRange = 12 * 60;",
+											"const time = Util.getRandomInt(timeRange);",
+											"",
+											"pm.collectionVariables.set(\"id\", id);",
+											"pm.collectionVariables.set(\"title\", title);",
+											"pm.collectionVariables.set(\"content\", content);",
+											"pm.collectionVariables.set(\"time\", time);",
+											"",
+											"/*unction getRandomString(lenght) {",
+											"    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689!@#$%^&*()';\";",
+											"    let charsLength = chars.length;",
+											"    let result = '';",
+											"    for (let i = 0; i < lenght; i++) {",
+											"        result += chars.charAt(Math.floor(Math.random() * charsLength));",
+											"    }",
+											"    return result;",
+											"}",
+											"",
+											"function getRandomInt(max) {",
+											"    return Math.floor(Math.random() * max);",
+											"}*/"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", () => {",
+											"    pm.expect(pm.response.code).to.eql(422);",
+											"})",
+											"",
+											"",
+											"pm.test(\"Response text should exist information about invalid type\", () => {",
+											"    const responseText = pm.response.text();",
+											"    pm.expect(responseText).includes(\"invalid type: string\")",
+											"})",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"{{title}}\",\n    \"content\": \"{{content}}\",\n    \"time\": \"{{time}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/activities",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"activities"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "body_type_text",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"",
+											"const oldId = parseInt(pm.collectionVariables.get(\"id\"))",
+											"let id = 1;",
+											"if (oldId) {",
+											"    id = (oldId + 1).toString()",
+											"} ",
+											"",
+											"const title = Util.getRandomString(Util.getRandomInt(60));",
+											"const content = Util.getRandomString(Util.getRandomInt(Math.pow(2, 10)));",
+											"const timeRange = 12 * 60;",
+											"const time = Util.getRandomInt(timeRange);",
+											"",
+											"pm.collectionVariables.set(\"id\", id);",
+											"pm.collectionVariables.set(\"title\", title);",
+											"pm.collectionVariables.set(\"content\", content);",
+											"pm.collectionVariables.set(\"time\", time);",
+											"",
+											"/*unction getRandomString(lenght) {",
+											"    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689!@#$%^&*()';\";",
+											"    let charsLength = chars.length;",
+											"    let result = '';",
+											"    for (let i = 0; i < lenght; i++) {",
+											"        result += chars.charAt(Math.floor(Math.random() * charsLength));",
+											"    }",
+											"    return result;",
+											"}",
+											"",
+											"function getRandomInt(max) {",
+											"    return Math.floor(Math.random() * max);",
+											"}*/"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 415\", () => {",
+											"    pm.expect(pm.response.code).to.eql(415);",
+											"})",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"id\": \"{{id}}\",\n    \"title\": \"{{title}}\",\n    \"content\": \"{{content}}\",\n    \"time\": \"{{time}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "text"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/activities",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"activities"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "miss_body",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"",
+											"const oldId = parseInt(pm.collectionVariables.get(\"id\"))",
+											"let id = 1;",
+											"if (oldId) {",
+											"    id = (oldId + 1).toString()",
+											"} ",
+											"",
+											"const title = Util.getRandomString(Util.getRandomInt(60));",
+											"const content = Util.getRandomString(Util.getRandomInt(Math.pow(2, 10)));",
+											"const timeRange = 12 * 60;",
+											"const time = Util.getRandomInt(timeRange);",
+											"",
+											"pm.collectionVariables.set(\"id\", id);",
+											"pm.collectionVariables.set(\"title\", title);",
+											"pm.collectionVariables.set(\"content\", content);",
+											"pm.collectionVariables.set(\"time\", time);",
+											"",
+											"/*unction getRandomString(lenght) {",
+											"    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689!@#$%^&*()';\";",
+											"    let charsLength = chars.length;",
+											"    let result = '';",
+											"    for (let i = 0; i < lenght; i++) {",
+											"        result += chars.charAt(Math.floor(Math.random() * charsLength));",
+											"    }",
+											"    return result;",
+											"}",
+											"",
+											"function getRandomInt(max) {",
+											"    return Math.floor(Math.random() * max);",
+											"}*/"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", () => {",
+											"    pm.expect(pm.response.code).to.eql(422);",
+											"})",
+											"",
+											"pm.test(\"Response text should exist information about missed body\", () => {",
+											"    const responseText = pm.response.text();",
+											"    pm.expect(responseText).includes(\"EOF while parsing a value\")",
+											"})",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/activities",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"activities"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "with_wrong_token",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"",
+											"const oldId = parseInt(pm.collectionVariables.get(\"id\"))",
+											"let id = 1;",
+											"if (oldId) {",
+											"    id = (oldId + 1).toString()",
+											"} ",
+											"",
+											"const title = Util.getRandomString(Util.getRandomInt(60));",
+											"const content = Util.getRandomString(Util.getRandomInt(Math.pow(2, 10)));",
+											"const timeRange = 12 * 60;",
+											"const time = Util.getRandomInt(timeRange);",
+											"",
+											"pm.collectionVariables.set(\"title\", title);",
+											"pm.collectionVariables.set(\"content\", content);",
+											"pm.collectionVariables.set(\"time\", time);",
+											"",
+											"pm.request.headers.remove(\"Authorization\");",
+											"",
+											"pm.request.headers.add({",
+											"    key: \"Authorization\",",
+											"    value: \"wrong token\"",
+											"})",
+											"pm.test(\"Header contain token\", ()=>{",
+											"    pm.expect(pm.request.headers.get(\"Authorization\")).includes(\"wrong token\")",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 404\", () => {",
+											"    pm.expect(pm.response.code).to.eql(404);",
+											"})",
+											"",
+											"",
+											"pm.test(\"Unauthorized information in text\", () => {",
+											"    const responseText = pm.response.text();",
+											"    pm.expect(responseText).includes(\"Route not found\")",
+											"})",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"{{title}}\",\n    \"content\": \"{{content}}\",\n    \"time\": {{time}}\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/activities",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"activities"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									"pm.request.headers.add({",
+									"        key: \"Authorization\",",
+									"        value: pm.collectionVariables.get(\"token\")",
+									"});",
+									"",
+									"pm.test(\"Header contain token\", ()=>{",
+									"    pm.expect(pm.request.headers.get(\"Authorization\").length).not.eql(0)",
+									"})"
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Edit",
+					"item": [
+						{
+							"name": "update_activity_with_empty_value",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"let title = pm.collectionVariables.get(\"title\");",
+											"let content = pm.collectionVariables.get(\"content\");",
+											"let time = pm.collectionVariables.get(\"time\");",
+											"",
+											"title = Util.getRandomString(Util.getRandomInt(60))",
+											"content = Util.getRandomString(Util.getRandomInt(Math.pow(2, 12)))",
+											"const timeRange = 12 * 60;",
+											"time = Util.getRandomInt(timeRange);",
+											"",
+											"pm.collectionVariables.set(\"title\", title);",
+											"pm.collectionVariables.set(\"content\", content);",
+											"pm.collectionVariables.set(\"time\", time);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", () => {",
+											"    pm.expect(pm.response.code).to.eql(422);",
+											"})",
+											"const reponseText = pm.response.text();",
+											"",
+											"pm.test(\"The response has text about missing time\", () => {",
+											"pm.expect(reponseText).include(\"missing field `time`\")",
+											"})",
+											"",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"id\": {{id}},\n    \"title\": \"{{title}}\",\n    \"content\": \"{{content}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/activities/{{id}}",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"activities",
+										"{{id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update_activity_with_incorect_data_type",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"let title = pm.collectionVariables.get(\"title\");",
+											"let content = pm.collectionVariables.get(\"content\");",
+											"let time = pm.collectionVariables.get(\"time\");",
+											"",
+											"title = Util.getRandomString(Util.getRandomInt(60))",
+											"content = Util.getRandomString(Util.getRandomInt(Math.pow(2, 12)))",
+											"const timeRange = 12 * 60;",
+											"time = Util.getRandomInt(timeRange);",
+											"",
+											"pm.collectionVariables.set(\"title\", title);",
+											"pm.collectionVariables.set(\"content\", content);",
+											"pm.collectionVariables.set(\"time\", time);"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", () => {",
+											"    pm.expect(pm.response.code).to.eql(422);",
+											"})",
+											"const reponseText = pm.response.text();",
+											"",
+											"pm.test(\"The response has text about invalid type\", () => {",
+											"pm.expect(reponseText).include(\"invalid type: string\")",
+											"})",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"id\": \"{{id}}\",\n    \"title\": \"{{title}}\",\n    \"content\": \"{{content}}\",\n    \"time\": \"{{time}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/activities/{{id}}",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"activities",
+										"{{id}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"//const url = \"localhost\"",
+									"const url = \"backend\" // crunch for autotests",
+									"",
+									"const reqBody = {",
+									"    \"title\": `${Util.getRandomString(60)}`,",
+									"    \"content\": `${Util.getRandomString(1024)}`,",
+									"    \"time\": Util.getRandomInt(12 * 60)",
+									"}",
+									"",
+									"const postRequest = {",
+									"  url: `http://${url}:8080/activities`,",
+									"  method: 'POST',",
+									"  header: {",
+									"    'Content-Type': 'application/json',",
+									"    \"Authorization\": pm.collectionVariables.get(\"token\")",
+									"  },",
+									"  body: {",
+									"    mode: 'json',",
+									"    raw: JSON.stringify(reqBody)",
+									"  }",
+									"};",
+									"",
+									"pm.sendRequest(postRequest, (error, response) => {",
+									"  pm.test('Post activities should be ok', () => {",
+									"    pm.expect(error).to.equal(null);",
+									"    pm.expect(response).to.have.property('code', 200);",
+									"  })",
+									"});",
+									"",
+									"pm.request.headers.add({",
+									"        key: \"Authorization\",",
+									"        value: pm.collectionVariables.get(\"token\")",
+									"});",
+									"",
+									"pm.test(\"Header contain token\", ()=>{",
+									"    pm.expect(pm.request.headers.get(\"Authorization\").length).not.eql(0)",
+									"})",
+									"",
+									"const accountID = pm.collectionVariables.get(\"accountID\");",
+									"const raw = JSON.stringify(`select title, id from activities where account_id=${accountID};`)",
+									"",
+									"const discoverID = {",
+									"  url: `http://${url}:4545/query`,",
+									"  method: 'POST',",
+									"  header: {",
+									"    'Content-Type': 'application/json',",
+									"  },",
+									"  body: {",
+									"    mode: 'json',",
+									"    raw: raw",
+									"  }",
+									"};",
+									"",
+									"pm.sendRequest(discoverID, (error, response) => {",
+									"  pm.test('Post activities should be ok', () => {",
+									"    pm.expect(error).to.equal(null);",
+									"    pm.expect(response).to.have.property('code', 200);",
+									"    console.log(response)",
+									"    pm.collectionVariables.set(\"id\", parseInt(response.json()[0].id))",
+									"  })",
+									"});"
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"//const url = \"localhost\"",
+									"const url = \"backend\" // crunch for autotests",
+									"const id = parseInt(pm.collectionVariables.get(\"id\"))",
+									"",
+									"",
+									"const postRequest = {",
+									"  url: `http://${url}:8080/activities/${id}`,",
+									"  method: 'DELETE',",
+									"  header: {",
+									"    'Content-Type': 'application/json',",
+									"    \"Authorization\": pm.collectionVariables.get(\"token\")",
+									"  },",
+									"",
+									"};",
+									"pm.sendRequest(postRequest, (error, response) => {",
+									"  pm.test('response should be okay to process', () => {",
+									"    pm.expect(error).to.equal(null);",
+									"    pm.expect(response).to.have.property('code', 200);",
+									"  })",
+									"});",
+									"",
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Delete",
+					"item": [
+						{
+							"name": "delete_not_exist_activity",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 401\", () => {",
+											"    pm.expect(pm.response.code).to.eql(401);",
+											"})",
+											"",
+											"pm.test(\"Text should contain true information\", () => {",
+											"    pm.expect(pm.response.text()).include(\"No permission to change underlying resource\")",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.collectionVariables.set(\"BadId\", 1 + 100000)"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/activities/{{BadId}}",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"activities",
+										"{{BadId}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									"pm.request.headers.add({",
+									"        key: \"Authorization\",",
+									"        value: pm.collectionVariables.get(\"token\")",
+									"});",
+									"",
+									"pm.test(\"Header contain token\", ()=>{",
+									"    pm.expect(pm.request.headers.get(\"Authorization\").length).not.eql(0)",
+									"})"
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Write_off",
+					"item": [
+						{
+							"name": "add_time_spent_with_0",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", () => {",
+											"    pm.expect(pm.response.code).to.eql(422);",
+											"})",
+											"",
+											"pm.test(\"Response has valid text `Cannot update. invalid data.`\", ()=> {",
+											"    pm.expect(pm.response.text()).include(`Cannot update. invalid data.`)",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"time\": 0,\n    \"activity_id\": {{id}}\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/time_spent",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"time_spent"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"//const url = \"localhost\"",
+									"const url = \"backend\" // crunch for autotests",
+									"",
+									"const reqBody = {",
+									"    \"title\": `${Util.getRandomString(60)}`,",
+									"    \"content\": `${Util.getRandomString(1024)}`,",
+									"    \"time\": Util.getRandomInt(12 * 60)",
+									"}",
+									"",
+									"const postRequest = {",
+									"  url: `http://${url}:8080/activities`,",
+									"  method: 'POST',",
+									"  header: {",
+									"    'Content-Type': 'application/json',",
+									"    \"Authorization\": pm.collectionVariables.get(\"token\")",
+									"  },",
+									"  body: {",
+									"    mode: 'json',",
+									"    raw: JSON.stringify(reqBody)",
+									"  }",
+									"};",
+									"",
+									"pm.sendRequest(postRequest, (error, response) => {",
+									"  pm.test('Post activities should be ok', () => {",
+									"    pm.expect(error).to.equal(null);",
+									"    pm.expect(response).to.have.property('code', 200);",
+									"  })",
+									"});",
+									"",
+									"pm.request.headers.add({",
+									"        key: \"Authorization\",",
+									"        value: pm.collectionVariables.get(\"token\")",
+									"});",
+									"",
+									"pm.test(\"Header contain token\", ()=>{",
+									"    pm.expect(pm.request.headers.get(\"Authorization\").length).not.eql(0)",
+									"})",
+									"",
+									"const accountID = pm.collectionVariables.get(\"accountID\");",
+									"const raw = JSON.stringify(`select title, id from activities where account_id=${accountID};`)",
+									"",
+									"const discoverID = {",
+									"  url: `http://${url}:4545/query`,",
+									"  method: 'POST',",
+									"  header: {",
+									"    'Content-Type': 'application/json',",
+									"  },",
+									"  body: {",
+									"    mode: 'json',",
+									"    raw: raw",
+									"  }",
+									"};",
+									"",
+									"pm.sendRequest(discoverID, (error, response) => {",
+									"  pm.test('Post activities should be ok', () => {",
+									"    pm.expect(error).to.equal(null);",
+									"    pm.expect(response).to.have.property('code', 200);",
+									"    console.log(response)",
+									"    pm.collectionVariables.set(\"id\", parseInt(response.json()[0].id))",
+									"  })",
+									"});"
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"//const url = \"localhost\"",
+									"const url = \"backend\" // crunch for autotests",
+									"const id = parseInt(pm.collectionVariables.get(\"id\"))",
+									"",
+									"",
+									"const postRequest = {",
+									"  url: `http://${url}:8080/activities/${id}`,",
+									"  method: 'DELETE',",
+									"  header: {",
+									"    'Content-Type': 'application/json',",
+									"    \"Authorization\": pm.collectionVariables.get(\"token\")",
+									"  },",
+									"",
+									"};",
+									"pm.sendRequest(postRequest, (error, response) => {",
+									"  pm.test('response should be okay to process', () => {",
+									"    pm.expect(error).to.equal(null);",
+									"    pm.expect(response).to.have.property('code', 200);",
+									"  })",
+									"});",
+									"",
+									""
+								]
+							}
+						}
+					]
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"Util = {}",
+							"",
+							"Util.getRandomString = (lenght) => {",
+							"    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689!@#$%^&*();\";",
+							"    let charsLength = chars.length;",
+							"    let result = '';",
+							"    for (let i = 0; i < lenght; i++) {",
+							"        result += chars.charAt(Math.floor(Math.random() * charsLength));",
+							"    }",
+							"    return result;",
+							"}",
+							"",
+							"Util.getRandomInt = (max) => Math.floor(Math.random()* max)",
+							"",
+							"Util.getIntFromText = (string) => {",
+							"    const regex = /\\d+/;",
+							"    const match = string.match(regex);",
+							"    return match[0]",
+							"}",
+							"",
+							"emailPrefix = Util.getRandomString(pm.collectionVariables.get(\"emailLength\"))",
+							"emailDomain = Util.getRandomString(pm.collectionVariables.get(\"passwordLength\"))",
+							"emailProvider = pm.collectionVariables.get(\"emailProvider\")",
+							"",
+							"const email = `${emailPrefix}@${emailDomain}.${emailProvider}`",
+							"",
+							"const password = Util.getRandomString(pm.collectionVariables.get(\"passwordLength\"))",
+							"",
+							"const url = \"backend\" // crunch for autotests",
+							"//const url = \"localhost\"",
+							"const reqBody = {",
+							"    \"email\": email,",
+							"    \"password\": password,",
+							"",
+							"}",
+							"",
+							"const postRequest = {",
+							"  url: `http://${url}:8080/registration`,",
+							"  method: 'POST',",
+							"  header: {",
+							"    'Content-Type': 'application/json',",
+							"  },",
+							"  body: {",
+							"    mode: 'json',",
+							"    raw: JSON.stringify(reqBody)",
+							"  }",
+							"};",
+							"",
+							"pm.sendRequest(postRequest, (error, response) => {",
+							"  pm.test('registration should be okay', () => {",
+							"    pm.expect(error).to.equal(null);",
+							"    pm.expect(response).to.have.property('code', 200);",
+							"",
+							"const raw = JSON.stringify(`select id from accounts where email ='${email}';`);",
+							"",
+							"const getAccountId = {",
+							"  url: `http://${url}:4545/query`,",
+							"  method: 'POST',",
+							"  header: {",
+							"    'Content-Type': 'application/json',",
+							"  },",
+							"  body: {",
+							"    mode: 'json',",
+							"    raw: raw",
+							"  }",
+							"};",
+							"",
+							"pm.sendRequest(getAccountId, (error, response) => {",
+							"  pm.test('get account id', () => {",
+							"    pm.expect(error).to.equal(null);",
+							"    pm.expect(response).to.have.property('code', 200);",
+							"const id = parseInt(Util.getIntFromText(response.text()))",
+							"pm.collectionVariables.set(\"accountID\", id)",
+							"  })",
+							"})",
+							"",
+							"const postLogin = {",
+							"  url: `http://${url}:8080/login`,",
+							"  method: 'POST',",
+							"  header: {",
+							"    'Content-Type': 'application/json',",
+							"  },",
+							"  body: {",
+							"    mode: 'json',",
+							"    raw: JSON.stringify(reqBody)",
+							"  }",
+							"};",
+							"",
+							"pm.sendRequest(postLogin, (error, response) => {",
+							"  pm.test('login should be ok', () => {",
+							"    pm.expect(error).to.equal(null);",
+							"    pm.expect(response).to.have.property('code', 200);",
+							"    const token = response.json()",
+							"    pm.collectionVariables.set(\"token\", token)",
+							"  })",
+							"",
+							"});",
+							"",
+							"  })",
+							"});",
+							" ",
+							"",
+							"",
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "NegativeCasesLoginRegistration",
+			"item": [
+				{
+					"name": "registration",
+					"item": [
+						{
+							"name": "registration_with_wrong_email_structure",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"emailPrefix = Util.getRandomString(pm.collectionVariables.get(\"emailLength\"))",
+											"emailDomain = Util.getRandomString(pm.collectionVariables.get(\"passwordLength\"))",
+											"emailProvider = pm.collectionVariables.get(\"emailProvider\")",
+											"",
+											"pm.collectionVariables.set(\"email\", `${emailPrefix}${emailDomain}.${emailProvider}`)",
+											"",
+											"password = Util.getRandomString(pm.collectionVariables.get(\"passwordLength\"))",
+											"pm.collectionVariables.set(\"password\", password)"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response code is 200\", ()=>{",
+											"    pm.expect(pm.response.code).eql(200)",
+											"})",
+											"",
+											"pm.test(\"Text about add new account\", () => {",
+											"    pm.expect(pm.response.text()).includes(`Can't create account`)",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"{{email}}\",\n    \"password\":\"{{password}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/registration",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"registration"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "registration_with_empty_password",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"emailPrefix = Util.getRandomString(pm.collectionVariables.get(\"emailLength\"))",
+											"emailDomain = Util.getRandomString(pm.collectionVariables.get(\"passwordLength\"))",
+											"emailProvider = pm.collectionVariables.get(\"emailProvider\")",
+											"",
+											"pm.collectionVariables.set(\"email\", `${emailPrefix}@${emailDomain}.${emailProvider}`)",
+											"",
+											"password = \"\"",
+											"pm.collectionVariables.set(\"password\", password)"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response code is 200\", ()=>{",
+											"    pm.expect(pm.response.code).eql(200)",
+											"})",
+											"",
+											"pm.test(\"Text about add new account\", () => {",
+											"    pm.expect(pm.response.text()).includes(`Can't create account`)",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"{{email}}\",\n    \"password\":\"{{password}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/registration",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"registration"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "registration_with_short_password",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"emailPrefix = Util.getRandomString(pm.collectionVariables.get(\"emailLength\"))",
+											"emailDomain = Util.getRandomString(pm.collectionVariables.get(\"emailLength\"))",
+											"emailProvider = pm.collectionVariables.get(\"emailProvider\")",
+											"",
+											"pm.collectionVariables.set(\"email\", `${emailPrefix}@${emailDomain}.${emailProvider}`)",
+											"",
+											"password = Util.getRandomString(2)",
+											"pm.collectionVariables.set(\"password\", password)"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response code is 200\", ()=>{",
+											"    pm.expect(pm.response.code).eql(200)",
+											"})",
+											"",
+											"pm.test(\"Text about add new account\", () => {",
+											"    pm.expect(pm.response.text()).includes(`Can't create account`)",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"{{email}}\",\n    \"password\":\"{{password}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/registration",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"registration"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "login",
+					"item": [
+						{
+							"name": "login_with_wrong_emai",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response code is 200\", ()=>{",
+											"    pm.expect(pm.response.code).eql(200)",
+											"})",
+											"",
+											"let token;",
+											"",
+											"try {",
+											"    token = pm.response.json()",
+											"}",
+											"catch{",
+											"    token = \"\"",
+											"}",
+											"pm.test(\"Token length not equal 0\", () => {",
+											"    pm.expect(token.length).eql(0)",
+											"})",
+											"",
+											"pm.test(\"Text about wrong email or password not provide sensitive information\", ()=>{",
+											"    pm.expect(pm.response.text()).includes(\"Wrong E-Mail/Password combination\")",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"{{email}}d\",\n    \"password\":\"{{password}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/login",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "login_with_wrong_pass",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response code is 401\", ()=>{",
+											"    pm.expect(pm.response.code).eql(401)",
+											"})",
+											"",
+											"let token;",
+											"",
+											"try {",
+											"    token = pm.response.json()",
+											"}",
+											"catch{",
+											"    token = \"\"",
+											"}",
+											"pm.test(\"Token length not equal 0\", () => {",
+											"    pm.expect(token.length).eql(0)",
+											"})",
+											"",
+											"pm.test(\"Text about wrong email or password not provide sensitive information\", ()=>{",
+											"    pm.expect(pm.response.text()).includes(\"Wrong E-Mail/Password combination\")",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"{{email}}\",\n    \"password\":\"{{password}}+1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/login",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									"",
+									"emailPrefix = Util.getRandomString(pm.collectionVariables.get(\"emailLength\"))",
+									"emailDomain = Util.getRandomString(pm.collectionVariables.get(\"passwordLength\"))",
+									"emailProvider = pm.collectionVariables.get(\"emailProvider\")",
+									"",
+									"const email = `${emailPrefix}@${emailDomain}.${emailProvider}`",
+									"",
+									"const password = Util.getRandomString(pm.collectionVariables.get(\"passwordLength\"))",
+									"",
+									"pm.collectionVariables.set(\"email\", email)",
+									"pm.collectionVariables.set(\"password\", password)",
+									"",
+									"const url = \"backend\" // crunch for autotests",
+									"//const url = \"localhost\"",
+									"const reqBody = {",
+									"    \"email\": email,",
+									"    \"password\": password,",
+									"",
+									"}",
+									"",
+									"const postRequest = {",
+									"  url: `http://${url}:8080/registration`,",
+									"  method: 'POST',",
+									"  header: {",
+									"    'Content-Type': 'application/json',",
+									"  },",
+									"  body: {",
+									"    mode: 'json',",
+									"    raw: JSON.stringify(reqBody)",
+									"  }",
+									"};",
+									"",
+									"pm.sendRequest(postRequest, (error, response) => {",
+									"  pm.test('registration should be okay', () => {",
+									"    pm.expect(error).to.equal(null);",
+									"    pm.expect(response).to.have.property('code', 200);",
+									"  })",
+									"});"
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"Util = {}",
+							"",
+							"Util.getRandomString = (lenght) => {",
+							"    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689!@#$%^&*()';\";",
+							"    let charsLength = chars.length;",
+							"    let result = '';",
+							"    for (let i = 0; i < lenght; i++) {",
+							"        result += chars.charAt(Math.floor(Math.random() * charsLength));",
+							"    }",
+							"    return result;",
+							"}",
+							"",
+							"Util.getRandomInt = (max) => Math.floor(Math.random()* max)",
+							"",
+							"Util.getIntFromText = (string) => {",
+							"    const regex = /\\d+/;",
+							"    const match = string.match(regex);",
+							"    return match[0]",
+							"}",
+							"",
+							" ",
+							"",
+							"",
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "title",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "content",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "time",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "limit",
+			"value": "100",
+			"type": "string"
+		},
+		{
+			"key": "url",
+			"value": "http://127.0.0.1:8080",
+			"type": "string"
+		},
+		{
+			"key": "timeSpentID",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "timeSpent",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "titleLength",
+			"value": "60",
+			"type": "string"
+		},
+		{
+			"key": "offset",
+			"value": "0",
+			"type": "string"
+		},
+		{
+			"key": "BadId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "http-sql",
+			"value": "http://localhost:4545/query",
+			"type": "string"
+		},
+		{
+			"key": "email",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "password",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "emailLength",
+			"value": "15",
+			"type": "string"
+		},
+		{
+			"key": "passwordLength",
+			"value": "12",
+			"type": "string"
+		},
+		{
+			"key": "emailProvider",
+			"value": "iv",
+			"type": "string"
+		},
+		{
+			"key": "emal",
+			"value": ""
+		},
+		{
+			"key": "accountID",
+			"value": "",
+			"type": "string"
+		}
+	]
 }
-

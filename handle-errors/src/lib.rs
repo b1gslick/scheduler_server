@@ -20,6 +20,7 @@ pub enum Error {
     ArgonLibraryError(ArgonError),
     CannotDecryptionToken,
     Unauthorized,
+    UnsupportedMediaType,
 }
 
 impl std::fmt::Display for Error {
@@ -43,6 +44,9 @@ impl std::fmt::Display for Error {
             }
             Error::CannotDecryptionToken => {
                 write!(f, "Cannot decrypt token provide")
+            }
+            Error::UnsupportedMediaType => {
+                write!(f, "Wrong type of body")
             }
         }
     }
@@ -110,6 +114,12 @@ pub async fn return_error(r: Rejection) -> Result<impl Reply, Rejection> {
             "Unprocessable entity".to_string(),
             StatusCode::UNPROCESSABLE_ENTITY,
         ))
+    } else if let Some(crate::Error::UnsupportedMediaType) = r.find() {
+        event!(Level::ERROR, "Wrong body format");
+        Ok(warp::reply::with_status(
+            "UnsupportedMediaType".to_string(),
+            StatusCode::UNSUPPORTED_MEDIA_TYPE,
+        ))
     } else {
         Ok(warp::reply::with_status(
             "Route not found".to_string(),
@@ -154,7 +164,13 @@ mod handle_error_tests {
     async fn small_test_time_spent_not_found() {
         let error_code = warp::reject::custom(Error::TimeSpentNotFound);
         let answer = return_error(error_code).await.unwrap().into_response();
-        println!("{answer:?}");
         assert_eq!(answer.status(), 404);
+    }
+    #[tokio::test]
+    async fn small_test_unsupported_media_type() {
+        let error_code = warp::reject::custom(Error::UnsupportedMediaType);
+        let answer = return_error(error_code).await.unwrap().into_response();
+        println!("{answer:?}");
+        assert_eq!(answer.status(), 415);
     }
 }
