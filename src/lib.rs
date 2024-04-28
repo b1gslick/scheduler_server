@@ -7,6 +7,7 @@ use warp::{http::Method, Filter, Reply};
 pub mod config;
 pub mod routes;
 pub mod store;
+mod tests;
 mod types;
 
 async fn build_routes(store: store::Store) -> impl Filter<Extract = impl Reply> + Clone {
@@ -79,7 +80,6 @@ async fn build_routes(store: store::Store) -> impl Filter<Extract = impl Reply> 
         .and(warp::body::json())
         .and_then(routes::authentication::login);
 
-    
     get_activities
         .or(add_activity)
         .or(update_activities)

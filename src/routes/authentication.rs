@@ -90,10 +90,20 @@ pub fn auth() -> impl Filter<Extract = (Session,), Error = warp::Rejection> + Cl
 
 #[cfg(test)]
 mod authentication_tests {
+
+    use crate::routes::authentication::{login, register};
+    use testcontainers::clients::Cli;
+    use warp::reply::Reply;
+
+    use crate::{
+        tests::helpers::{create_postgres, prepare_store},
+        types::account::Account,
+    };
+
     use super::{auth, env, issue_token, AccountID};
 
     #[tokio::test]
-    async fn post_activities_auth() {
+    async fn small_test_post_activities_auth() {
         env::set_var("PASETO_KEY", "RANDOM WORDS WINTER MACINTOSH PC");
         let token = issue_token(AccountID(3));
 
@@ -104,5 +114,65 @@ mod authentication_tests {
             .filter(&filter);
 
         assert_eq!(res.await.unwrap().account_id, AccountID(3));
+    }
+
+    #[tokio::test]
+    async fn medium_test_user_should_have_possibilities_for_registration() {
+        let docker = Cli::default();
+        let node = docker.run(create_postgres());
+        let store = prepare_store(node.get_host_port_ipv4(5432)).await.unwrap();
+        let account = Account {
+            id: Some(AccountID(1)),
+            email: "test@email.iv".to_string(),
+            password: "test".to_string(),
+        };
+        let result = register(store, account).await.unwrap().into_response();
+        assert_eq!(result.status(), 200)
+    }
+
+    #[tokio::test]
+    async fn medium_test_user_can_login() {
+        let docker = Cli::default();
+        let node = docker.run(create_postgres());
+        let store = prepare_store(node.get_host_port_ipv4(5432)).await.unwrap();
+        let account = store.clone().add_test_account(2).await.unwrap();
+        let result = login(store, account).await.unwrap().into_response();
+        assert_eq!(result.status(), 200)
+    }
+
+    #[tokio::test]
+    async fn medium_test_not_registret_cant_login() {
+        let docker = Cli::default();
+        let node = docker.run(create_postgres());
+        let store = prepare_store(node.get_host_port_ipv4(5432)).await.unwrap();
+        let account = Account {
+            id: Some(AccountID(1)),
+            email: "test@email.iv".to_string(),
+            password: "test".to_string(),
+        };
+        let result = login(store, account).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn medium_test_user_cant_login_with_wrong_password() {
+        let docker = Cli::default();
+        let node = docker.run(create_postgres());
+        let store = prepare_store(node.get_host_port_ipv4(5432)).await.unwrap();
+        let mut account = store.clone().add_test_account(2).await.unwrap();
+        account.password = "test".to_string();
+        let result = login(store, account).await;
+        assert!(result.is_err());
+    }
+
+    #[tokio::test]
+    async fn medium_test_user_cant_login_with_wrong_email() {
+        let docker = Cli::default();
+        let node = docker.run(create_postgres());
+        let store = prepare_store(node.get_host_port_ipv4(5432)).await.unwrap();
+        let mut account = store.clone().add_test_account(2).await.unwrap();
+        account.password = "test".to_string();
+        let result = login(store, account).await;
+        assert!(result.is_err());
     }
 }
