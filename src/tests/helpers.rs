@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, fmt::Debug};
 
 use testcontainers::RunnableImage;
 use testcontainers_modules::postgres::Postgres;
@@ -117,5 +117,18 @@ pub fn get_session(id: i32) -> Session {
         exp: dt,
         account_id: AccountID(id),
         nbf: current_date_time,
+    }
+}
+
+pub trait HelperTrait: Debug {
+    fn helper_method(&mut self);
+}
+
+impl<T> HelperTrait for T
+where
+    T: Debug,
+{
+    fn helper_method(&mut self) {
+        println!("{:?}", self);
     }
 }

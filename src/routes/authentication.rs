@@ -142,7 +142,7 @@ mod authentication_tests {
     }
 
     #[tokio::test]
-    async fn medium_test_not_registret_cant_login() {
+    async fn medium_test_not_registered_cant_login() {
         let docker = Cli::default();
         let node = docker.run(create_postgres());
         let store = prepare_store(node.get_host_port_ipv4(5432)).await.unwrap();

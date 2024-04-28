@@ -22,27 +22,6 @@ pub enum Error {
     Unauthorized,
 }
 
-// so that two trait bounds essentially collapse into one.
-pub trait HelperTrait: Debug {
-    // + PartialEq + warp::Reply {
-    fn helper_method(&mut self);
-    // fn eq(&self, other: &Self) -> bool;
-}
-
-impl<T> HelperTrait for T
-where
-    T: Debug,
-    // T: PartialEq,
-    // T: warp::Reply,
-{
-    fn helper_method(&mut self) {
-        println!("{:?}", self);
-    }
-    // fn eq(&self, other: &Self) -> bool {
-    //     self == other
-    // }
-}
-
 impl std::fmt::Display for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match &self {
@@ -57,7 +36,7 @@ impl std::fmt::Display for Error {
                 write!(f, "Cannot update. invalid data.")
             }
             Error::WrongPassword => {
-                write!(f, "Wrong password")
+                write!(f, "Wrong E-Mail/Password combination")
             }
             Error::ArgonLibraryError(_) => {
                 write!(f, "Cannot verifiy password")
@@ -74,7 +53,7 @@ impl Reject for Error {}
 const DUPLICATE_KEY: u32 = 23505;
 
 #[instrument]
-pub async fn return_error(r: Rejection) -> Result<impl Reply + HelperTrait, Rejection> {
+pub async fn return_error(r: Rejection) -> Result<impl Reply, Rejection> {
     if let Some(crate::Error::DatabaseQueryError(e)) = r.find() {
         event!(Level::ERROR, "Database query error");
 
@@ -97,11 +76,6 @@ pub async fn return_error(r: Rejection) -> Result<impl Reply + HelperTrait, Reje
                 StatusCode::UNPROCESSABLE_ENTITY,
             )),
         }
-    } else if let Some(error) = r.find::<Error>() {
-        Ok(warp::reply::with_status(
-            error.to_string(),
-            StatusCode::RANGE_NOT_SATISFIABLE,
-        ))
     } else if let Some(error) = r.find::<CorsForbidden>() {
         Ok(warp::reply::with_status(
             error.to_string(),
@@ -130,6 +104,12 @@ pub async fn return_error(r: Rejection) -> Result<impl Reply + HelperTrait, Reje
             "Not authorized".to_string(),
             StatusCode::NETWORK_AUTHENTICATION_REQUIRED,
         ))
+    } else if let Some(crate::Error::MissingParameters) = r.find() {
+        event!(Level::ERROR, "MissingParameters");
+        Ok(warp::reply::with_status(
+            "Unprocessable entity".to_string(),
+            StatusCode::UNPROCESSABLE_ENTITY,
+        ))
     } else {
         Ok(warp::reply::with_status(
             "Route not found".to_string(),
@@ -144,12 +124,37 @@ mod handle_error_tests {
     use super::*;
 
     #[tokio::test]
-    async fn test() {
+    async fn small_test_unauthorized() {
         let error_code = warp::reject::custom(Error::Unauthorized);
-        let answer = return_error(error_code).await.unwrap();
-        // assert_eq!(
-        // answer,
-        // warp::reply::with_status("".to_string(), StatusCode::NOT_FOUND)
-        // );
+        let answer = return_error(error_code).await.unwrap().into_response();
+        assert_eq!(answer.status(), 401)
+    }
+
+    #[tokio::test]
+    async fn small_test_cannot_decryption_token() {
+        let error_code = warp::reject::custom(Error::CannotDecryptionToken);
+        let answer = return_error(error_code).await.unwrap().into_response();
+        assert_eq!(answer.status(), 511)
+    }
+
+    #[tokio::test]
+    async fn small_test_wrong_password() {
+        let error_code = warp::reject::custom(Error::WrongPassword);
+        let answer = return_error(error_code).await.unwrap().into_response();
+        assert_eq!(answer.status(), 401)
+    }
+
+    #[tokio::test]
+    async fn small_test_missing_paramter() {
+        let error_code = warp::reject::custom(Error::MissingParameters);
+        let answer = return_error(error_code).await.unwrap().into_response();
+        assert_eq!(answer.status(), 422);
+    }
+    #[tokio::test]
+    async fn small_test_time_spent_not_found() {
+        let error_code = warp::reject::custom(Error::TimeSpentNotFound);
+        let answer = return_error(error_code).await.unwrap().into_response();
+        println!("{answer:?}");
+        assert_eq!(answer.status(), 404);
     }
 }

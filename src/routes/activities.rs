@@ -148,7 +148,7 @@ mod test_activities {
     }
 
     #[tokio::test]
-    async fn medium_test_user_should_get_owned_activities_with_ofset() {
+    async fn medium_test_user_should_get_owned_activities_with_offset() {
         let docker = Cli::default();
         let node = docker.run(create_postgres());
         let store = prepare_store(node.get_host_port_ipv4(5432)).await.unwrap();

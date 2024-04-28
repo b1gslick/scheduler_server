@@ -151,4 +151,51 @@ pub async fn oneshot(store: store::Store) -> OneshotHandler {
 }
 
 #[cfg(test)]
-mod test_scheduler {}
+mod test_scheduler {
+
+    use testcontainers::clients::Cli;
+
+    use crate::{
+        build_routes,
+        config::Config,
+        setup_store,
+        tests::helpers::{create_postgres, prepare_store},
+    };
+
+    #[tokio::test]
+    async fn medium_test_configure_store() {
+        let docker = Cli::default();
+        let node = docker.run(create_postgres());
+
+        let config = Config {
+            log_level: "DEBUG".to_string(),
+            port: 8080,
+            database_user: "postgres".to_string(),
+            database_password: "postgres".to_string(),
+            database_host: "127.0.0.1".to_string(),
+            database_port: node.get_host_port_ipv4(5432),
+            database_name: "postgres".to_string(),
+        };
+        let result = setup_store(&config).await;
+        assert!(result.is_ok())
+    }
+
+    #[tokio::test]
+    async fn medium_test_get_empty_activities() {
+        // env::set_var("PASETO_KEY", "RANDOM WORDS WINTER MACINTOSH PC");
+        // let token = issue_token(AccountID(3));
+        let docker = Cli::default();
+        let node = docker.run(create_postgres());
+        let store = prepare_store(node.get_host_port_ipv4(5432)).await.unwrap();
+
+        let filter = build_routes(store).await;
+
+        let res = warp::test::request()
+            .method("GET")
+            .path("/activities?limit=1&offset=1")
+            .reply(&filter)
+            .await;
+        println!("{:?}", res.body());
+        assert_eq!(res.body().to_vec(), b"[]");
+    }
+}

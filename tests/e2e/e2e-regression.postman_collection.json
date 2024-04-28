@@ -2551,7 +2551,7 @@
                       "})",
                       "",
                       "pm.test(\"Text about wrong email or password not provide sensitive information\", ()=>{",
-                      "    pm.expect(pm.response.text()).includes(\"Wrong login or password\")",
+                      "    pm.expect(pm.response.text()).includes(\"Wrong E-Mail/Password combination\")",
                       "})"
                     ],
                     "type": "text/javascript",
