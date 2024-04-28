@@ -73,7 +73,7 @@ mod config_tests {
     }
 
     #[test]
-    fn set_paseto_key() {
+    fn small_test_set_paseto_key() {
         set_env();
 
         let expexted = Config {

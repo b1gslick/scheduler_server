@@ -162,7 +162,7 @@ impl Store {
         id: i32,
         account_id: AccountID,
     ) -> Result<TimeSpent, Error> {
-        match sqlx::query(r#"SELECT * from time_spent WHERE id = $1 and accound_id = $2"#)
+        match sqlx::query(r#"SELECT * from time_spent WHERE id = $1 and account_id = $2"#)
             .bind(id)
             .bind(account_id.0)
             .map(|row: PgRow| TimeSpent {

@@ -149,3 +149,6 @@ pub async fn oneshot(store: store::Store) -> OneshotHandler {
 
     OneshotHandler { sender: tx }
 }
+
+#[cfg(test)]
+mod test_scheduler {}

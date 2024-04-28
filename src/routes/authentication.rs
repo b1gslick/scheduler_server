@@ -132,6 +132,7 @@ mod authentication_tests {
 
     #[tokio::test]
     async fn medium_test_user_can_login() {
+        env::set_var("PASETO_KEY", "RANDOM WORDS WINTER MACINTOSH PC");
         let docker = Cli::default();
         let node = docker.run(create_postgres());
         let store = prepare_store(node.get_host_port_ipv4(5432)).await.unwrap();

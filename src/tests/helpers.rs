@@ -68,6 +68,17 @@ impl Store {
                 );"
             .to_string(),
         );
+        tables.insert(
+            "time_spent".to_string(),
+            "CREATE TABLE IF NOT EXISTS time_spent (
+            id serial PRIMARY KEY,
+            time integer NOT NULL,
+            account_id serial NOT NULL,
+            created_on TIMESTAMP NOT NULL DEFAULT NOW(),
+            activity_id integer REFERENCES activities
+            );"
+            .to_string(),
+        );
         match tables.get(name) {
             Some(insert) => sqlx::query(insert)
                 .fetch_all(&self.connection)
@@ -89,6 +100,7 @@ pub async fn prepare_store(port: u16) -> Result<Store, sqlx::Error> {
 
     store.add_tables("accounts").await;
     store.add_tables("activities").await;
+    store.add_tables("time_spent").await;
     Ok(store)
 }
 
