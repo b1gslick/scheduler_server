@@ -25,6 +25,11 @@ pub async fn add_time_spent(
     new_time_spent: NewTimeSpent,
 ) -> Result<impl warp::Reply, warp::Rejection> {
     info!("find activity for time spent");
+    if new_time_spent.time <= 0 {
+        return Err(warp::reject::custom(
+            handle_errors::Error::MissingParameters,
+        ));
+    }
     let account_id = session.account_id;
     match store
         .add_time_spent(new_time_spent.clone(), account_id)

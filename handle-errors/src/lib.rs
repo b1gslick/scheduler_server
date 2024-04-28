@@ -21,6 +21,8 @@ pub enum Error {
     CannotDecryptionToken,
     Unauthorized,
     UnsupportedMediaType,
+    PasswordInvalid,
+    WrongEmailType,
 }
 
 impl std::fmt::Display for Error {
@@ -47,6 +49,12 @@ impl std::fmt::Display for Error {
             }
             Error::UnsupportedMediaType => {
                 write!(f, "Wrong type of body")
+            }
+            Error::PasswordInvalid => {
+                write!(f, "Password not correct")
+            }
+            Error::WrongEmailType => {
+                write!(f, "Password not correct")
             }
         }
     }
@@ -89,6 +97,16 @@ pub async fn return_error(r: Rejection) -> Result<impl Reply, Rejection> {
         Ok(warp::reply::with_status(
             error.to_string(),
             StatusCode::UNPROCESSABLE_ENTITY,
+        ))
+    } else if let Some(crate::Error::PasswordInvalid) = r.find() {
+        Ok(warp::reply::with_status(
+            "Password not meet criteria".to_string(),
+            StatusCode::NOT_ACCEPTABLE,
+        ))
+    } else if let Some(crate::Error::WrongEmailType) = r.find() {
+        Ok(warp::reply::with_status(
+            "Email not meet criteria".to_string(),
+            StatusCode::NOT_ACCEPTABLE,
         ))
     } else if let Some(crate::Error::WrongPassword) = r.find() {
         event!(Level::ERROR, "Entered wrong password");
@@ -172,5 +190,19 @@ mod handle_error_tests {
         let answer = return_error(error_code).await.unwrap().into_response();
         println!("{answer:?}");
         assert_eq!(answer.status(), 415);
+    }
+    #[tokio::test]
+    async fn small_test_unsupported_password() {
+        let error_code = warp::reject::custom(Error::PasswordInvalid);
+        let answer = return_error(error_code).await.unwrap().into_response();
+        println!("{answer:?}");
+        assert_eq!(answer.status(), 406);
+    }
+    #[tokio::test]
+    async fn small_test_unsupported_email() {
+        let error_code = warp::reject::custom(Error::WrongEmailType);
+        let answer = return_error(error_code).await.unwrap().into_response();
+        println!("{answer:?}");
+        assert_eq!(answer.status(), 406);
     }
 }

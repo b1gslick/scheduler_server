@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 activities-scheduler-server = { path = "../", version = "0.1.0" }
-dotenv = "0.15.0"
+dotenvy = "0.15.0"
 tokio = { version = "1.35.1", features = ["full"] }
 reqwest = { version = "0.12.4", features = ["json"] }
 serde = { version = "1.0.193", features = ["derive"] }

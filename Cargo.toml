@@ -48,7 +48,7 @@ handle-errors = { path = "handle-errors" }
 # config
 clap = { version = "4.5.4", features = ["derive"] }
 proc-macro2 = "1.0.81"
-dotenv = { version = "0.15.0" }
+dotenvy = "0.15.7"
 
 # db
 sqlx = { version = "0.7.4", features = [

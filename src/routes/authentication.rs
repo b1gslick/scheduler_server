@@ -9,6 +9,9 @@ use crate::store::Store;
 use crate::types::account::{Account, AccountID, Session};
 
 pub async fn register(store: Store, account: Account) -> Result<impl warp::Reply, warp::Rejection> {
+    if account.password.len() < 3 || account.email.len() < 3 {
+        return Err(warp::reject::custom(handle_errors::Error::PasswordInvalid));
+    }
     let hashed_password = hash_password(account.password.as_bytes());
     let account = Account {
         id: account.id,
