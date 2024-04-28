@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "b0c3c496-91ab-4155-8da5-21bf3a25bf0d",
+    "_postman_id": "68f2d830-670a-454f-95a4-6b90a7f265da",
     "name": "e2e-regression",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "4366696"
@@ -152,7 +152,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "\"select id from accounts order by id DESC limit 1;\"\n",
+              "raw": "\"select id from accounts where email ='{{email}}';\"\n",
               "options": {
                 "raw": {
                   "language": "json"
@@ -186,20 +186,7 @@
                   "pm.collectionVariables.set(\"title\", title);",
                   "pm.collectionVariables.set(\"content\", content);",
                   "pm.collectionVariables.set(\"time\", time);",
-                  "",
-                  "/*unction getRandomString(lenght) {",
-                  "    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689!@#$%^&*()';\";",
-                  "    let charsLength = chars.length;",
-                  "    let result = '';",
-                  "    for (let i = 0; i < lenght; i++) {",
-                  "        result += chars.charAt(Math.floor(Math.random() * charsLength));",
-                  "    }",
-                  "    return result;",
-                  "}",
-                  "",
-                  "function getRandomInt(max) {",
-                  "    return Math.floor(Math.random() * max);",
-                  "}*/"
+                  ""
                 ],
                 "type": "text/javascript",
                 "packages": {}
@@ -283,8 +270,12 @@
                   "pm.test(\"Title which added, equal title in db\", () => {",
                   "    pm.expect(response[0].title).eq(pm.collectionVariables.get(\"title\"))",
                   "})",
+                  "pm.test(\"The array key lenght should be equal 1\", () => {",
+                  "    pm.expect(Object.keys(response).length).to.be.eql(1);",
+                  "})",
+                  "pm.collectionVariables.set(\"id\", parseInt(response[0].id))",
                   "",
-                  "pm.collectionVariables.set(\"id\", parseInt(response[0].id))"
+                  ""
                 ],
                 "type": "text/javascript",
                 "packages": {}
@@ -546,10 +537,7 @@
                   "pm.test(\"The response has time\", () => {",
                   "    pm.expect(responseJson.time).to.be.eql(parseInt(pm.collectionVariables.get(\"time\")))",
                   "})",
-                  "",
-                  "const offset = parseInt(pm.collectionVariables.get('offset')) + 1",
-                  "",
-                  "pm.collectionVariables.set(\"offset\", offset)"
+                  ""
                 ],
                 "type": "text/javascript",
                 "packages": {}
@@ -606,9 +594,8 @@
                   "pm.test(\"Anwser has text about time added\", ()=>{",
                   "    pm.expect(responseText).includes(`Time added`)",
                   "})",
-                  "const oldId = pm.collectionVariables.get(\"timeSpentID\")",
-                  "const timeSpentId = oldId == \"\" ? 1 : parseInt(oldId) + 1",
-                  "pm.collectionVariables.set(\"timeSpentID\", timeSpentId)"
+                  "",
+                  ""
                 ],
                 "type": "text/javascript",
                 "packages": {}
@@ -648,16 +635,17 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "const response = pm.response.text();",
+                  "const response = pm.response.json();",
                   "",
+                  "pm.collectionVariables.set(\"timeSpentID\", parseInt(response[0].id))",
                   "pm.test(\"Response code is 200\", ()=>{",
                   "    pm.expect(pm.response.code).eql(200)",
                   "})",
                   "",
-                  "pm.test(\"Response not empty\", () => {",
-                  "    const lengthEmptyQuery=2",
-                  "    pm.expect(response.length).above(lengthEmptyQuery)",
-                  "})"
+                  "pm.test(\"activity id equal correct value\", ()=>{",
+                  "    pm.expect(parseInt(response[0].activity_id)).to.eql(pm.collectionVariables.get(\"id\"))",
+                  "})",
+                  ""
                 ],
                 "type": "text/javascript",
                 "packages": {}
@@ -669,7 +657,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "\"select id, activity_id from time_spent where id={{timeSpentID}};\"\n",
+              "raw": "\"select id, activity_id from time_spent where activity_id={{id}};\"\n",
               "options": {
                 "raw": {
                   "language": "json"
@@ -905,9 +893,7 @@
                   "pm.test(\"Anwser has text about time added\", ()=>{",
                   "    pm.expect(responseText).includes(`Time added`)",
                   "})",
-                  "const oldId = pm.collectionVariables.get(\"timeSpentID\")",
-                  "const timeSpentId = oldId == \"\" ? 1 : parseInt(oldId) + 1",
-                  "pm.collectionVariables.set(\"timeSpentID\", timeSpentId)"
+                  ""
                 ],
                 "type": "text/javascript",
                 "packages": {}
@@ -936,6 +922,49 @@
               "raw": "{{url}}/time_spent",
               "host": ["{{url}}"],
               "path": ["time_spent"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "slq_query_after_add_time_spent_2",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "",
+                  "pm.collectionVariables.set(\"timeSpentID\", parseInt(response[0].id))",
+                  "pm.test(\"Response code is 200\", ()=>{",
+                  "    pm.expect(pm.response.code).eql(200)",
+                  "})",
+                  "",
+                  "pm.test(\"activity id equal correct value\", ()=>{",
+                  "    pm.expect(parseInt(response[0].activity_id)).to.eql(pm.collectionVariables.get(\"id\"))",
+                  "})",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "\"select id, activity_id from time_spent where activity_id={{id}} order by id DESC limit 1;\"\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{http-sql}}",
+              "host": ["{{http-sql}}"]
             }
           },
           "response": []
@@ -1020,58 +1049,6 @@
           "response": []
         },
         {
-          "name": "check_time_spent_exist_after_delete",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "let responseJson;",
-                  "try{",
-                  "    responseJson = pm.response.json()",
-                  "}",
-                  "catch(e){",
-                  "    console.error(e)",
-                  "}",
-                  "pm.test(\"Status code is 200\", () => {",
-                  "    pm.expect(pm.response.code).to.eql(200);",
-                  "})",
-                  "",
-                  "pm.test(\"The response has right timespent id\", () => {",
-                  "   const timeSpentId = parseInt(pm.collectionVariables.get('timeSpentID'))",
-                  "   pm.expect(responseJson.id).eql(timeSpentId)",
-                  "})",
-                  "pm.test(\"The response has right time\", () => {",
-                  "    pm.expect(responseJson.time).eql(parseInt(pm.collectionVariables.get(\"timeSpent\")))",
-                  "})",
-                  "pm.test(\"The response has right activity_id\", () => {",
-                  "    const activityId = parseInt(pm.collectionVariables.get('id'))",
-                  "    pm.expect(responseJson.activity_id).eql(activityId)",
-                  "})"
-                ],
-                "type": "text/javascript",
-                "packages": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "{{token}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{url}}/time_spent/{{timeSpentID}}",
-              "host": ["{{url}}"],
-              "path": ["time_spent", "{{timeSpentID}}"]
-            }
-          },
-          "response": []
-        },
-        {
           "name": "add_time_spent_when_activity_not_exist",
           "event": [
             {
@@ -1090,8 +1067,8 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test(\"Status code is 404\", () => {",
-                  "    pm.expect(pm.response.code).to.eql(404);",
+                  "pm.test(\"Status code is 422\", () => {",
+                  "    pm.expect(pm.response.code).to.eql(422);",
                   "})",
                   "// we need to add some crunch for",
                   "// stability other pieces of",
@@ -1143,7 +1120,7 @@
               "Util = {}",
               "",
               "Util.getRandomString = (lenght) => {",
-              "    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689!@#$%^&*()';\";",
+              "    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689!@#$%^&*();\";",
               "    let result = '';",
               "    for (let i = 0; i < lenght; i++) {",
               "        result += chars.charAt(Util.getRandomInt(chars.length));",
@@ -2780,7 +2757,7 @@
     },
     {
       "key": "limit",
-      "value": "1",
+      "value": "100",
       "type": "string"
     },
     {
@@ -2859,3 +2836,4 @@
     }
   ]
 }
+
