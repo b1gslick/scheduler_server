@@ -36,7 +36,7 @@ pub fn hash_password(password: &[u8]) -> String {
 
 pub fn is_email_valid(email: &str) -> bool {
     let email_regex = Regex::new(
-        r"^([a-z0-9_+]([a-z0-9_+.]*[a-z0-9_+])?)@([a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,6})",
+        r"^([a-zA-Z0-9_+]([a-zA-Z0-9_+.]*[a-zA-Z0-9_+])?)@([a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,6})",
     )
     .unwrap();
     email_regex.is_match(email)
@@ -106,7 +106,7 @@ pub fn auth() -> impl Filter<Extract = (Session,), Error = warp::Rejection> + Cl
 #[cfg(test)]
 mod authentication_tests {
 
-    use crate::routes::authentication::{login, register};
+    use crate::routes::authentication::{is_email_valid, login, register};
     use testcontainers::clients::Cli;
     use warp::reply::Reply;
 
@@ -206,5 +206,27 @@ mod authentication_tests {
         account.password = "test".to_string();
         let result = login(store, account).await;
         assert!(result.is_err());
+    }
+
+    #[test]
+    fn small_test_is_email_valid() {
+        let email_addresses = [
+            "foo@bar.com",
+            "foo.bar42@c.com",
+            "42@c.com",
+            "f@42.co",
+            "foo@4-2.team",
+            "foo_bar@bar.com",
+            "_bar@bar.com",
+            "foo_@bar.com",
+            "foo+bar@bar.com",
+            "+bar@bar.com",
+            "foo+@bar.com",
+            "foo.lastname@bar.com",
+            "dYDPFjl5bBwaJvE@scheduler.iv",
+        ];
+        for email_address in &email_addresses {
+            assert!(is_email_valid(email_address));
+        }
     }
 }
