@@ -1120,7 +1120,7 @@
               "Util = {}",
               "",
               "Util.getRandomString = (lenght) => {",
-              "    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689!@#$%^&*();\";",
+              "    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689\";",
               "    let result = '';",
               "    for (let i = 0; i < lenght; i++) {",
               "        result += chars.charAt(Util.getRandomInt(chars.length));",
@@ -1256,20 +1256,7 @@
                       "pm.collectionVariables.set(\"title\", title);",
                       "pm.collectionVariables.set(\"content\", content);",
                       "pm.collectionVariables.set(\"time\", time);",
-                      "",
-                      "/*unction getRandomString(lenght) {",
-                      "    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689!@#$%^&*()';\";",
-                      "    let charsLength = chars.length;",
-                      "    let result = '';",
-                      "    for (let i = 0; i < lenght; i++) {",
-                      "        result += chars.charAt(Math.floor(Math.random() * charsLength));",
-                      "    }",
-                      "    return result;",
-                      "}",
-                      "",
-                      "function getRandomInt(max) {",
-                      "    return Math.floor(Math.random() * max);",
-                      "}*/"
+                      ""
                     ],
                     "type": "text/javascript",
                     "packages": {}
@@ -1338,20 +1325,7 @@
                       "pm.collectionVariables.set(\"title\", title);",
                       "pm.collectionVariables.set(\"content\", content);",
                       "pm.collectionVariables.set(\"time\", time);",
-                      "",
-                      "/*unction getRandomString(lenght) {",
-                      "    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689!@#$%^&*()';\";",
-                      "    let charsLength = chars.length;",
-                      "    let result = '';",
-                      "    for (let i = 0; i < lenght; i++) {",
-                      "        result += chars.charAt(Math.floor(Math.random() * charsLength));",
-                      "    }",
-                      "    return result;",
-                      "}",
-                      "",
-                      "function getRandomInt(max) {",
-                      "    return Math.floor(Math.random() * max);",
-                      "}*/"
+                      ""
                     ],
                     "type": "text/javascript",
                     "packages": {}
@@ -1420,20 +1394,7 @@
                       "pm.collectionVariables.set(\"title\", title);",
                       "pm.collectionVariables.set(\"content\", content);",
                       "pm.collectionVariables.set(\"time\", time);",
-                      "",
-                      "/*unction getRandomString(lenght) {",
-                      "    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689!@#$%^&*()';\";",
-                      "    let charsLength = chars.length;",
-                      "    let result = '';",
-                      "    for (let i = 0; i < lenght; i++) {",
-                      "        result += chars.charAt(Math.floor(Math.random() * charsLength));",
-                      "    }",
-                      "    return result;",
-                      "}",
-                      "",
-                      "function getRandomInt(max) {",
-                      "    return Math.floor(Math.random() * max);",
-                      "}*/"
+                      ""
                     ],
                     "type": "text/javascript",
                     "packages": {}
@@ -1495,21 +1456,7 @@
                       "pm.collectionVariables.set(\"id\", id);",
                       "pm.collectionVariables.set(\"title\", title);",
                       "pm.collectionVariables.set(\"content\", content);",
-                      "pm.collectionVariables.set(\"time\", time);",
-                      "",
-                      "/*unction getRandomString(lenght) {",
-                      "    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689!@#$%^&*()';\";",
-                      "    let charsLength = chars.length;",
-                      "    let result = '';",
-                      "    for (let i = 0; i < lenght; i++) {",
-                      "        result += chars.charAt(Math.floor(Math.random() * charsLength));",
-                      "    }",
-                      "    return result;",
-                      "}",
-                      "",
-                      "function getRandomInt(max) {",
-                      "    return Math.floor(Math.random() * max);",
-                      "}*/"
+                      "pm.collectionVariables.set(\"time\", time);"
                     ],
                     "type": "text/javascript"
                   }
@@ -2119,7 +2066,7 @@
               "Util = {}",
               "",
               "Util.getRandomString = (lenght) => {",
-              "    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689!@#$%^&*();\";",
+              "    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689\";",
               "    let charsLength = chars.length;",
               "    let result = '';",
               "    for (let i = 0; i < lenght; i++) {",
@@ -2604,7 +2551,7 @@
               "Util = {}",
               "",
               "Util.getRandomString = (lenght) => {",
-              "    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689!@#$%^&*()';\";",
+              "    let chars = \"abcdeghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345689\";",
               "    let charsLength = chars.length;",
               "    let result = '';",
               "    for (let i = 0; i < lenght; i++) {",
@@ -2756,4 +2703,3 @@
     }
   ]
 }
-
