@@ -6,7 +6,7 @@ services:
     #   target: final
     #   dockerfile: Dockerfile
     image: t1mon1106/scheduler:${TAG}
-    container_name: server
+    container_name: backend
     depends_on:
       - postgres
     ports:
@@ -107,6 +107,11 @@ services:
       - http-to-sql
     networks:
       - postgres
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://backend:8080/activities"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
 volumes:
   scheduler-data:
