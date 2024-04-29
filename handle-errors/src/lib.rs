@@ -1,7 +1,7 @@
 use warp::{
     filters::{body::BodyDeserializeError, cors::CorsForbidden},
     http::StatusCode,
-    reject::Reject,
+    reject::{Reject, UnsupportedMediaType},
     Rejection, Reply,
 };
 
@@ -54,7 +54,7 @@ impl std::fmt::Display for Error {
                 write!(f, "Password not correct")
             }
             Error::WrongEmailType => {
-                write!(f, "Password not correct")
+                write!(f, "Email not correct")
             }
         }
     }
@@ -132,10 +132,10 @@ pub async fn return_error(r: Rejection) -> Result<impl Reply, Rejection> {
             "Unprocessable entity".to_string(),
             StatusCode::UNPROCESSABLE_ENTITY,
         ))
-    } else if let Some(crate::Error::UnsupportedMediaType) = r.find() {
+    } else if let Some(error) = r.find::<UnsupportedMediaType>() {
         event!(Level::ERROR, "Wrong body format");
         Ok(warp::reply::with_status(
-            "UnsupportedMediaType".to_string(),
+            error.to_string(),
             StatusCode::UNSUPPORTED_MEDIA_TYPE,
         ))
     } else {
@@ -183,13 +183,6 @@ mod handle_error_tests {
         let error_code = warp::reject::custom(Error::TimeSpentNotFound);
         let answer = return_error(error_code).await.unwrap().into_response();
         assert_eq!(answer.status(), 404);
-    }
-    #[tokio::test]
-    async fn small_test_unsupported_media_type() {
-        let error_code = warp::reject::custom(Error::UnsupportedMediaType);
-        let answer = return_error(error_code).await.unwrap().into_response();
-        println!("{answer:?}");
-        assert_eq!(answer.status(), 415);
     }
     #[tokio::test]
     async fn small_test_unsupported_password() {

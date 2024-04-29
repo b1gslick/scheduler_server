@@ -2,6 +2,7 @@
 use argon2::{self, Config};
 use chrono::prelude::*;
 use rand::Rng;
+use regex::Regex;
 use std::{env, future};
 use warp::Filter;
 
@@ -11,6 +12,9 @@ use crate::types::account::{Account, AccountID, Session};
 pub async fn register(store: Store, account: Account) -> Result<impl warp::Reply, warp::Rejection> {
     if account.password.len() < 3 || account.email.len() < 3 {
         return Err(warp::reject::custom(handle_errors::Error::PasswordInvalid));
+    }
+    if !is_email_valid(&account.email) {
+        return Err(warp::reject::custom(handle_errors::Error::WrongEmailType));
     }
     let hashed_password = hash_password(account.password.as_bytes());
     let account = Account {
@@ -28,6 +32,14 @@ pub fn hash_password(password: &[u8]) -> String {
     let salt = rand::thread_rng().gen::<[u8; 32]>();
     let config = Config::default();
     argon2::hash_encoded(password, &salt, &config).unwrap()
+}
+
+pub fn is_email_valid(email: &str) -> bool {
+    let email_regex = Regex::new(
+        r"^([a-z0-9_+]([a-z0-9_+.]*[a-z0-9_+])?)@([a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,6})",
+    )
+    .unwrap();
+    email_regex.is_match(email)
 }
 
 pub async fn login(store: Store, login: Account) -> Result<impl warp::Reply, warp::Rejection> {
