@@ -1,6 +1,5 @@
 #![warn(clippy::all)]
 pub use handle_errors;
-use tokio::sync::{oneshot, oneshot::Sender};
 use tracing_subscriber::fmt::format::FmtSpan;
 use warp::{http::Method, Filter, Reply};
 
@@ -126,28 +125,6 @@ pub async fn setup_store(config: &config::Config) -> Result<store::Store, handle
 pub async fn run(config: config::Config, store: store::Store) {
     let routes = build_routes(store).await;
     warp::serve(routes).run(([0, 0, 0, 0], config.port)).await;
-}
-
-pub struct OneshotHandler {
-    pub sender: Sender<i32>,
-}
-
-pub async fn oneshot(store: store::Store) -> OneshotHandler {
-    let routes = build_routes(store).await;
-    let (tx, rx) = oneshot::channel::<i32>();
-
-    let socket: std::net::SocketAddr = "127.0.0.1:3030"
-        .to_string()
-        .parse()
-        .expect("Not a valid address");
-
-    let (_, server) = warp::serve(routes).bind_with_graceful_shutdown(socket, async {
-        rx.await.ok();
-    });
-
-    tokio::task::spawn(server);
-
-    OneshotHandler { sender: tx }
 }
 
 #[cfg(test)]
