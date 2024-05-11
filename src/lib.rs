@@ -1,4 +1,3 @@
-#![warn(clippy::all)]
 pub use handle_errors;
 use tracing_subscriber::fmt::format::FmtSpan;
 use warp::{http::Method, Filter, Reply};
