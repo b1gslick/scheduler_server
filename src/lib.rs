@@ -195,7 +195,6 @@ mod test_scheduler {
             .path("/activities?limit=1&offset=1")
             .reply(&filter)
             .await;
-        println!("{:?}", res.body());
         assert_eq!(res.body().to_vec(), b"[]");
     }
 }

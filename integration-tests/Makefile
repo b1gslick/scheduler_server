@@ -30,7 +30,7 @@ run_test: clean up_db create_db psql
 	cargo run || true
 
 create_db:
-	psql -U postgres -c "CREATE DATABASE test OWNER username" || true
+	psql -U postgres -c "CREATE DATABASE test OWNER postgres" || true
 
 clean:
 	pg_ctl stop -D test_cluster || true

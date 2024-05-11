@@ -27,3 +27,275 @@
 2024-04-23 09:56:44.134 EEST [73383] LOG:  checkpoint starting: shutdown immediate
 2024-04-23 09:56:44.141 EEST [73383] LOG:  checkpoint complete: wrote 0 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.010 s; sync files=0, longest=0.000 s, average=0.000 s; distance=0 kB, estimate=235 kB; lsn=0/1531770, redo lsn=0/1531770
 2024-04-23 09:56:44.146 EEST [73365] LOG:  database system is shut down
+2024-05-09 08:11:02.355 EEST [1794750] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-05-09 08:11:02.358 EEST [1794750] LOG:  listening on IPv6 address "::1", port 5432
+2024-05-09 08:11:02.358 EEST [1794750] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-05-09 08:11:02.364 EEST [1794750] FATAL:  could not create lock file "/run/postgresql/.s.PGSQL.5432.lock": No such file or directory
+2024-05-09 08:11:02.366 EEST [1794750] LOG:  database system is shut down
+2024-05-09 08:12:35.514 EEST [1797546] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-05-09 08:12:35.515 EEST [1797546] LOG:  listening on IPv6 address "::1", port 5432
+2024-05-09 08:12:35.515 EEST [1797546] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-05-09 08:12:35.517 EEST [1797546] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2024-05-09 08:12:35.525 EEST [1797549] LOG:  database system was shut down at 2024-04-23 09:56:44 EEST
+2024-05-09 08:12:35.533 EEST [1797546] LOG:  database system is ready to accept connections
+2024-05-09 08:12:35.632 EEST [1797555] ERROR:  role "username" does not exist
+2024-05-09 08:12:35.632 EEST [1797555] STATEMENT:  CREATE DATABASE test OWNER username
+2024-05-09 08:12:35.665 EEST [1797562] FATAL:  database "-c" does not exist
+2024-05-09 08:12:35.680 EEST [1797561] FATAL:  role "username" does not exist
+2024-05-09 08:12:35.686 EEST [1797565] FATAL:  database "-c" does not exist
+2024-05-09 08:12:35.699 EEST [1797568] FATAL:  database "-c" does not exist
+2024-05-09 08:13:43.145 EEST [1799640] FATAL:  role "timon" does not exist
+2024-05-09 08:13:43.165 EEST [1799649] FATAL:  role "timon" does not exist
+2024-05-09 08:13:43.177 EEST [1799651] FATAL:  role "username" does not exist
+2024-05-09 08:14:11.905 EEST [1797546] LOG:  received fast shutdown request
+2024-05-09 08:14:11.907 EEST [1797546] LOG:  aborting any active transactions
+2024-05-09 08:14:11.910 EEST [1797546] LOG:  background worker "logical replication launcher" (PID 1797552) exited with exit code 1
+2024-05-09 08:14:11.911 EEST [1797547] LOG:  shutting down
+2024-05-09 08:14:11.913 EEST [1797547] LOG:  checkpoint starting: shutdown immediate
+2024-05-09 08:14:11.925 EEST [1797547] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.004 s, sync=0.002 s, total=0.014 s; sync files=2, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=0 kB; lsn=0/1531820, redo lsn=0/1531820
+2024-05-09 08:14:11.931 EEST [1797546] LOG:  database system is shut down
+2024-05-09 08:14:14.079 EEST [1800453] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-05-09 08:14:14.080 EEST [1800453] LOG:  listening on IPv6 address "::1", port 5432
+2024-05-09 08:14:14.080 EEST [1800453] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-05-09 08:14:14.082 EEST [1800453] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2024-05-09 08:14:14.087 EEST [1800456] LOG:  database system was shut down at 2024-05-09 08:14:11 EEST
+2024-05-09 08:14:14.093 EEST [1800453] LOG:  database system is ready to accept connections
+2024-05-09 08:14:14.168 EEST [1800462] ERROR:  role "username" does not exist
+2024-05-09 08:14:14.168 EEST [1800462] STATEMENT:  CREATE DATABASE test OWNER username
+2024-05-09 08:14:14.185 EEST [1800468] FATAL:  role "username" does not exist
+2024-05-09 08:14:14.186 EEST [1800469] FATAL:  database "-c" does not exist
+2024-05-09 08:14:14.199 EEST [1800472] FATAL:  database "-c" does not exist
+2024-05-09 08:14:14.210 EEST [1800475] FATAL:  database "-c" does not exist
+2024-05-09 08:14:14.565 EEST [1800489] FATAL:  role "timon" does not exist
+2024-05-09 08:14:14.573 EEST [1800496] FATAL:  role "timon" does not exist
+2024-05-09 08:14:14.578 EEST [1800498] FATAL:  role "username" does not exist
+2024-05-09 08:14:46.113 EEST [1800453] LOG:  received fast shutdown request
+2024-05-09 08:14:46.115 EEST [1800453] LOG:  aborting any active transactions
+2024-05-09 08:14:46.117 EEST [1800453] LOG:  background worker "logical replication launcher" (PID 1800459) exited with exit code 1
+2024-05-09 08:14:46.118 EEST [1800454] LOG:  shutting down
+2024-05-09 08:14:46.119 EEST [1800454] LOG:  checkpoint starting: shutdown immediate
+2024-05-09 08:14:46.131 EEST [1800454] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.004 s, sync=0.002 s, total=0.014 s; sync files=2, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=0 kB; lsn=0/15318D0, redo lsn=0/15318D0
+2024-05-09 08:14:46.135 EEST [1800453] LOG:  database system is shut down
+2024-05-09 08:14:46.260 EEST [1801468] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-05-09 08:14:46.261 EEST [1801468] LOG:  listening on IPv6 address "::1", port 5432
+2024-05-09 08:14:46.261 EEST [1801468] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-05-09 08:14:46.262 EEST [1801468] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2024-05-09 08:14:46.268 EEST [1801471] LOG:  database system was shut down at 2024-05-09 08:14:46 EEST
+2024-05-09 08:14:46.275 EEST [1801468] LOG:  database system is ready to accept connections
+2024-05-09 08:14:46.348 EEST [1801477] ERROR:  role "username" does not exist
+2024-05-09 08:14:46.348 EEST [1801477] STATEMENT:  CREATE DATABASE test OWNER username
+2024-05-09 08:14:46.366 EEST [1801483] FATAL:  role "username" does not exist
+2024-05-09 08:14:46.368 EEST [1801484] FATAL:  database "-c" does not exist
+2024-05-09 08:14:46.379 EEST [1801487] FATAL:  database "-c" does not exist
+2024-05-09 08:14:46.390 EEST [1801490] FATAL:  database "-c" does not exist
+2024-05-09 08:14:46.740 EEST [1801504] FATAL:  role "timon" does not exist
+2024-05-09 08:14:46.749 EEST [1801511] FATAL:  role "timon" does not exist
+2024-05-09 08:14:46.754 EEST [1801513] FATAL:  role "username" does not exist
+2024-05-09 08:14:50.298 EEST [1801468] LOG:  received fast shutdown request
+2024-05-09 08:14:50.300 EEST [1801468] LOG:  aborting any active transactions
+2024-05-09 08:14:50.302 EEST [1801468] LOG:  background worker "logical replication launcher" (PID 1801474) exited with exit code 1
+2024-05-09 08:14:50.302 EEST [1801469] LOG:  shutting down
+2024-05-09 08:14:50.303 EEST [1801469] LOG:  checkpoint starting: shutdown immediate
+2024-05-09 08:14:50.315 EEST [1801469] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.004 s, sync=0.002 s, total=0.013 s; sync files=2, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=0 kB; lsn=0/1531948, redo lsn=0/1531948
+2024-05-09 08:14:50.319 EEST [1801468] LOG:  database system is shut down
+2024-05-09 08:14:50.447 EEST [1801642] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-05-09 08:14:50.448 EEST [1801642] LOG:  listening on IPv6 address "::1", port 5432
+2024-05-09 08:14:50.448 EEST [1801642] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-05-09 08:14:50.449 EEST [1801642] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2024-05-09 08:14:50.455 EEST [1801645] LOG:  database system was shut down at 2024-05-09 08:14:50 EEST
+2024-05-09 08:14:50.461 EEST [1801642] LOG:  database system is ready to accept connections
+2024-05-09 08:14:50.534 EEST [1801651] ERROR:  role "username" does not exist
+2024-05-09 08:14:50.534 EEST [1801651] STATEMENT:  CREATE DATABASE test OWNER username
+2024-05-09 08:14:50.553 EEST [1801657] FATAL:  role "username" does not exist
+2024-05-09 08:14:50.555 EEST [1801658] FATAL:  database "-c" does not exist
+2024-05-09 08:14:50.565 EEST [1801661] FATAL:  database "-c" does not exist
+2024-05-09 08:14:50.578 EEST [1801664] FATAL:  database "-c" does not exist
+2024-05-09 08:14:50.926 EEST [1801678] FATAL:  role "timon" does not exist
+2024-05-09 08:14:50.935 EEST [1801685] FATAL:  role "timon" does not exist
+2024-05-09 08:14:50.940 EEST [1801687] FATAL:  role "username" does not exist
+2024-05-09 08:15:41.647 EEST [1801642] LOG:  received fast shutdown request
+2024-05-09 08:15:41.649 EEST [1801642] LOG:  aborting any active transactions
+2024-05-09 08:15:41.651 EEST [1801642] LOG:  background worker "logical replication launcher" (PID 1801648) exited with exit code 1
+2024-05-09 08:15:41.652 EEST [1801643] LOG:  shutting down
+2024-05-09 08:15:41.654 EEST [1801643] LOG:  checkpoint starting: shutdown immediate
+2024-05-09 08:15:41.665 EEST [1801643] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.004 s, sync=0.002 s, total=0.014 s; sync files=2, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=0 kB; lsn=0/15319F8, redo lsn=0/15319F8
+2024-05-09 08:15:41.669 EEST [1801642] LOG:  database system is shut down
+2024-05-09 08:15:41.795 EEST [1803122] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-05-09 08:15:41.796 EEST [1803122] LOG:  listening on IPv6 address "::1", port 5432
+2024-05-09 08:15:41.796 EEST [1803122] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-05-09 08:15:41.798 EEST [1803122] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2024-05-09 08:15:41.803 EEST [1803125] LOG:  database system was shut down at 2024-05-09 08:15:41 EEST
+2024-05-09 08:15:41.809 EEST [1803122] LOG:  database system is ready to accept connections
+2024-05-09 08:15:41.881 EEST [1803131] ERROR:  role "username" does not exist
+2024-05-09 08:15:41.881 EEST [1803131] STATEMENT:  CREATE DATABASE test OWNER username
+2024-05-09 08:15:41.899 EEST [1803137] FATAL:  role "scheduler" does not exist
+2024-05-09 08:15:41.899 EEST [1803138] FATAL:  database "-c" does not exist
+2024-05-09 08:15:41.913 EEST [1803141] FATAL:  database "-c" does not exist
+2024-05-09 08:15:41.924 EEST [1803144] FATAL:  database "-c" does not exist
+2024-05-09 08:15:42.276 EEST [1803181] FATAL:  role "timon" does not exist
+2024-05-09 08:15:42.284 EEST [1803188] FATAL:  role "timon" does not exist
+2024-05-09 08:15:42.290 EEST [1803190] FATAL:  role "scheduler" does not exist
+2024-05-09 08:15:55.839 EEST [1803122] LOG:  received fast shutdown request
+2024-05-09 08:15:55.841 EEST [1803122] LOG:  aborting any active transactions
+2024-05-09 08:15:55.843 EEST [1803122] LOG:  background worker "logical replication launcher" (PID 1803128) exited with exit code 1
+2024-05-09 08:15:55.857 EEST [1803123] LOG:  shutting down
+2024-05-09 08:15:55.859 EEST [1803123] LOG:  checkpoint starting: shutdown immediate
+2024-05-09 08:15:55.869 EEST [1803123] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.004 s, sync=0.002 s, total=0.013 s; sync files=2, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=0 kB; lsn=0/1531A70, redo lsn=0/1531A70
+2024-05-09 08:15:55.873 EEST [1803122] LOG:  database system is shut down
+2024-05-09 08:15:55.988 EEST [1803680] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-05-09 08:15:55.989 EEST [1803680] LOG:  listening on IPv6 address "::1", port 5432
+2024-05-09 08:15:55.989 EEST [1803680] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-05-09 08:15:55.991 EEST [1803680] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2024-05-09 08:15:55.997 EEST [1803683] LOG:  database system was shut down at 2024-05-09 08:15:55 EEST
+2024-05-09 08:15:56.002 EEST [1803680] LOG:  database system is ready to accept connections
+2024-05-09 08:15:56.074 EEST [1803689] ERROR:  role "username" does not exist
+2024-05-09 08:15:56.074 EEST [1803689] STATEMENT:  CREATE DATABASE test OWNER username
+2024-05-09 08:15:56.109 EEST [1803698] FATAL:  database "-c" does not exist
+2024-05-09 08:15:56.120 EEST [1803710] FATAL:  database "-c" does not exist
+2024-05-09 08:15:56.131 EEST [1803719] FATAL:  database "-c" does not exist
+2024-05-09 08:15:56.493 EEST [1803739] FATAL:  role "timon" does not exist
+2024-05-09 08:15:56.500 EEST [1803746] FATAL:  role "timon" does not exist
+2024-05-09 08:15:56.506 EEST [1803748] FATAL:  database "test" does not exist
+2024-05-09 08:16:23.071 EEST [1804537] ERROR:  role "username" does not exist
+2024-05-09 08:16:23.071 EEST [1804537] STATEMENT:  CREATE DATABASE test OWNER username
+2024-05-09 08:16:47.530 EEST [1803680] LOG:  received fast shutdown request
+2024-05-09 08:16:47.532 EEST [1803680] LOG:  aborting any active transactions
+2024-05-09 08:16:47.535 EEST [1803680] LOG:  background worker "logical replication launcher" (PID 1803686) exited with exit code 1
+2024-05-09 08:16:47.545 EEST [1803681] LOG:  shutting down
+2024-05-09 08:16:47.546 EEST [1803681] LOG:  checkpoint starting: shutdown immediate
+2024-05-09 08:16:47.633 EEST [1803681] LOG:  checkpoint complete: wrote 933 buffers (5.7%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.025 s, sync=0.057 s, total=0.089 s; sync files=301, longest=0.002 s, average=0.001 s; distance=4280 kB, estimate=4280 kB; lsn=0/195FD38, redo lsn=0/195FD38
+2024-05-09 08:16:47.641 EEST [1803680] LOG:  database system is shut down
+2024-05-09 08:16:47.779 EEST [1805336] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-05-09 08:16:47.780 EEST [1805336] LOG:  listening on IPv6 address "::1", port 5432
+2024-05-09 08:16:47.780 EEST [1805336] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-05-09 08:16:47.782 EEST [1805336] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2024-05-09 08:16:47.787 EEST [1805339] LOG:  database system was shut down at 2024-05-09 08:16:47 EEST
+2024-05-09 08:16:47.793 EEST [1805336] LOG:  database system is ready to accept connections
+2024-05-09 08:16:47.866 EEST [1805345] ERROR:  database "test" already exists
+2024-05-09 08:16:47.866 EEST [1805345] STATEMENT:  CREATE DATABASE test OWNER postgres
+2024-05-09 08:16:47.887 EEST [1805352] FATAL:  database "-c" does not exist
+2024-05-09 08:16:47.898 EEST [1805355] FATAL:  database "-c" does not exist
+2024-05-09 08:16:47.911 EEST [1805358] FATAL:  database "-c" does not exist
+2024-05-09 08:16:48.263 EEST [1805395] FATAL:  role "timon" does not exist
+2024-05-09 08:16:48.271 EEST [1805402] FATAL:  role "timon" does not exist
+2024-05-09 08:17:56.819 EEST [1805336] LOG:  received fast shutdown request
+2024-05-09 08:17:56.821 EEST [1805336] LOG:  aborting any active transactions
+2024-05-09 08:17:56.827 EEST [1805336] LOG:  background worker "logical replication launcher" (PID 1805342) exited with exit code 1
+2024-05-09 08:17:56.830 EEST [1805337] LOG:  shutting down
+2024-05-09 08:17:56.832 EEST [1805337] LOG:  checkpoint starting: shutdown immediate
+2024-05-09 08:17:56.867 EEST [1805337] LOG:  checkpoint complete: wrote 91 buffers (0.6%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.013 s, sync=0.014 s, total=0.037 s; sync files=68, longest=0.002 s, average=0.001 s; distance=309 kB, estimate=309 kB; lsn=0/19AD190, redo lsn=0/19AD190
+2024-05-09 08:17:56.873 EEST [1805336] LOG:  database system is shut down
+2024-05-09 08:17:56.993 EEST [1808646] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-05-09 08:17:56.994 EEST [1808646] LOG:  listening on IPv6 address "::1", port 5432
+2024-05-09 08:17:56.995 EEST [1808646] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-05-09 08:17:56.996 EEST [1808646] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2024-05-09 08:17:57.013 EEST [1808649] LOG:  database system was shut down at 2024-05-09 08:17:56 EEST
+2024-05-09 08:17:57.027 EEST [1808646] LOG:  database system is ready to accept connections
+2024-05-09 08:17:57.096 EEST [1808655] ERROR:  database "test" already exists
+2024-05-09 08:17:57.096 EEST [1808655] STATEMENT:  CREATE DATABASE test OWNER postgres
+2024-05-09 08:17:57.158 EEST [1808662] FATAL:  database "-c" does not exist
+2024-05-09 08:17:57.172 EEST [1808665] FATAL:  database "-c" does not exist
+2024-05-09 08:17:57.188 EEST [1808668] FATAL:  database "-c" does not exist
+2024-05-09 08:18:15.216 EEST [1808646] LOG:  received fast shutdown request
+2024-05-09 08:18:15.217 EEST [1808646] LOG:  aborting any active transactions
+2024-05-09 08:18:15.219 EEST [1808646] LOG:  background worker "logical replication launcher" (PID 1808652) exited with exit code 1
+2024-05-09 08:18:15.223 EEST [1808647] LOG:  shutting down
+2024-05-09 08:18:15.225 EEST [1808647] LOG:  checkpoint starting: shutdown immediate
+2024-05-09 08:18:15.238 EEST [1808647] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.006 s, sync=0.002 s, total=0.016 s; sync files=2, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=0 kB; lsn=0/19AD240, redo lsn=0/19AD240
+2024-05-09 08:18:15.243 EEST [1808646] LOG:  database system is shut down
+2024-05-09 08:18:15.364 EEST [1809423] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-05-09 08:18:15.365 EEST [1809423] LOG:  listening on IPv6 address "::1", port 5432
+2024-05-09 08:18:15.366 EEST [1809423] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-05-09 08:18:15.367 EEST [1809423] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2024-05-09 08:18:15.373 EEST [1809426] LOG:  database system was shut down at 2024-05-09 08:18:15 EEST
+2024-05-09 08:18:15.378 EEST [1809423] LOG:  database system is ready to accept connections
+2024-05-09 08:18:15.450 EEST [1809432] ERROR:  database "test" already exists
+2024-05-09 08:18:15.450 EEST [1809432] STATEMENT:  CREATE DATABASE test OWNER postgres
+2024-05-09 08:18:15.471 EEST [1809439] FATAL:  database "-c" does not exist
+2024-05-09 08:18:15.482 EEST [1809442] FATAL:  database "-c" does not exist
+2024-05-09 08:18:15.494 EEST [1809445] FATAL:  database "-c" does not exist
+2024-05-09 08:18:30.218 EEST [1809423] LOG:  received fast shutdown request
+2024-05-09 08:18:30.219 EEST [1809423] LOG:  aborting any active transactions
+2024-05-09 08:18:30.221 EEST [1809423] LOG:  background worker "logical replication launcher" (PID 1809429) exited with exit code 1
+2024-05-09 08:18:30.223 EEST [1809424] LOG:  shutting down
+2024-05-09 08:18:30.225 EEST [1809424] LOG:  checkpoint starting: shutdown immediate
+2024-05-09 08:18:30.236 EEST [1809424] LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.003 s, sync=0.002 s, total=0.013 s; sync files=2, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=0 kB; lsn=0/19AD2B8, redo lsn=0/19AD2B8
+2024-05-09 08:18:30.240 EEST [1809423] LOG:  database system is shut down
+2024-05-09 08:18:30.366 EEST [1810101] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-05-09 08:18:30.367 EEST [1810101] LOG:  listening on IPv6 address "::1", port 5432
+2024-05-09 08:18:30.367 EEST [1810101] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-05-09 08:18:30.369 EEST [1810101] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2024-05-09 08:18:30.374 EEST [1810104] LOG:  database system was shut down at 2024-05-09 08:18:30 EEST
+2024-05-09 08:18:30.380 EEST [1810101] LOG:  database system is ready to accept connections
+2024-05-09 08:18:30.452 EEST [1810110] ERROR:  database "test" already exists
+2024-05-09 08:18:30.452 EEST [1810110] STATEMENT:  CREATE DATABASE test OWNER postgres
+2024-05-09 08:18:30.472 EEST [1810117] FATAL:  database "-c" does not exist
+2024-05-09 08:18:30.486 EEST [1810120] FATAL:  database "-c" does not exist
+2024-05-09 08:18:30.497 EEST [1810123] FATAL:  database "-c" does not exist
+2024-05-09 08:18:45.491 EEST [1810752] FATAL:  role "timon" does not exist
+2024-05-09 08:18:45.499 EEST [1810759] FATAL:  role "timon" does not exist
+2024-05-09 08:18:46.338 EEST [1810761] ERROR:  duplicate key value violates unique constraint "accounts_pkey"
+2024-05-09 08:18:46.338 EEST [1810761] DETAIL:  Key (email)=(test@mail.com) already exists.
+2024-05-09 08:18:46.338 EEST [1810761] STATEMENT:  INSERT INTO accounts (email, password) VALUES ($1, $2) RETURNING id, email, password
+2024-05-09 08:19:45.481 EEST [1810101] LOG:  received fast shutdown request
+2024-05-09 08:19:45.524 EEST [1810101] LOG:  aborting any active transactions
+2024-05-09 08:19:45.526 EEST [1810101] LOG:  background worker "logical replication launcher" (PID 1810107) exited with exit code 1
+2024-05-09 08:19:45.526 EEST [1810102] LOG:  shutting down
+2024-05-09 08:19:45.567 EEST [1810102] LOG:  checkpoint starting: shutdown immediate
+2024-05-09 08:19:45.904 EEST [1810102] LOG:  checkpoint complete: wrote 8 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.083 s, sync=0.078 s, total=0.379 s; sync files=6, longest=0.040 s, average=0.013 s; distance=0 kB, estimate=0 kB; lsn=0/19AD5D8, redo lsn=0/19AD5D8
+2024-05-09 08:19:45.909 EEST [1810101] LOG:  database system is shut down
+2024-05-09 08:19:46.104 EEST [1812656] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-05-09 08:19:46.105 EEST [1812656] LOG:  listening on IPv6 address "::1", port 5432
+2024-05-09 08:19:46.105 EEST [1812656] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-05-09 08:19:46.139 EEST [1812656] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2024-05-09 08:19:46.211 EEST [1812659] LOG:  database system was shut down at 2024-05-09 08:19:45 EEST
+2024-05-09 08:19:46.250 EEST [1812656] LOG:  database system is ready to accept connections
+2024-05-09 08:19:46.318 EEST [1812665] ERROR:  database "test" already exists
+2024-05-09 08:19:46.318 EEST [1812665] STATEMENT:  CREATE DATABASE test OWNER postgres
+2024-05-09 08:19:46.344 EEST [1812674] FATAL:  database "-c" does not exist
+2024-05-09 08:19:46.357 EEST [1812690] FATAL:  database "-c" does not exist
+2024-05-09 08:19:46.368 EEST [1812697] FATAL:  database "-c" does not exist
+2024-05-09 08:20:00.504 EEST [1813306] FATAL:  role "timon" does not exist
+2024-05-09 08:20:00.512 EEST [1813313] FATAL:  role "timon" does not exist
+2024-05-09 08:21:03.385 EEST [1812656] LOG:  received fast shutdown request
+2024-05-09 08:21:03.387 EEST [1812656] LOG:  aborting any active transactions
+2024-05-09 08:21:03.390 EEST [1812656] LOG:  background worker "logical replication launcher" (PID 1812662) exited with exit code 1
+2024-05-09 08:21:03.392 EEST [1812657] LOG:  shutting down
+2024-05-09 08:21:03.394 EEST [1812657] LOG:  checkpoint starting: shutdown immediate
+2024-05-09 08:21:03.408 EEST [1812657] LOG:  checkpoint complete: wrote 9 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.004 s, sync=0.004 s, total=0.016 s; sync files=8, longest=0.002 s, average=0.001 s; distance=1 kB, estimate=1 kB; lsn=0/19ADC60, redo lsn=0/19ADC60
+2024-05-09 08:21:03.415 EEST [1812656] LOG:  database system is shut down
+2024-05-09 08:21:03.546 EEST [1815755] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-05-09 08:21:03.547 EEST [1815755] LOG:  listening on IPv6 address "::1", port 5432
+2024-05-09 08:21:03.547 EEST [1815755] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-05-09 08:21:03.549 EEST [1815755] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2024-05-09 08:21:03.554 EEST [1815758] LOG:  database system was shut down at 2024-05-09 08:21:03 EEST
+2024-05-09 08:21:03.561 EEST [1815755] LOG:  database system is ready to accept connections
+2024-05-09 08:21:03.629 EEST [1815764] ERROR:  database "test" already exists
+2024-05-09 08:21:03.629 EEST [1815764] STATEMENT:  CREATE DATABASE test OWNER postgres
+2024-05-09 08:21:03.670 EEST [1815771] FATAL:  database "-c" does not exist
+2024-05-09 08:21:03.680 EEST [1815774] FATAL:  database "-c" does not exist
+2024-05-09 08:21:03.695 EEST [1815777] FATAL:  database "-c" does not exist
+2024-05-09 08:21:18.483 EEST [1816406] FATAL:  role "timon" does not exist
+2024-05-09 08:21:18.497 EEST [1816415] FATAL:  role "timon" does not exist
+2024-05-09 08:21:19.366 EEST [1816418] ERROR:  duplicate key value violates unique constraint "accounts_pkey"
+2024-05-09 08:21:19.366 EEST [1816418] DETAIL:  Key (email)=(test1@mail.com) already exists.
+2024-05-09 08:21:19.366 EEST [1816418] STATEMENT:  INSERT INTO accounts (email, password) VALUES ($1, $2) RETURNING id, email, password
+2024-05-09 08:22:03.111 EEST [1815755] LOG:  received fast shutdown request
+2024-05-09 08:22:03.112 EEST [1815755] LOG:  aborting any active transactions
+2024-05-09 08:22:03.114 EEST [1815755] LOG:  background worker "logical replication launcher" (PID 1815761) exited with exit code 1
+2024-05-09 08:22:03.116 EEST [1815756] LOG:  shutting down
+2024-05-09 08:22:03.118 EEST [1815756] LOG:  checkpoint starting: shutdown immediate
+2024-05-09 08:22:03.132 EEST [1815756] LOG:  checkpoint complete: wrote 5 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.004 s, sync=0.003 s, total=0.016 s; sync files=4, longest=0.002 s, average=0.001 s; distance=1 kB, estimate=1 kB; lsn=0/19AE0F0, redo lsn=0/19AE0F0
+2024-05-09 08:22:03.136 EEST [1815755] LOG:  database system is shut down
+2024-05-09 08:22:03.269 EEST [1817673] LOG:  starting PostgreSQL 16.1 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 13.2.1 20230801, 64-bit
+2024-05-09 08:22:03.270 EEST [1817673] LOG:  listening on IPv6 address "::1", port 5432
+2024-05-09 08:22:03.270 EEST [1817673] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2024-05-09 08:22:03.272 EEST [1817673] LOG:  listening on Unix socket "/run/postgresql/.s.PGSQL.5432"
+2024-05-09 08:22:03.282 EEST [1817676] LOG:  database system was shut down at 2024-05-09 08:22:03 EEST
+2024-05-09 08:22:03.290 EEST [1817673] LOG:  database system is ready to accept connections
+2024-05-09 08:22:03.353 EEST [1817682] ERROR:  database "test" already exists
+2024-05-09 08:22:03.353 EEST [1817682] STATEMENT:  CREATE DATABASE test OWNER postgres
+2024-05-09 08:22:04.004 EEST [1817732] FATAL:  role "timon" does not exist
+2024-05-09 08:22:04.014 EEST [1817739] FATAL:  role "timon" does not exist
+2024-05-09 08:27:03.381 EEST [1817674] LOG:  checkpoint starting: time
+2024-05-09 08:27:05.037 EEST [1817674] LOG:  checkpoint complete: wrote 19 buffers (0.1%); 0 WAL file(s) added, 0 removed, 0 recycled; write=1.628 s, sync=0.014 s, total=1.657 s; sync files=23, longest=0.007 s, average=0.001 s; distance=33 kB, estimate=33 kB; lsn=0/19B67C8, redo lsn=0/19B6790
