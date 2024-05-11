@@ -5,7 +5,7 @@ use warp::{http::Method, Filter, Reply};
 pub mod config;
 pub mod routes;
 pub mod store;
-mod tests;
+pub mod tests;
 mod types;
 
 async fn build_routes(store: store::Store) -> impl Filter<Extract = impl Reply> + Clone {

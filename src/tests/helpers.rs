@@ -1,4 +1,3 @@
-#[allow(dead_code)]
 use std::{collections::HashMap, fmt::Debug};
 
 use testcontainers::RunnableImage;
