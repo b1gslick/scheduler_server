@@ -1,7 +1,8 @@
 use handle_errors::Error;
 use std::collections::HashMap;
+use utoipa::ToSchema;
 
-#[derive(Default, Debug, PartialEq, Eq)]
+#[derive(Default, Debug, PartialEq, Eq, ToSchema)]
 pub struct Pagination {
     pub limit: Option<i32>,
     pub offset: i32,

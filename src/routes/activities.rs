@@ -8,6 +8,13 @@ use tracing::{info, instrument};
 use warp::http::StatusCode;
 
 #[instrument]
+#[utoipa::path(
+        get,
+        path = "activities",
+        responses(
+            (status = 200, description = "List todos successfully", body = [Activity])
+        )
+    )]
 pub async fn get_activities(
     params: HashMap<String, String>,
     store: Store,

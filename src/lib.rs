@@ -1,6 +1,17 @@
+use std::sync::Arc;
+
 pub use handle_errors;
 use tracing_subscriber::fmt::format::FmtSpan;
-use warp::{http::Method, Filter, Reply};
+use warp::{
+    http::Method,
+    http::Uri,
+    hyper::{Response, StatusCode},
+    path::{FullPath, Tail},
+    Filter, Rejection, Reply,
+};
+
+use utoipa::OpenApi;
+use utoipa_swagger_ui::Config as SwaggerConfig;
 
 pub mod config;
 pub mod routes;
@@ -8,7 +19,9 @@ pub mod store;
 pub mod tests;
 mod types;
 
-async fn build_routes(store: store::Store) -> impl Filter<Extract = impl Reply> + Clone {
+async fn build_routes(
+    store: store::Store,
+) -> impl Filter<Extract = impl Reply, Error = Rejection> + Clone {
     let store_filter = warp::any().map(move || store.clone());
 
     let cors = warp::cors()
@@ -121,9 +134,70 @@ pub async fn setup_store(config: &config::Config) -> Result<store::Store, handle
 
     Ok(store)
 }
+
 pub async fn run(config: config::Config, store: store::Store) {
+    let swagger_config = Arc::new(SwaggerConfig::from("/api-doc.json"));
+
+    #[derive(OpenApi)]
+    #[openapi(paths(routes::activities::get_activities))]
+    pub struct SchedulerApi;
+
+    #[derive(OpenApi)]
+    #[openapi(
+        nest(
+            (path = "/", api = SchedulerApi)
+        ),
+        tags(
+            (name = "activities", description = "Api server for scheduler api")
+        )
+    )]
+    struct ApiDoc;
+
+    let api_doc = warp::path("api-doc.json")
+        .and(warp::get())
+        .map(|| warp::reply::json(&ApiDoc::openapi()));
+
+    let swagger_ui = warp::path("docs")
+        .and(warp::get())
+        .and(warp::path::full())
+        .and(warp::path::tail())
+        .and(warp::any().map(move || swagger_config.clone()))
+        .and_then(serve_swagger);
+
     let routes = build_routes(store).await;
-    warp::serve(routes).run(([0, 0, 0, 0], config.port)).await;
+    warp::serve(api_doc.or(swagger_ui).or(routes))
+        .run(([0, 0, 0, 0], config.port))
+        .await
+}
+
+async fn serve_swagger(
+    full_path: FullPath,
+    tail: Tail,
+    config: Arc<SwaggerConfig<'static>>,
+) -> Result<Box<dyn Reply + 'static>, Rejection> {
+    if full_path.as_str() == "/docs" {
+        return Ok(Box::new(warp::redirect::found(Uri::from_static("/docs/"))));
+    }
+
+    let path = tail.as_str();
+    match utoipa_swagger_ui::serve(path, config) {
+        Ok(file) => {
+            if let Some(file) = file {
+                Ok(Box::new(
+                    Response::builder()
+                        .header("Content-Type", file.content_type)
+                        .body(file.bytes),
+                ))
+            } else {
+                Ok(Box::new(StatusCode::NOT_FOUND))
+            }
+        }
+        Err(error) => Ok(Box::new(
+            Response::builder()
+                .status(StatusCode::INTERNAL_SERVER_ERROR)
+                .body(error.to_string()),
+        )),
+    }
 }
 
 #[cfg(test)]

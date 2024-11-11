@@ -1,4 +1,4 @@
-ARG RUST_VERSION=1.74.1
+ARG RUST_VERSION=1.75
 ARG APP_NAME=server
 ARG TARGET=x86_64-unknown-linux-musl
 FROM rust:${RUST_VERSION}-slim-bullseye AS build
@@ -7,7 +7,7 @@ ARG TARGET
 WORKDIR /app
 
 RUN apt-get update && \
-  apt-get install -y pkg-config make g++ libssl-dev musl-tools musl-dev build-essential gcc-x86-64-linux-gnu && \
+  apt-get install -y pkg-config make g++ libssl-dev musl-tools musl-dev build-essential gcc-x86-64-linux-gnu curl && \
   rustup target add ${TARGET}
 
 # For a musl build on M1 Macs, these ENV variables have to be set

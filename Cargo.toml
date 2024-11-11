@@ -67,8 +67,12 @@ openssl-sys = "0.9.102"
 openssl = { version = "0.10.64", features = ["vendored"] }
 regex = { version = "1.10.4" }
 
-# time 
+# time
 chrono = { version = "0.4.38" }
 
 testcontainers = { version = "0.15.0" }                                 # test
 testcontainers-modules = { version = "0.3.7", features = ["postgres"] }
+
+# utopia
+utoipa = { version = "5.2.0" }
+utoipa-swagger-ui = { version = "8.0.3" }
