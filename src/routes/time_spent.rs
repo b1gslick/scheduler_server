@@ -4,6 +4,19 @@ use crate::types::time_spent::{NewTimeSpent, TimeSpent};
 use tracing::info;
 use warp::http::StatusCode;
 
+#[utoipa::path(
+        get,
+        path = "time_spent/{id}",
+        responses(
+            (status = 200, description = "Get time spent by id", body = TimeSpent)
+        ),
+        params(
+            ("id" = i32, Path, description = "time spent unique id")
+        ),
+        security(
+            ("Authorization" = [])
+        )
+    )]
 pub async fn get_time_spent_by_id(
     id: i32,
     session: Session,
@@ -19,6 +32,18 @@ pub async fn get_time_spent_by_id(
     Ok(warp::reply::json(&res))
 }
 
+#[utoipa::path(
+        post,
+        path = "time_spent",
+        request_body = NewTimeSpent,
+        responses(
+            (status = 200, description = "Get time spent by id", body = NewTimeSpent),
+            (status = 422, description = "Can't parse body", body = NewTimeSpent)
+        ),
+        security(
+            ("Authorization" = [])
+        )
+    )]
 pub async fn add_time_spent(
     session: Session,
     store: Store,

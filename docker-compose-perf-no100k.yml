@@ -1,4 +1,3 @@
-version: "3.9"
 services:
   backend:
     image: t1mon1106/scheduler:${TAG}

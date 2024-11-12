@@ -7,8 +7,17 @@ use std::{env, future};
 use warp::Filter;
 
 use crate::store::Store;
-use crate::types::account::{Account, AccountID, Session};
+use crate::types::account::{Account, AccountID, PubAccount, Session};
 
+#[utoipa::path(
+        post,
+        path = "registration",
+        request_body = PubAccount,
+        responses(
+            (status = 200, description = "Account added", body = String),
+            (status = 406, description = "Short password or email"),
+        )
+    )]
 pub async fn register(store: Store, account: Account) -> Result<impl warp::Reply, warp::Rejection> {
     if account.password.len() < 3 || account.email.len() < 3 {
         return Err(warp::reject::custom(handle_errors::Error::PasswordInvalid));
@@ -42,6 +51,16 @@ pub fn is_email_valid(email: &str) -> bool {
     email_regex.is_match(email)
 }
 
+#[utoipa::path(
+        post,
+        path = "login",
+        request_body = PubAccount,
+        responses(
+            (status = 200, description = "Ok", body = String),
+            (status = 406, description = "Short password or email"),
+            (status = 511, description = "Server error"),
+        )
+    )]
 pub async fn login(store: Store, login: Account) -> Result<impl warp::Reply, warp::Rejection> {
     match store.get_account(login.email).await {
         Ok(account) => match verify_password(&account.password, login.password.as_bytes()) {

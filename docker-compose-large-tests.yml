@@ -1,11 +1,10 @@
-version: "3.9"
 services:
   backend:
-    # build:
-    #   context: .
-    #   target: final
-    #   dockerfile: Dockerfile
-    image: t1mon1106/scheduler:${TAG}
+    build:
+      context: .
+      target: final
+      dockerfile: Dockerfile
+    # image: t1mon1106/scheduler:${TAG}
     container_name: backend
     depends_on:
       - postgres

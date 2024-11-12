@@ -10,8 +10,15 @@ use warp::{
     Filter, Rejection, Reply,
 };
 
-use utoipa::OpenApi;
 use utoipa_swagger_ui::Config as SwaggerConfig;
+
+use utoipa::{
+    openapi::{
+        security::{ApiKey, ApiKeyValue, SecurityScheme},
+        Components,
+    },
+    Modify, OpenApi,
+};
 
 pub mod config;
 pub mod routes;
@@ -139,19 +146,41 @@ pub async fn run(config: config::Config, store: store::Store) {
     let swagger_config = Arc::new(SwaggerConfig::from("/api-doc.json"));
 
     #[derive(OpenApi)]
-    #[openapi(paths(routes::activities::get_activities))]
+    #[openapi(paths(
+        routes::authentication::register,
+        routes::authentication::login,
+        routes::activities::get_activities,
+        routes::activities::add_activity,
+        routes::activities::update_activities,
+        routes::activities::deleted_activities,
+        routes::time_spent::add_time_spent,
+        routes::time_spent::get_time_spent_by_id,
+    ))]
     pub struct SchedulerApi;
+
+    struct SecurityAddon;
 
     #[derive(OpenApi)]
     #[openapi(
         nest(
             (path = "/", api = SchedulerApi)
         ),
+        modifiers(&SecurityAddon),
         tags(
             (name = "activities", description = "Api server for scheduler api")
         )
     )]
     struct ApiDoc;
+
+    impl Modify for SecurityAddon {
+        fn modify(&self, openapi: &mut utoipa::openapi::OpenApi) {
+            let components = openapi.components.get_or_insert(Components::new());
+            components.add_security_scheme(
+                "Authorization",
+                SecurityScheme::ApiKey(ApiKey::Header(ApiKeyValue::new("Authorization"))),
+            )
+        }
+    }
 
     let api_doc = warp::path("api-doc.json")
         .and(warp::get())

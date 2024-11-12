@@ -18,3 +18,9 @@ pub struct Account {
     pub email: String,
     pub password: String,
 }
+
+#[derive(Debug, Serialize, Deserialize, Clone, ToSchema)]
+pub struct PubAccount {
+    pub email: String,
+    pub password: String,
+}
