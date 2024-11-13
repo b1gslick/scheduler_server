@@ -154,7 +154,6 @@ mod test_activities {
     use crate::routes::activities::{add_activity, deleted_activities, update_activities};
     use crate::tests::helpers::{create_postgres, get_session, prepare_store};
     use crate::types::activities::NewActivity;
-    use crate::types::activities::{Activity, ActivityId};
     use testcontainers_modules::testcontainers::clients::Cli;
     use warp::reply::Reply;
 
@@ -237,8 +236,7 @@ mod test_activities {
         let activity_id = 1;
         store.clone().add_test_account(account_id).await;
         store.clone().add_test_acctivities().await;
-        let for_update = Activity {
-            id: ActivityId(activity_id),
+        let for_update = NewActivity {
             title: "updated".to_string(),
             content: "full_update".to_string(),
             time: 199999,
@@ -256,8 +254,7 @@ mod test_activities {
         let store = prepare_store(node.get_host_port_ipv4(5432)).await.unwrap();
         let account_id = 1;
         store.clone().add_test_account(account_id).await;
-        let for_update = Activity {
-            id: ActivityId(1),
+        let for_update = NewActivity {
             title: "updated".to_string(),
             content: "full_update".to_string(),
             time: 199999,
