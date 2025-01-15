@@ -6,11 +6,17 @@ services:
       context: .
       target: final
       dockerfile: Dockerfile
-    env_file: .env
     ports:
       - "8080:8080"
     environment:
-      - RUST_LOG=info
+      PASETO_KEY: "RANDOM WORDS WINTER MACINTOSH PC"
+      PORT: 8080
+      DATABASE_PASSWORD: scheduler
+      DATABASE_USER: scheduler
+      DATABASE_PORT: 5432
+      DATABASE_DB: schedulerdb
+      DATABASE_HOST: postgres 
+      RUST_LOG: info
     restart: on-failure
     networks:
       - postgres

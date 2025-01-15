@@ -7,3 +7,4 @@ queries.yaml
 target
 .github
 Makefile
+.env

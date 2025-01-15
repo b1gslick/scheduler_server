@@ -1,30 +1,23 @@
+use crate::swagger::serve_swagger;
+use crate::swagger::ApiDoc;
+
 use std::sync::Arc;
 
-pub use handle_errors;
 use tracing_subscriber::fmt::format::FmtSpan;
-use warp::{
-    http::Method,
-    http::Uri,
-    hyper::{Response, StatusCode},
-    path::{FullPath, Tail},
-    Filter, Rejection, Reply,
-};
+use warp::{http::Method, Filter, Rejection, Reply};
 
+use utoipa::OpenApi;
 use utoipa_swagger_ui::Config as SwaggerConfig;
 
-use utoipa::{
-    openapi::{
-        security::{ApiKey, ApiKeyValue, SecurityScheme},
-        Components,
-    },
-    Modify, OpenApi,
-};
-
+pub use handle_errors;
 pub mod config;
 pub mod routes;
 pub mod store;
+pub mod swagger;
 pub mod tests;
 mod types;
+
+const VERSION: &str = "v1";
 
 async fn build_routes(
     store: store::Store,
@@ -37,6 +30,7 @@ async fn build_routes(
         .allow_methods(&[Method::PUT, Method::DELETE, Method::GET, Method::POST]);
 
     let get_activities = warp::get()
+        .and(warp::path(VERSION))
         .and(warp::path("activities"))
         .and(warp::path::end())
         .and(warp::query())
@@ -44,6 +38,7 @@ async fn build_routes(
         .and_then(routes::activities::get_activities);
 
     let add_activity = warp::post()
+        .and(warp::path(VERSION))
         .and(warp::path("activities"))
         .and(warp::path::end())
         .and(routes::authentication::auth())
@@ -52,6 +47,7 @@ async fn build_routes(
         .and_then(routes::activities::add_activity);
 
     let update_activities = warp::put()
+        .and(warp::path(VERSION))
         .and(warp::path("activities"))
         .and(warp::path::param::<i32>())
         .and(warp::path::end())
@@ -61,6 +57,7 @@ async fn build_routes(
         .and_then(routes::activities::update_activities);
 
     let add_time_spent = warp::post()
+        .and(warp::path(VERSION))
         .and(warp::path("time_spent"))
         .and(warp::path::end())
         .and(routes::authentication::auth())
@@ -69,6 +66,7 @@ async fn build_routes(
         .and_then(routes::time_spent::add_time_spent);
 
     let get_time_spent = warp::get()
+        .and(warp::path(VERSION))
         .and(warp::path("time_spent"))
         .and(warp::path::param::<i32>())
         .and(warp::path::end())
@@ -77,6 +75,7 @@ async fn build_routes(
         .and_then(routes::time_spent::get_time_spent_by_id);
 
     let deleted_activities = warp::delete()
+        .and(warp::path(VERSION))
         .and(warp::path("activities"))
         .and(warp::path::param::<i32>())
         .and(warp::path::end())
@@ -85,6 +84,7 @@ async fn build_routes(
         .and_then(routes::activities::deleted_activities);
 
     let registration = warp::post()
+        .and(warp::path(VERSION))
         .and(warp::path("registration"))
         .and(warp::path::end())
         .and(store_filter.clone())
@@ -92,6 +92,7 @@ async fn build_routes(
         .and_then(routes::authentication::register);
 
     let login = warp::post()
+        .and(warp::path(VERSION))
         .and(warp::path("login"))
         .and(warp::path::end())
         .and(store_filter.clone())
@@ -145,43 +146,6 @@ pub async fn setup_store(config: &config::Config) -> Result<store::Store, handle
 pub async fn run(config: config::Config, store: store::Store) {
     let swagger_config = Arc::new(SwaggerConfig::from("/api-doc.json"));
 
-    #[derive(OpenApi)]
-    #[openapi(paths(
-        routes::authentication::register,
-        routes::authentication::login,
-        routes::activities::get_activities,
-        routes::activities::add_activity,
-        routes::activities::update_activities,
-        routes::activities::deleted_activities,
-        routes::time_spent::add_time_spent,
-        routes::time_spent::get_time_spent_by_id,
-    ))]
-    pub struct SchedulerApi;
-
-    struct SecurityAddon;
-
-    #[derive(OpenApi)]
-    #[openapi(
-        nest(
-            (path = "/", api = SchedulerApi)
-        ),
-        modifiers(&SecurityAddon),
-        tags(
-            (name = "activities", description = "Api server for scheduler api")
-        )
-    )]
-    struct ApiDoc;
-
-    impl Modify for SecurityAddon {
-        fn modify(&self, openapi: &mut utoipa::openapi::OpenApi) {
-            let components = openapi.components.get_or_insert(Components::new());
-            components.add_security_scheme(
-                "Authorization",
-                SecurityScheme::ApiKey(ApiKey::Header(ApiKeyValue::new("Authorization"))),
-            )
-        }
-    }
-
     let api_doc = warp::path("api-doc.json")
         .and(warp::get())
         .map(|| warp::reply::json(&ApiDoc::openapi()));
@@ -194,39 +158,10 @@ pub async fn run(config: config::Config, store: store::Store) {
         .and_then(serve_swagger);
 
     let routes = build_routes(store).await;
+
     warp::serve(api_doc.or(swagger_ui).or(routes))
         .run(([0, 0, 0, 0], config.port))
         .await
-}
-
-async fn serve_swagger(
-    full_path: FullPath,
-    tail: Tail,
-    config: Arc<SwaggerConfig<'static>>,
-) -> Result<Box<dyn Reply + 'static>, Rejection> {
-    if full_path.as_str() == "/docs" {
-        return Ok(Box::new(warp::redirect::found(Uri::from_static("/docs/"))));
-    }
-
-    let path = tail.as_str();
-    match utoipa_swagger_ui::serve(path, config) {
-        Ok(file) => {
-            if let Some(file) = file {
-                Ok(Box::new(
-                    Response::builder()
-                        .header("Content-Type", file.content_type)
-                        .body(file.bytes),
-                ))
-            } else {
-                Ok(Box::new(StatusCode::NOT_FOUND))
-            }
-        }
-        Err(error) => Ok(Box::new(
-            Response::builder()
-                .status(StatusCode::INTERNAL_SERVER_ERROR)
-                .body(error.to_string()),
-        )),
-    }
 }
 
 #[cfg(test)]
@@ -261,8 +196,6 @@ mod test_scheduler {
 
     #[tokio::test]
     async fn medium_test_get_empty_activities() {
-        // env::set_var("PASETO_KEY", "RANDOM WORDS WINTER MACINTOSH PC");
-        // let token = issue_token(AccountID(3));
         let docker = Cli::default();
         let node = docker.run(create_postgres());
         let store = prepare_store(node.get_host_port_ipv4(5432)).await.unwrap();
