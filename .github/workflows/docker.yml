@@ -119,7 +119,12 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
-      - uses: KengoTODA/actions-setup-docker-compose@v1
+
+      - name: prepare compose
+        uses: KengoTODA/actions-setup-docker-compose@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: run empty db test
         env:
           TAG: ${{ github.ref_name }}
@@ -149,7 +154,10 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v4
 
-      - uses: KengoTODA/actions-setup-docker-compose@v1
+      - name: prepare compose
+        uses: KengoTODA/actions-setup-docker-compose@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Start target
         env:
