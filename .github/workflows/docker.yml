@@ -11,7 +11,7 @@ on: [push]
 jobs:
   test:
     name: Test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Setup Checkout
         uses: actions/checkout@v4
@@ -30,7 +30,7 @@ jobs:
 
   lint:
     name: Lint
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Setup Checkout
         uses: actions/checkout@v4
@@ -42,7 +42,7 @@ jobs:
 
   security-audit:
     name: security-audit
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Setup Checkout
         uses: actions/checkout@v4
@@ -55,7 +55,7 @@ jobs:
 
   push_to_registry:
     name: Push Docker image to Docker Hub
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 180
     needs: [test]
     steps:
@@ -94,7 +94,7 @@ jobs:
 
   large-tests:
     name: large tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: [push_to_registry]
     steps:
       - name: Check out the repo
@@ -114,7 +114,7 @@ jobs:
 
   one-handredk-rows-test:
     name: one-handredk-rows-test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: [push_to_registry]
     steps:
       - name: Check out the repo
@@ -142,7 +142,7 @@ jobs:
 
   api-security-check:
     name: api-security-check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     needs: [push_to_registry]
     steps:
       - name: Check out the repo
