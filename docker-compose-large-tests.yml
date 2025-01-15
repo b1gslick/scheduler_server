@@ -11,7 +11,15 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - RUST_LOG=debug
+      RUST_LOG: debug
+      PASETO_KEY: "RANDOM WORDS WINTER MACINTOSH PC"
+      PORT: 8080
+      DATABASE_PASSWORD: scheduler
+      DATABASE_USER: scheduler
+      DATABASE_PORT: 5432
+      DATABASE_DB: schedulerdb
+      DATABASE_HOST: postgres_container
+
     networks:
       - postgres
     healthcheck:
@@ -96,7 +104,7 @@ services:
 
   postman_checks:
     image: postman/newman
-    command: run ./e2e-regression.postman_collection.json --env-var "url=http://backend:8080" --env-var "http-sql=http://http-to-sql:4545/query" -n 1 -r junit,cli --reporter-junit-export /report
+    command: run ./e2e-regression.postman_collection.json --env-var "url=http://backend:8080/v1" --env-var "http-sql=http://http-to-sql:4545/query" -n 1 -r junit,cli --reporter-junit-export /report
     volumes:
       - ./tests/e2e/:/etc/newman
       - ./tests/e2e/report/:/report
@@ -107,7 +115,7 @@ services:
     networks:
       - postgres
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://backend:8080/activities"]
+      test: ["CMD", "curl", "-f", "http://backend:8080/v1/activities"]
       interval: 30s
       timeout: 10s
       retries: 5

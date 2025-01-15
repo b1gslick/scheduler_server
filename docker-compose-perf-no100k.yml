@@ -6,7 +6,14 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - RUST_LOG=debug
+      RUST_LOG: debug
+      PASETO_KEY: "RANDOM WORDS WINTER MACINTOSH PC"
+      PORT: 8080
+      DATABASE_PASSWORD: scheduler
+      DATABASE_USER: scheduler
+      DATABASE_PORT: 5432
+      DATABASE_DB: schedulerdb
+      DATABASE_HOST: postgres_container
     networks:
       - postgres
     depends_on:
@@ -75,7 +82,7 @@ services:
     image: grafana/k6
     command: k6 run /scripts/perf_test.js --quiet
     environment:
-      BASE_URL: http://backend:8080
+      BASE_URL: http://backend:8080/v1
     volumes:
       - ./tests/performance/:/scripts
     depends_on:

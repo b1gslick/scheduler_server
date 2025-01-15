@@ -174,6 +174,7 @@ mod test_scheduler {
         config::Config,
         setup_store,
         tests::helpers::{create_postgres, prepare_store},
+        VERSION,
     };
 
     #[tokio::test]
@@ -202,9 +203,10 @@ mod test_scheduler {
 
         let filter = build_routes(store).await;
 
+        let path = format!("/{}/activities?limit=1&offset=1", VERSION);
         let res = warp::test::request()
             .method("GET")
-            .path("/activities?limit=1&offset=1")
+            .path(&path)
             .reply(&filter)
             .await;
         println!("{:?}", res.body());
