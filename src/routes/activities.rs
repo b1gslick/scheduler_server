@@ -12,7 +12,8 @@ use warp::http::StatusCode;
         get,
         path = "activities",
         responses(
-            (status = 200, description = "List activities", body = [Activity])
+            (status = 200, description = "List activities", body = [Activity]),
+            (status = 404, description = "Rout not found")
         ),
         security(
             ("Authorization" = [])
