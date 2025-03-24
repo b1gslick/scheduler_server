@@ -72,7 +72,7 @@ pub fn is_password_valid(pass: &str) -> bool {
     let min_len = env::var("MIN_PASS_LEN")
         .unwrap_or("8".to_string())
         .parse::<usize>()
-        .unwrap();
+        .expect("Provide number");
     let max_len = env::var("MAX_PASS_LEN")
         .unwrap_or("128".to_string())
         .parse::<usize>()
