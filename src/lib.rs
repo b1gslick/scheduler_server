@@ -31,7 +31,7 @@ async fn build_routes(
 
     let get_activities = warp::get()
         .and(warp::path(VERSION))
-        .and(warp::path("activities"))
+        .and(warp::path("activity"))
         .and(warp::path::end())
         .and(warp::query())
         .and(store_filter.clone())
@@ -39,7 +39,7 @@ async fn build_routes(
 
     let add_activity = warp::post()
         .and(warp::path(VERSION))
-        .and(warp::path("activities"))
+        .and(warp::path("activity"))
         .and(warp::path::end())
         .and(routes::authentication::auth())
         .and(store_filter.clone())
@@ -48,7 +48,7 @@ async fn build_routes(
 
     let update_activities = warp::put()
         .and(warp::path(VERSION))
-        .and(warp::path("activities"))
+        .and(warp::path("activity"))
         .and(warp::path::param::<i32>())
         .and(warp::path::end())
         .and(routes::authentication::auth())
@@ -76,7 +76,7 @@ async fn build_routes(
 
     let deleted_activities = warp::delete()
         .and(warp::path(VERSION))
-        .and(warp::path("activities"))
+        .and(warp::path("activity"))
         .and(warp::path::param::<i32>())
         .and(warp::path::end())
         .and(routes::authentication::auth())
@@ -203,7 +203,7 @@ mod test_scheduler {
 
         let filter = build_routes(store).await;
 
-        let path = format!("/{}/activities?limit=1&offset=1", VERSION);
+        let path = format!("/{}/activity?limit=1&offset=1", VERSION);
         let res = warp::test::request()
             .method("GET")
             .path(&path)

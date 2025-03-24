@@ -10,7 +10,7 @@ use warp::http::StatusCode;
 #[instrument]
 #[utoipa::path(
         get,
-        path = "activities",
+        path = "activity",
         responses(
             (status = 200, description = "List activities", body = [Activity]),
             (status = 404, description = "Rout not found")
@@ -44,7 +44,7 @@ pub async fn get_activities(
 
 #[utoipa::path(
         post,
-        path = "activities",
+        path = "activity",
         request_body = NewActivity,
         responses(
             (status = 200, description = "activity added", body = Activity),
@@ -74,7 +74,7 @@ pub async fn add_activity(
 
 #[utoipa::path(
         put,
-        path = "activities/{id}",
+        path = "activity/{id}",
         request_body = NewActivity,
         params(
             ("id" = i32, Path, description = "Activity unique id")
@@ -117,7 +117,7 @@ pub async fn update_activities(
 
 #[utoipa::path(
         delete,
-        path = "activities/{id}",
+        path = "activity/{id}",
         params(
             ("id" = i32, Path, description = "Activity unique id")
         ),

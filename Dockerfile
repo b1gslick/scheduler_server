@@ -1,4 +1,4 @@
-ARG RUST_VERSION=1.75
+ARG RUST_VERSION=1.83
 ARG APP_NAME=server
 ARG TARGET=x86_64-unknown-linux-musl
 FROM rust:${RUST_VERSION}-slim-bullseye AS build
