@@ -41,9 +41,6 @@ pub struct SecurityAddon;
             (path = format!("/{}/", VERSION), api = SchedulerApi)
         ),
         modifiers(&SecurityAddon),
-        tags(
-            (name = "activities", description = "Api server for scheduler api")
-        )
     )]
 pub struct ApiDoc;
 
