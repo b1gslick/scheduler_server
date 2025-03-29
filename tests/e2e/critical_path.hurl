@@ -14,7 +14,7 @@ HTTP 200
 token: regex "\"([^\"]*)\""
 
 # check store in db
-POST {{slq_query_path}}
+POST {{sql_query_path}}
  "select id from accounts where email ='{{a_string}}@{{a_string}}.iv';"
 
 HTTP 200
@@ -35,7 +35,7 @@ Authorization: {{token}}
 HTTP 200
 
 # check DB store this
-POST {{slq_query_path}}
+POST {{sql_query_path}}
 "select title, id from activities where account_id={{accountID}};"
 
 HTTP 200

@@ -5,9 +5,9 @@
 ################################################################################
 
 host=http://localhost:8080
-slq_query_path=http://localhost:4545/query
+sql_query_path=http://localhost:4545/query
 version=v1
-critical_path=critical_path.hurl
+file_path=critical_path.hurl
 envs_path=vars.env
 
 ################################################################################
@@ -21,6 +21,10 @@ Help() {
   echo "Syntax: $1 --help"
   echo "options:"
   echo "--help, -h           Print this Help."
+  echo "--url, -u            Set url."
+  echo "--sqp, -s            Set url for sql query service."
+  echo "--file, -f           Set test file path."
+  echo "--env, -e            Set env vars file path."
   echo
 }
 
@@ -37,6 +41,22 @@ while [[ "$#" -gt 0 ]]; do
     exit 0
     shift
     ;;
+  -u | --url)
+    host=${2}
+    shift
+    ;;
+  -s | --sqp)
+    sql_query_path=${2}
+    shift
+    ;;
+  -f | --file)
+    file_path=${2}
+    shift
+    ;;
+  -e | --env)
+    envs_path=${2}
+    shift
+    ;;
   *)
     echo "Unknown parameter passed: $1"
     exit 1
@@ -51,6 +71,9 @@ done
 
 cat <<EOF
 Run testing
+>> URL:       $host
+>> Test file: $file_path
+>> Env vars : $envs_path
 EOF
 
 check() {
@@ -62,11 +85,14 @@ check() {
 
 ## set env vars to the file
 echo host=$host >$envs_path
-echo slq_query_path=$slq_query_path >>$envs_path
+echo sql_query_path=$sql_query_path >>$envs_path
 echo version=$version >>$envs_path
 echo a_string=$(openssl rand -hex 12) >>$envs_path
 echo title=$(openssl rand -hex 60) >>$envs_path
 echo content=$(openssl rand -hex 120) >>$envs_path
 echo time=$RANDOM >>$envs_path
 
-hurl --variables-file $envs_path --very-verbose --report-html report/ --test $critical_path
+hurl --variables-file $envs_path \
+  --very-verbose \
+  --report-html report/ \
+  --test $file_path
