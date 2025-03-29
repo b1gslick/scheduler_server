@@ -40,6 +40,17 @@ POST {{sql_query_path}}
 
 HTTP 200
 
+[Captures]
+id: jsonpath "$[0].id"
+
 [Asserts]
 body contains "{{title}}"
 
+# check activity added
+GET {{host}}/{{version}}/activity?limit={{limit}}&offset={{offset}}
+Authorization: {{token}}
+
+HTTP 200
+
+[Asserts]
+jsonpath "$[-1:].['id'][0]"  ==  {{id}}

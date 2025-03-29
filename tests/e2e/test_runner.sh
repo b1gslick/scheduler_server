@@ -9,6 +9,7 @@ sql_query_path=http://localhost:4545/query
 version=v1
 file_path=critical_path.hurl
 envs_path=vars.env
+verbosity="--very-verbose"
 
 ################################################################################
 # Help                                                                         #
@@ -25,6 +26,7 @@ Help() {
   echo "--sqp, -s            Set url for sql query service."
   echo "--file, -f           Set test file path."
   echo "--env, -e            Set env vars file path."
+  echo "--verbosity, -v      Set verbosity level."
   echo
 }
 
@@ -57,6 +59,10 @@ while [[ "$#" -gt 0 ]]; do
     envs_path=${2}
     shift
     ;;
+  -v | --verbosity)
+    verbosity=${2}
+    shift
+    ;;
   *)
     echo "Unknown parameter passed: $1"
     exit 1
@@ -74,6 +80,7 @@ Run testing
 >> URL:       $host
 >> Test file: $file_path
 >> Env vars : $envs_path
+
 EOF
 
 check() {
@@ -91,8 +98,10 @@ echo a_string=$(openssl rand -hex 12) >>$envs_path
 echo title=$(openssl rand -hex 60) >>$envs_path
 echo content=$(openssl rand -hex 120) >>$envs_path
 echo time=$RANDOM >>$envs_path
+echo limit=100 >>$envs_path
+echo offset=0 >>$envs_path
 
 hurl --variables-file $envs_path \
-  --very-verbose \
+  $verbosity \
   --report-html report/ \
   --test $file_path
