@@ -26,8 +26,7 @@ struct PassCriteria {
         )
     )]
 pub async fn register(store: Store, account: Account) -> Result<impl warp::Reply, warp::Rejection> {
-    println!("passowrd is: {:?}", account.password);
-    if account.password.len() < 3 || !is_password_valid(&account.password) {
+    if !is_password_valid(&account.password) {
         return Err(warp::reject::custom(handle_errors::Error::PasswordInvalid));
     }
     if account.email.len() < 3 || !is_email_valid(&account.email) {

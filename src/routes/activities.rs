@@ -20,6 +20,7 @@ use warp::http::StatusCode;
         )
     )]
 pub async fn get_activities(
+    session: Session,
     params: HashMap<String, String>,
     store: Store,
 ) -> Result<impl warp::Reply, warp::Rejection> {
@@ -32,7 +33,7 @@ pub async fn get_activities(
     }
 
     let res: Vec<Activity> = match store
-        .get_activities(pagination.limit, pagination.offset)
+        .get_activities(session.account_id, pagination.limit, pagination.offset)
         .await
     {
         Ok(res) => res,
@@ -154,6 +155,7 @@ pub async fn deleted_activities(
 mod test_activities {
     use crate::routes::activities::{add_activity, deleted_activities, update_activities};
     use crate::tests::helpers::{create_postgres, get_session, prepare_store};
+    use crate::types::account::AccountID;
     use crate::types::activities::NewActivity;
     use testcontainers_modules::testcontainers::clients::Cli;
     use warp::reply::Reply;
@@ -188,7 +190,11 @@ mod test_activities {
         store.clone().add_test_account(account_id).await;
         store.clone().add_test_acctivities().await;
         store.clone().add_test_acctivities().await;
-        let result = store.clone().get_activities(Some(limit), 0).await.unwrap();
+        let result = store
+            .clone()
+            .get_activities(AccountID(account_id), Some(limit), 0)
+            .await
+            .unwrap();
         assert_eq!(result.len() as i32, limit);
     }
 
@@ -204,7 +210,11 @@ mod test_activities {
             store.clone().add_test_acctivities().await;
         }
 
-        let result = store.clone().get_activities(None, 0).await.unwrap();
+        let result = store
+            .clone()
+            .get_activities(AccountID(account_id), None, 0)
+            .await
+            .unwrap();
         assert_eq!(result.len() as i32, num_activities);
     }
 
@@ -222,7 +232,7 @@ mod test_activities {
 
         let result = store
             .clone()
-            .get_activities(None, num_activities - 1)
+            .get_activities(AccountID(account_id), None, num_activities - 1)
             .await
             .unwrap();
         assert_eq!(result.len() as i32, num_activities - (num_activities - 1));

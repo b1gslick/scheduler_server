@@ -33,6 +33,7 @@ async fn build_routes(
         .and(warp::path(VERSION))
         .and(warp::path("activity"))
         .and(warp::path::end())
+        .and(routes::authentication::auth())
         .and(warp::query())
         .and(store_filter.clone())
         .and_then(routes::activities::get_activities);
@@ -167,6 +168,8 @@ pub async fn run(config: config::Config, store: store::Store) {
 #[cfg(test)]
 mod test_scheduler {
 
+    use std::env;
+
     use testcontainers::clients::Cli;
 
     use crate::{
@@ -197,19 +200,53 @@ mod test_scheduler {
 
     #[tokio::test]
     async fn medium_test_get_empty_activities() {
+        env::set_var("PASETO_KEY", "RANDOM WORDS WINTER MACINTOSH PC");
         let docker = Cli::default();
         let node = docker.run(create_postgres());
         let store = prepare_store(node.get_host_port_ipv4(5432)).await.unwrap();
 
         let filter = build_routes(store).await;
 
+        let register = format!("/{}/registration", VERSION);
+        let login = format!("/{}/login", VERSION);
+        let body = &serde_json::json!({"email": "test@test.iv", "password": "AbcD1x!#"});
+
+        let reg_req = warp::test::request()
+            .method("POST")
+            .path(&register)
+            .json(body)
+            .reply(&filter)
+            .await;
+
+        assert_eq!(reg_req.status(), 200);
+
+        let login_req = warp::test::request()
+            .method("POST")
+            .path(&login)
+            .json(body)
+            .reply(&filter)
+            .await;
+
+        let token = convert_to_string(login_req.body())
+            .await
+            .unwrap()
+            .replace("\"", "");
+        println!("{:?}", token);
+
         let path = format!("/{}/activity?limit=1&offset=1", VERSION);
         let res = warp::test::request()
             .method("GET")
+            .header("Authorization", token)
             .path(&path)
             .reply(&filter)
             .await;
-        println!("{:?}", res.body());
+        println!("{:?}", convert_to_string(res.body()).await.unwrap());
         assert_eq!(res.body().to_vec(), b"[]");
+    }
+
+    async fn convert_to_string(
+        bytes: &warp::hyper::body::Bytes,
+    ) -> Result<String, warp::Rejection> {
+        String::from_utf8(bytes.to_vec()).map_err(|_| warp::reject())
     }
 }
