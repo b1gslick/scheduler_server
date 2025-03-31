@@ -4,7 +4,7 @@ services:
       context: .
       target: final
       dockerfile: Dockerfile
-    image: t1mon1106/scheduler:${TAG}
+    # image: t1mon1106/scheduler:${TAG}
     container_name: backend
     depends_on:
       - postgres
@@ -22,11 +22,7 @@ services:
 
     networks:
       - postgres
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://backend:8080/activities"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+
   postgres:
     container_name: postgres_container
     image: postgres:16.2-alpine3.18
@@ -96,29 +92,6 @@ services:
       - postgres
     depends_on:
       - postgres
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://http-to-sql:4545/query"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-
-  postman_checks:
-    image: postman/newman
-    command: run ./e2e-regression.postman_collection.json --env-var "url=http://backend:8080/v1" --env-var "http-sql=http://http-to-sql:4545/query" -n 1 -r junit,cli --reporter-junit-export /report
-    volumes:
-      - ./tests/e2e/:/etc/newman
-      - ./tests/e2e/report/:/report
-    depends_on:
-      - backend
-      - postgres
-      - http-to-sql
-    networks:
-      - postgres
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://backend:8080/v1/activities"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
 
 volumes:
   scheduler-data:

@@ -1,7 +1,6 @@
 #![allow(dead_code)]
 use argon2::{self, Config};
 use chrono::prelude::*;
-use rand::Rng;
 use regex::Regex;
 use std::{env, future};
 use warp::Filter;
@@ -29,7 +28,7 @@ pub async fn register(store: Store, account: Account) -> Result<impl warp::Reply
     if !is_password_valid(&account.password) {
         return Err(warp::reject::custom(handle_errors::Error::PasswordInvalid));
     }
-    if account.email.len() < 3 || !is_email_valid(&account.email) {
+    if !is_email_valid(&account.email) {
         return Err(warp::reject::custom(handle_errors::Error::WrongEmailType));
     }
 
@@ -46,12 +45,15 @@ pub async fn register(store: Store, account: Account) -> Result<impl warp::Reply
 }
 
 pub fn hash_password(password: &[u8]) -> String {
-    let salt = rand::thread_rng().gen::<[u8; 32]>();
+    let salt = rand::random::<[u8; 32]>();
     let config = Config::default();
     argon2::hash_encoded(password, &salt, &config).unwrap()
 }
 
 pub fn is_email_valid(email: &str) -> bool {
+    if email.len() < 3 {
+        return false;
+    }
     let email_regex = Regex::new(
         r"^([a-zA-Z0-9_+]([a-zA-Z0-9_+.]*[a-zA-Z0-9_+])?)@([a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,6})",
     )

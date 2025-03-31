@@ -1,12 +1,12 @@
 # registration
 POST {{host}}/{{version}}/registration
-{"email": "{{a_string}}@{{a_string}}.iv","password": "AbcD1x!#"}
+{"email": "{{email_1}}","password": "AbcD1x!#"}
 
 HTTP 200
 
 # login
 POST {{host}}/{{version}}/login
-{"email": "{{a_string}}@{{a_string}}.iv", "password": "AbcD1x!#"}
+{"email": "{{email_1}}", "password": "AbcD1x!#"}
 
 HTTP 200
 
@@ -15,7 +15,7 @@ token: regex "\"([^\"]*)\""
 
 # check store in db
 POST {{sql_query_path}}
- "select id from accounts where email ='{{a_string}}@{{a_string}}.iv';"
+ "select id from accounts where email ='{{email_1}}';"
 
 HTTP 200
 

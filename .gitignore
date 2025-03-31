@@ -21,3 +21,5 @@ tests/e2e/report.html
 .venv
 *.xml
 *.info
+vars.env
+

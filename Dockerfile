@@ -1,9 +1,13 @@
 ARG RUST_VERSION=1.83
 ARG APP_NAME=server
 ARG TARGET=x86_64-unknown-linux-musl
+ARG PORT=8080
 FROM rust:${RUST_VERSION}-slim-bullseye AS build
 ARG APP_NAME
 ARG TARGET
+
+ARG PORT
+
 WORKDIR /app
 
 RUN apt-get update && \
@@ -31,7 +35,8 @@ EOF
 
 FROM debian:bullseye-slim AS final
 
-# create simple user
+ARG PORT
+
 ARG UID=10001
 RUN adduser \
   --disabled-password \
@@ -41,20 +46,11 @@ RUN adduser \
   --no-create-home \
   --uid "${UID}" \
   appuser
+
 USER appuser
 
-HEALTHCHECK \
-  --interval=30s \
-  --timeout=30s  \
-  --start-period=5s \
-  --retries=3 \ 
-  CMD curl -f http://localhost:8080/get_activities || exit
-
-# copy binaries
 COPY --from=build /bin/server /bin/
-# copy configuration file
 
-# expose port
-EXPOSE 8080
+EXPOSE ${PORT}
 
 CMD ["/bin/server"]

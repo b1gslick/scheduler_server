@@ -3,8 +3,9 @@ use crate::swagger::ApiDoc;
 
 use std::sync::Arc;
 
+use tracing::info;
 use tracing_subscriber::fmt::format::FmtSpan;
-use warp::{http::Method, Filter, Rejection, Reply};
+use warp::{http::Method, http::StatusCode, Filter, Rejection, Reply};
 
 use utoipa::OpenApi;
 use utoipa_swagger_ui::Config as SwaggerConfig;
@@ -28,6 +29,12 @@ async fn build_routes(
         .allow_any_origin()
         .allow_header("content-type")
         .allow_methods(&[Method::PUT, Method::DELETE, Method::GET, Method::POST]);
+
+    let health_check = warp::get()
+        .and(warp::path(VERSION))
+        .and(warp::path("healthz"))
+        .and(warp::path::end())
+        .and_then(healthz);
 
     let get_activities = warp::get()
         .and(warp::path(VERSION))
@@ -101,6 +108,7 @@ async fn build_routes(
         .and_then(routes::authentication::login);
 
     get_activities
+        .or(health_check)
         .or(add_activity)
         .or(update_activities)
         .or(add_time_spent)
@@ -111,6 +119,20 @@ async fn build_routes(
         .with(cors)
         .with(warp::trace::request())
         .recover(handle_errors::return_error)
+}
+
+#[utoipa::path(
+        get,
+        path = "healthz",
+        responses(
+            (status = 200, description = "OK"),
+            (status = 404, description = "Not found")
+        ),
+    )]
+pub async fn healthz() -> Result<impl warp::Reply, warp::Rejection> {
+    info!("healthz");
+
+    Ok(warp::reply::with_status("OK", StatusCode::OK))
 }
 
 pub async fn setup_store(config: &config::Config) -> Result<store::Store, handle_errors::Error> {
@@ -231,7 +253,6 @@ mod test_scheduler {
             .await
             .unwrap()
             .replace("\"", "");
-        println!("{:?}", token);
 
         let path = format!("/{}/activity?limit=1&offset=1", VERSION);
         let res = warp::test::request()
@@ -240,7 +261,7 @@ mod test_scheduler {
             .path(&path)
             .reply(&filter)
             .await;
-        println!("{:?}", convert_to_string(res.body()).await.unwrap());
+
         assert_eq!(res.body().to_vec(), b"[]");
     }
 

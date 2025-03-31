@@ -10,6 +10,7 @@ version=v1
 file_path=critical_path.hurl
 envs_path=vars.env
 verbosity="--very-verbose"
+report="--report-html report/"
 
 ################################################################################
 # Help                                                                         #
@@ -27,6 +28,7 @@ Help() {
   echo "--file, -f           Set test file path."
   echo "--env, -e            Set env vars file path."
   echo "--verbosity, -v      Set verbosity level."
+  echo "--xml, -x            Set xml report type."
   echo
 }
 
@@ -63,6 +65,9 @@ while [[ "$#" -gt 0 ]]; do
     verbosity=${2}
     shift
     ;;
+  -x | --xml)
+    report="--report-junit report.xml"
+    ;;
   *)
     echo "Unknown parameter passed: $1"
     exit 1
@@ -96,6 +101,9 @@ echo sql_query_path=$sql_query_path >>$envs_path
 echo version=$version >>$envs_path
 echo a_string=$(openssl rand -hex 12) >>$envs_path
 
+echo email_1="$(openssl rand -hex 12)@$(openssl rand -hex 12).iv" >>$envs_path
+echo email_2="$(openssl rand -hex 12)@$(openssl rand -hex 12).iv" >>$envs_path
+
 echo title=$(openssl rand -hex 60) >>$envs_path
 echo new_title=$(openssl rand -hex 60) >>$envs_path
 
@@ -110,5 +118,5 @@ echo offset=0 >>$envs_path
 
 hurl --variables-file $envs_path \
   $verbosity \
-  --report-html report/ \
+  $report \
   --test $file_path

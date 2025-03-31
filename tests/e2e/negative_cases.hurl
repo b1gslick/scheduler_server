@@ -1,12 +1,12 @@
 # registration
 POST {{host}}/{{version}}/registration
-{"email": "{{a_string}}@{{a_string}}.iv","password": "AbcD1x!#"}
+{"email": "{{email_2}}","password": "AbcD1x!#"}
 
 HTTP 200
 
 # login
 POST {{host}}/{{version}}/login
-{"email": "{{a_string}}@{{a_string}}.iv", "password": "AbcD1x!#"}
+{"email": "{{email_2}}", "password": "AbcD1x!#"}
 
 HTTP 200
 
