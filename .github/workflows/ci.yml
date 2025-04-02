@@ -104,11 +104,13 @@ jobs:
           POSTGRES_DB: "schedulerdb"
           POSTGRES_USER: "scheduler"
           POSTGRES_PASSWORD: "scheduler"
+        ports:
+          - 5432:5432
         options: >-
-            --health-cmd pg_isready
-            --health-interval 10s
-            --health-timeout 5s
-            --health-retries 5
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
       backend:
         image: t1mon1106/scheduler:${{ github.ref_name }}
@@ -138,7 +140,8 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
-      - name: Prepare hurl
+
+      - name: prepare hurl
         run: |
           VERSION=6.1.1
           sudo apt-get update
@@ -164,12 +167,6 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
-
-      - name: prepare compose
-        uses: KengoTODA/actions-setup-docker-compose@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: run empty db test
         env:
           TAG: ${{ github.ref_name }}
@@ -198,11 +195,6 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
-
-      - name: prepare compose
-        uses: KengoTODA/actions-setup-docker-compose@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Start target
         env:
