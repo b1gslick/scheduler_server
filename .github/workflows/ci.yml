@@ -167,10 +167,17 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
+
+      - name: prepare compose
+        uses: KengoTODA/actions-setup-docker-compose@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: run empty db test
         env:
           TAG: ${{ github.ref_name }}
         run: docker-compose -f docker-compose-perf-no100k.yml run k6s run /scripts/get_activities.js --quiet
+
       - name: tear down
         env:
           TAG: ${{ github.ref_name }}
@@ -183,6 +190,7 @@ jobs:
           POSTGRES_PASSWORD: "scheduler"
           TAG: ${{ github.ref_name }}
         run: docker-compose -f docker-compose-perf.yml up -d
+
       - name: run-compose with tests
         env:
           TAG: ${{ github.ref_name }}
@@ -195,6 +203,11 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
+
+      - name: prepare compose
+        uses: KengoTODA/actions-setup-docker-compose@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Start target
         env:
