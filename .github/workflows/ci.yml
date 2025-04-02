@@ -200,19 +200,39 @@ jobs:
     name: api-security-check
     runs-on: ubuntu-latest
     # needs: [push_to_registry]
+    
+    services:
+      postgres:
+        image: postgres:16.2-alpine3.18
+        env:
+          POSTGRES_DB: "schedulerdb"
+          POSTGRES_USER: "scheduler"
+          POSTGRES_PASSWORD: "scheduler"
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      backend:
+        image: t1mon1106/scheduler:${{ github.ref_name }}
+        ports:
+          - 8080:8080
+        env:
+          RUST_LOG: info
+          PASETO_KEY: "RANDOM WORDS WINTER MACINTOSH PC"
+          PORT: 8080
+          DATABASE_PASSWORD: scheduler
+          DATABASE_USER: scheduler
+          DATABASE_PORT: 5432
+          DATABASE_DB: schedulerdb
+          DATABASE_HOST: postgres
+
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
-
-      - name: prepare compose
-        uses: KengoTODA/actions-setup-docker-compose@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Start target
-        env:
-          TAG: ${{ github.ref_name }}
-        run: docker-compose -f docker-compose.yml up -d
 
       - name: VulnAPI
         uses: cerberauth/vulnapi-action@v1
