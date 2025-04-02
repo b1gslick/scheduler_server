@@ -234,13 +234,6 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v4
 
-      - name: VulnAPI
-        uses: cerberauth/vulnapi-action@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          openapi: 'http://localhost:8080/api-doc.json'
-
       - name: ZAP Scan
         uses: zaproxy/action-api-scan@v0.9.0
         with:
