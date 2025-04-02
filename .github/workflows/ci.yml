@@ -200,10 +200,6 @@ jobs:
     name: api-security-check
     runs-on: ubuntu-latest
     # needs: [push_to_registry]
-    permissions:
-      contents: read
-      actions: read
-      checks: write
     services:
       postgres:
         image: postgres:16.2-alpine3.18
@@ -245,6 +241,7 @@ jobs:
           format: openapi
           target: 'http://localhost:8080/api-doc.json'
           cmd_options: '-a'
+          allow_issue_writing: false
 
       - name: store report
         uses: actions/upload-artifact@v4
