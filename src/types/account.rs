@@ -24,3 +24,8 @@ pub struct PubAccount {
     pub email: String,
     pub password: String,
 }
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct TokenAnswer {
+    pub token: String,
+}

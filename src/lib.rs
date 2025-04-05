@@ -3,7 +3,6 @@ use crate::swagger::ApiDoc;
 
 use std::sync::Arc;
 
-use tracing::info;
 use tracing_subscriber::fmt::format::FmtSpan;
 use warp::{http::Method, http::StatusCode, Filter, Rejection, Reply};
 
@@ -34,14 +33,14 @@ async fn build_routes(
         .and(warp::path(VERSION))
         .and(warp::path("healthz"))
         .and(warp::path::end())
-        .and_then(healthz);
+        .and_then(routes::health::healthz);
 
     let get_activities = warp::get()
         .and(warp::path(VERSION))
         .and(warp::path("activity"))
         .and(warp::path::end())
         .and(routes::authentication::auth())
-        .and(warp::query())
+        .and(warp::query::<types::pagination::Pagination>())
         .and(store_filter.clone())
         .and_then(routes::activities::get_activities);
 
@@ -121,20 +120,6 @@ async fn build_routes(
         .recover(handle_errors::return_error)
 }
 
-#[utoipa::path(
-        get,
-        path = "healthz",
-        responses(
-            (status = 200, description = "OK"),
-            (status = 404, description = "Not found")
-        ),
-    )]
-pub async fn healthz() -> Result<impl warp::Reply, warp::Rejection> {
-    info!("healthz");
-
-    Ok(warp::reply::with_status("OK", StatusCode::OK))
-}
-
 pub async fn setup_store(config: &config::Config) -> Result<store::Store, handle_errors::Error> {
     let store = store::Store::new(&format!(
         "postgres://{}:{}@{}:{}/{}",
@@ -199,6 +184,7 @@ mod test_scheduler {
         config::Config,
         setup_store,
         tests::helpers::{create_postgres, prepare_store},
+        types::account::TokenAnswer,
         VERSION,
     };
 
@@ -240,7 +226,7 @@ mod test_scheduler {
             .reply(&filter)
             .await;
 
-        assert_eq!(reg_req.status(), 200);
+        assert_eq!(reg_req.status(), 201);
 
         let login_req = warp::test::request()
             .method("POST")
@@ -249,15 +235,17 @@ mod test_scheduler {
             .reply(&filter)
             .await;
 
-        let token = convert_to_string(login_req.body())
-            .await
-            .unwrap()
-            .replace("\"", "");
+        // let token: TokenAnswer = deserialize(&login_req.body()).unwrap();
+        let token = convert_to_string(login_req.body()).await.unwrap();
+
+        println!("{:?}", token);
+        let t: TokenAnswer = serde_json::from_str(&token).unwrap();
+        println!("{:?}", t);
 
         let path = format!("/{}/activity?limit=1&offset=1", VERSION);
         let res = warp::test::request()
             .method("GET")
-            .header("Authorization", token)
+            .header("Authorization", t.token)
             .path(&path)
             .reply(&filter)
             .await;

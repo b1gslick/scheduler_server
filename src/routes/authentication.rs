@@ -1,12 +1,14 @@
-#![allow(dead_code)]
+use crate::StatusCode;
 use argon2::{self, Config};
 use chrono::prelude::*;
 use regex::Regex;
+use std::collections::HashMap;
 use std::{env, future};
+use warp::reply::json;
 use warp::Filter;
 
 use crate::store::Store;
-use crate::types::account::{Account, AccountID, PubAccount, Session};
+use crate::types::account::{Account, AccountID, PubAccount, Session, TokenAnswer};
 
 #[derive(Debug)]
 struct PassCriteria {
@@ -20,7 +22,7 @@ struct PassCriteria {
         path = "registration",
         request_body = PubAccount,
         responses(
-            (status = 200, description = "Account added", body = String),
+            (status = 201, description = "Account added"),
             (status = 406, description = "Short password or email"),
         )
     )]
@@ -38,8 +40,9 @@ pub async fn register(store: Store, account: Account) -> Result<impl warp::Reply
         email: account.email,
         password: hashed_password,
     };
+    let answer = HashMap::from([("status", "Account created")]);
     match store.add_account(account).await {
-        Ok(_) => Ok(warp::reply::json(&"Account added".to_string())),
+        Ok(_) => Ok(warp::reply::with_status(json(&answer), StatusCode::CREATED)),
         Err(e) => Err(warp::reject::custom(e)),
     }
 }
@@ -129,8 +132,7 @@ pub fn is_password_valid(pass: &str) -> bool {
         request_body = PubAccount,
         responses(
             (status = 200, description = "Ok", body = String),
-            (status = 406, description = "Short password or email"),
-            (status = 511, description = "Server error"),
+            (status = 401, description = "Unauthorized"),
         )
     )]
 pub async fn login(store: Store, login: Account) -> Result<impl warp::Reply, warp::Rejection> {
@@ -138,18 +140,16 @@ pub async fn login(store: Store, login: Account) -> Result<impl warp::Reply, war
         Ok(account) => match verify_password(&account.password, login.password.as_bytes()) {
             Ok(verified) => {
                 if verified {
-                    Ok(warp::reply::json(&issue_token(
-                        account.id.expect("id not found"),
-                    )))
+                    let token = issue_token(account.id.expect("id not found"));
+                    let answer = TokenAnswer { token };
+                    Ok(warp::reply::with_status(json(&answer), StatusCode::OK))
                 } else {
                     Err(warp::reject::custom(handle_errors::Error::Unauthorized))
                 }
             }
-            Err(e) => Err(warp::reject::custom(
-                handle_errors::Error::ArgonLibraryError(e),
-            )),
+            Err(_) => Err(warp::reject::custom(handle_errors::Error::Unauthorized)),
         },
-        Err(e) => Err(warp::reject::custom(e)),
+        Err(_) => Err(warp::reject::custom(handle_errors::Error::Unauthorized)),
     }
 }
 fn verify_password(hash: &str, password: &[u8]) -> Result<bool, argon2::Error> {
@@ -333,7 +333,7 @@ mod authentication_tests {
             password: "AbcD1x!#".to_string(),
         };
         let result = register(store, account).await.unwrap().into_response();
-        assert_eq!(result.status(), 200)
+        assert_eq!(result.status(), 201)
     }
 
     #[tokio::test]

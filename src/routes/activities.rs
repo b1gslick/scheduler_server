@@ -1,11 +1,10 @@
 use crate::store::Store;
 use crate::types::account::Session;
 use crate::types::activities::{Activity, ActivityId, NewActivity};
-use crate::types::pagination::extract_pagination;
 use crate::types::pagination::Pagination;
-use std::collections::HashMap;
 use tracing::{info, instrument};
 use warp::http::StatusCode;
+use warp::reply::json;
 
 #[instrument]
 #[utoipa::path(
@@ -15,25 +14,19 @@ use warp::http::StatusCode;
             (status = 200, description = "List activities", body = [Activity]),
             (status = 404, description = "Rout not found")
         ),
+        params(Pagination),
         security(
             ("Authorization" = [])
         )
     )]
 pub async fn get_activities(
     session: Session,
-    params: HashMap<String, String>,
+    params: Pagination,
     store: Store,
 ) -> Result<impl warp::Reply, warp::Rejection> {
     info!("quering activities");
-    let mut pagination = Pagination::default();
-
-    if !params.is_empty() {
-        info!(pagination = true);
-        pagination = extract_pagination(params)?;
-    }
-
     let res: Vec<Activity> = match store
-        .get_activities(session.account_id, pagination.limit, pagination.offset)
+        .get_activities(session.account_id, params.limit, params.offset)
         .await
     {
         Ok(res) => res,
@@ -48,7 +41,7 @@ pub async fn get_activities(
         path = "activity",
         request_body = NewActivity,
         responses(
-            (status = 200, description = "activity added", body = Activity),
+            (status = 201, description = "activity added", body = Activity),
             (status = 409, description = "activity is already exists"),
             (status = 422, description = "can't add activities", body = Activity)
         ),
@@ -64,12 +57,12 @@ pub async fn add_activity(
     info!("add activity");
     let account_id = session.account_id;
     if let Err(e) = store.add_activity(new_activity.clone(), account_id).await {
-        info!("Add activity not added{:?}", new_activity.clone());
+        info!("activity not added{:?}", new_activity.clone());
         return Err(warp::reject::custom(e));
     }
     Ok(warp::reply::with_status(
-        format!("Activity added: {:?}", new_activity),
-        StatusCode::OK,
+        json(&new_activity),
+        StatusCode::CREATED,
     ))
 }
 
@@ -177,7 +170,7 @@ mod test_activities {
             .await
             .unwrap()
             .into_response();
-        assert_eq!(result.status(), 200);
+        assert_eq!(result.status(), 201);
     }
 
     #[tokio::test]
@@ -192,7 +185,7 @@ mod test_activities {
         store.clone().add_test_acctivities().await;
         let result = store
             .clone()
-            .get_activities(AccountID(account_id), Some(limit), 0)
+            .get_activities(AccountID(account_id), Some(limit), None)
             .await
             .unwrap();
         assert_eq!(result.len() as i32, limit);
@@ -212,7 +205,7 @@ mod test_activities {
 
         let result = store
             .clone()
-            .get_activities(AccountID(account_id), None, 0)
+            .get_activities(AccountID(account_id), None, None)
             .await
             .unwrap();
         assert_eq!(result.len() as i32, num_activities);
@@ -232,7 +225,7 @@ mod test_activities {
 
         let result = store
             .clone()
-            .get_activities(AccountID(account_id), None, num_activities - 1)
+            .get_activities(AccountID(account_id), None, Some(num_activities - 1))
             .await
             .unwrap();
         assert_eq!(result.len() as i32, num_activities - (num_activities - 1));
