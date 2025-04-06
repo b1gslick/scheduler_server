@@ -72,7 +72,7 @@ Authorization: {{token}}
     "time": {{new_time}}
 }
 
-HTTP 200
+HTTP 201
 
 [Asserts]
 jsonpath "$.id" toString == {{id}}
@@ -137,7 +137,7 @@ Authorization: {{token}}
     "time": {{time}}
 }
 
-HTTP 200
+HTTP 201
 
 [Asserts]
 jsonpath "$.id" toString == {{id}}
@@ -181,10 +181,10 @@ Authorization: {{token}}
   "activity_id": {{id}}
 }
 
-HTTP 422
+HTTP 404
 
 [Asserts]
-body == "Cannot update data"
+body == "Route not found"
 
 
 

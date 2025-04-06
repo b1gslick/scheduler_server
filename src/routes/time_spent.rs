@@ -3,12 +3,14 @@ use crate::types::account::Session;
 use crate::types::time_spent::{NewTimeSpent, TimeSpent};
 use tracing::info;
 use warp::http::StatusCode;
+use warp::reply::json;
 
 #[utoipa::path(
         get,
         path = "time_spent/{id}",
         responses(
-            (status = 200, description = "Get time spent by id", body = TimeSpent)
+            (status = 200, description = "Get time spent by id", body = TimeSpent),
+            (status = 404, description = "Not found")
         ),
         params(
             ("id" = i32, Path, description = "time spent unique id")
@@ -26,10 +28,10 @@ pub async fn get_time_spent_by_id(
     let account_id = session.account_id;
     let res: TimeSpent = match store.get_time_spent_by_id(id, account_id).await {
         Ok(res) => res,
-        Err(e) => return Err(warp::reject::custom(e)),
+        Err(_) => return Err(warp::reject::not_found()),
     };
 
-    Ok(warp::reply::json(&res))
+    Ok(warp::reply::with_status(json(&res), StatusCode::OK))
 }
 
 #[utoipa::path(
@@ -38,6 +40,7 @@ pub async fn get_time_spent_by_id(
         request_body = NewTimeSpent,
         responses(
             (status = 200, description = "Get time spent by id", body = NewTimeSpent),
+            (status = 404, description = "Not found"),
             (status = 422, description = "Can't parse body", body = NewTimeSpent)
         ),
         security(
@@ -61,10 +64,10 @@ pub async fn add_time_spent(
         .await
     {
         Ok(_) => Ok(warp::reply::with_status(
-            format!("Time added wit id {:?}", new_time_spent),
+            json(&new_time_spent),
             StatusCode::OK,
         )),
-        Err(e) => Err(warp::reject::custom(e)),
+        Err(_) => Err(warp::reject::not_found()),
     }
 }
 
