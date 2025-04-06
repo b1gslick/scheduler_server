@@ -1,14 +1,28 @@
-pub use handle_errors;
-use tracing_subscriber::fmt::format::FmtSpan;
-use warp::{http::Method, Filter, Reply};
+use crate::swagger::serve_swagger;
+use crate::swagger::ApiDoc;
 
+use std::sync::Arc;
+
+use tracing::info;
+use tracing_subscriber::fmt::format::FmtSpan;
+use warp::{http::Method, http::StatusCode, Filter, Rejection, Reply};
+
+use utoipa::OpenApi;
+use utoipa_swagger_ui::Config as SwaggerConfig;
+
+pub use handle_errors;
 pub mod config;
 pub mod routes;
 pub mod store;
+pub mod swagger;
 pub mod tests;
 mod types;
 
-async fn build_routes(store: store::Store) -> impl Filter<Extract = impl Reply> + Clone {
+const VERSION: &str = "v1";
+
+async fn build_routes(
+    store: store::Store,
+) -> impl Filter<Extract = impl Reply, Error = Rejection> + Clone {
     let store_filter = warp::any().map(move || store.clone());
 
     let cors = warp::cors()
@@ -16,15 +30,24 @@ async fn build_routes(store: store::Store) -> impl Filter<Extract = impl Reply> 
         .allow_header("content-type")
         .allow_methods(&[Method::PUT, Method::DELETE, Method::GET, Method::POST]);
 
-    let get_activities = warp::get()
-        .and(warp::path("activities"))
+    let health_check = warp::get()
+        .and(warp::path(VERSION))
+        .and(warp::path("healthz"))
         .and(warp::path::end())
+        .and_then(healthz);
+
+    let get_activities = warp::get()
+        .and(warp::path(VERSION))
+        .and(warp::path("activity"))
+        .and(warp::path::end())
+        .and(routes::authentication::auth())
         .and(warp::query())
         .and(store_filter.clone())
         .and_then(routes::activities::get_activities);
 
     let add_activity = warp::post()
-        .and(warp::path("activities"))
+        .and(warp::path(VERSION))
+        .and(warp::path("activity"))
         .and(warp::path::end())
         .and(routes::authentication::auth())
         .and(store_filter.clone())
@@ -32,7 +55,8 @@ async fn build_routes(store: store::Store) -> impl Filter<Extract = impl Reply> 
         .and_then(routes::activities::add_activity);
 
     let update_activities = warp::put()
-        .and(warp::path("activities"))
+        .and(warp::path(VERSION))
+        .and(warp::path("activity"))
         .and(warp::path::param::<i32>())
         .and(warp::path::end())
         .and(routes::authentication::auth())
@@ -41,6 +65,7 @@ async fn build_routes(store: store::Store) -> impl Filter<Extract = impl Reply> 
         .and_then(routes::activities::update_activities);
 
     let add_time_spent = warp::post()
+        .and(warp::path(VERSION))
         .and(warp::path("time_spent"))
         .and(warp::path::end())
         .and(routes::authentication::auth())
@@ -49,6 +74,7 @@ async fn build_routes(store: store::Store) -> impl Filter<Extract = impl Reply> 
         .and_then(routes::time_spent::add_time_spent);
 
     let get_time_spent = warp::get()
+        .and(warp::path(VERSION))
         .and(warp::path("time_spent"))
         .and(warp::path::param::<i32>())
         .and(warp::path::end())
@@ -57,7 +83,8 @@ async fn build_routes(store: store::Store) -> impl Filter<Extract = impl Reply> 
         .and_then(routes::time_spent::get_time_spent_by_id);
 
     let deleted_activities = warp::delete()
-        .and(warp::path("activities"))
+        .and(warp::path(VERSION))
+        .and(warp::path("activity"))
         .and(warp::path::param::<i32>())
         .and(warp::path::end())
         .and(routes::authentication::auth())
@@ -65,6 +92,7 @@ async fn build_routes(store: store::Store) -> impl Filter<Extract = impl Reply> 
         .and_then(routes::activities::deleted_activities);
 
     let registration = warp::post()
+        .and(warp::path(VERSION))
         .and(warp::path("registration"))
         .and(warp::path::end())
         .and(store_filter.clone())
@@ -72,6 +100,7 @@ async fn build_routes(store: store::Store) -> impl Filter<Extract = impl Reply> 
         .and_then(routes::authentication::register);
 
     let login = warp::post()
+        .and(warp::path(VERSION))
         .and(warp::path("login"))
         .and(warp::path::end())
         .and(store_filter.clone())
@@ -79,6 +108,7 @@ async fn build_routes(store: store::Store) -> impl Filter<Extract = impl Reply> 
         .and_then(routes::authentication::login);
 
     get_activities
+        .or(health_check)
         .or(add_activity)
         .or(update_activities)
         .or(add_time_spent)
@@ -89,6 +119,20 @@ async fn build_routes(store: store::Store) -> impl Filter<Extract = impl Reply> 
         .with(cors)
         .with(warp::trace::request())
         .recover(handle_errors::return_error)
+}
+
+#[utoipa::path(
+        get,
+        path = "healthz",
+        responses(
+            (status = 200, description = "OK"),
+            (status = 404, description = "Not found")
+        ),
+    )]
+pub async fn healthz() -> Result<impl warp::Reply, warp::Rejection> {
+    info!("healthz");
+
+    Ok(warp::reply::with_status("OK", StatusCode::OK))
 }
 
 pub async fn setup_store(config: &config::Config) -> Result<store::Store, handle_errors::Error> {
@@ -121,13 +165,32 @@ pub async fn setup_store(config: &config::Config) -> Result<store::Store, handle
 
     Ok(store)
 }
+
 pub async fn run(config: config::Config, store: store::Store) {
+    let swagger_config = Arc::new(SwaggerConfig::from("/api-doc.json"));
+
+    let api_doc = warp::path("api-doc.json")
+        .and(warp::get())
+        .map(|| warp::reply::json(&ApiDoc::openapi()));
+
+    let swagger_ui = warp::path("docs")
+        .and(warp::get())
+        .and(warp::path::full())
+        .and(warp::path::tail())
+        .and(warp::any().map(move || swagger_config.clone()))
+        .and_then(serve_swagger);
+
     let routes = build_routes(store).await;
-    warp::serve(routes).run(([0, 0, 0, 0], config.port)).await;
+
+    warp::serve(api_doc.or(swagger_ui).or(routes))
+        .run(([0, 0, 0, 0], config.port))
+        .await
 }
 
 #[cfg(test)]
 mod test_scheduler {
+
+    use std::env;
 
     use testcontainers::clients::Cli;
 
@@ -136,6 +199,7 @@ mod test_scheduler {
         config::Config,
         setup_store,
         tests::helpers::{create_postgres, prepare_store},
+        VERSION,
     };
 
     #[tokio::test]
@@ -158,20 +222,52 @@ mod test_scheduler {
 
     #[tokio::test]
     async fn medium_test_get_empty_activities() {
-        // env::set_var("PASETO_KEY", "RANDOM WORDS WINTER MACINTOSH PC");
-        // let token = issue_token(AccountID(3));
+        env::set_var("PASETO_KEY", "RANDOM WORDS WINTER MACINTOSH PC");
         let docker = Cli::default();
         let node = docker.run(create_postgres());
         let store = prepare_store(node.get_host_port_ipv4(5432)).await.unwrap();
 
         let filter = build_routes(store).await;
 
-        let res = warp::test::request()
-            .method("GET")
-            .path("/activities?limit=1&offset=1")
+        let register = format!("/{}/registration", VERSION);
+        let login = format!("/{}/login", VERSION);
+        let body = &serde_json::json!({"email": "test@test.iv", "password": "AbcD1x!#"});
+
+        let reg_req = warp::test::request()
+            .method("POST")
+            .path(&register)
+            .json(body)
             .reply(&filter)
             .await;
-        println!("{:?}", res.body());
+
+        assert_eq!(reg_req.status(), 200);
+
+        let login_req = warp::test::request()
+            .method("POST")
+            .path(&login)
+            .json(body)
+            .reply(&filter)
+            .await;
+
+        let token = convert_to_string(login_req.body())
+            .await
+            .unwrap()
+            .replace("\"", "");
+
+        let path = format!("/{}/activity?limit=1&offset=1", VERSION);
+        let res = warp::test::request()
+            .method("GET")
+            .header("Authorization", token)
+            .path(&path)
+            .reply(&filter)
+            .await;
+
         assert_eq!(res.body().to_vec(), b"[]");
+    }
+
+    async fn convert_to_string(
+        bytes: &warp::hyper::body::Bytes,
+    ) -> Result<String, warp::Rejection> {
+        String::from_utf8(bytes.to_vec()).map_err(|_| warp::reject())
     }
 }

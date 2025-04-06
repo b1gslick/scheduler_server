@@ -1,5 +1,5 @@
 ---
-name: Test,Build
+name: Test,Build,e2e
 
 permissions:
   contents: read
@@ -96,21 +96,69 @@ jobs:
     name: large tests
     runs-on: ubuntu-latest
     needs: [push_to_registry]
+
+    services:
+      postgres:
+        image: postgres:16.2-alpine3.18
+        env:
+          POSTGRES_DB: "schedulerdb"
+          POSTGRES_USER: "scheduler"
+          POSTGRES_PASSWORD: "scheduler"
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      backend:
+        image: t1mon1106/scheduler:${{ github.ref_name }}
+        ports:
+          - 8080:8080
+        env:
+          RUST_LOG: info
+          PASETO_KEY: "RANDOM WORDS WINTER MACINTOSH PC"
+          PORT: 8080
+          DATABASE_PASSWORD: scheduler
+          DATABASE_USER: scheduler
+          DATABASE_PORT: 5432
+          DATABASE_DB: schedulerdb
+          DATABASE_HOST: postgres
+
+      http-to-sql:
+        image: t1mon1106/http_to_sql
+        ports:
+          - "4545:4545"
+        env:
+          DB_USER: scheduler
+          DB_PASSWORD: scheduler
+          DB_HOST: postgres
+          DB_PORT: 5432
+          DB_NAME: schedulerdb
+
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
-      - name: run-compose with tests
-        uses: isbang/compose-action@v1.5.1
-        with:
-          compose-file: "docker-compose-large-tests.yml"
-          up-flags: "--abort-on-container-exit"
-        env:
-          TAG: ${{ github.ref_name }}
+
+      - name: prepare hurl
+        run: |
+          VERSION=6.1.1
+          sudo apt-get update
+          sudo apt install software-properties-common -y
+          sudo apt-add-repository -y ppa:lepapareil/hurl
+          sudo apt install hurl="${VERSION}"*
+
+      - name: run test script
+        run: |
+          cd ./tests/e2e
+          ./test_runner.sh -f . -x -u "http://localhost:8080" -v
+
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v4
         if: success() || failure() # always run even if the previous step fails
         with:
-          report_paths: "**/tests/e2e/report/*.xml"
+          report_paths: "**/tests/e2e/report.xml"
 
   one-handredk-rows-test:
     name: one-handredk-rows-test
@@ -119,10 +167,17 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
+
+      - name: prepare compose
+        uses: KengoTODA/actions-setup-docker-compose@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: run empty db test
         env:
           TAG: ${{ github.ref_name }}
         run: docker-compose -f docker-compose-perf-no100k.yml run k6s run /scripts/get_activities.js --quiet
+
       - name: tear down
         env:
           TAG: ${{ github.ref_name }}
@@ -135,6 +190,7 @@ jobs:
           POSTGRES_PASSWORD: "scheduler"
           TAG: ${{ github.ref_name }}
         run: docker-compose -f docker-compose-perf.yml up -d
+
       - name: run-compose with tests
         env:
           TAG: ${{ github.ref_name }}
@@ -144,23 +200,51 @@ jobs:
     name: api-security-check
     runs-on: ubuntu-latest
     needs: [push_to_registry]
+    services:
+      postgres:
+        image: postgres:16.2-alpine3.18
+        env:
+          POSTGRES_DB: "schedulerdb"
+          POSTGRES_USER: "scheduler"
+          POSTGRES_PASSWORD: "scheduler"
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      backend:
+        image: t1mon1106/scheduler:${{ github.ref_name }}
+        ports:
+          - 8080:8080
+        env:
+          RUST_LOG: info
+          PASETO_KEY: "RANDOM WORDS WINTER MACINTOSH PC"
+          PORT: 8080
+          DATABASE_PASSWORD: scheduler
+          DATABASE_USER: scheduler
+          DATABASE_PORT: 5432
+          DATABASE_DB: schedulerdb
+          DATABASE_HOST: postgres
+
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
 
-      - name: Start target
-        env:
-          TAG: ${{ github.ref_name }}
-        run: docker-compose -f docker-compose.yml up -d
-
-      - name: install deps
-        run: pip install wapiti3
-
-      - name: run scanner
-        run: wapiti -u http://localhost:8080 -o report
+      - name: ZAP Scan
+        uses: zaproxy/action-api-scan@v0.9.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          docker_name: 'ghcr.io/zaproxy/zaproxy:stable'
+          format: openapi
+          target: 'http://localhost:8080/api-doc.json'
+          cmd_options: '-a'
+          allow_issue_writing: false
 
       - name: store report
         uses: actions/upload-artifact@v4
         with:
-          name: wapiti-report
-          path: report/*
+          name: zap-report
+          path: report_html.html

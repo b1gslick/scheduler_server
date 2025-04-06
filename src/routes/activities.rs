@@ -1,6 +1,6 @@
 use crate::store::Store;
 use crate::types::account::Session;
-use crate::types::activities::{Activity, NewActivity};
+use crate::types::activities::{Activity, ActivityId, NewActivity};
 use crate::types::pagination::extract_pagination;
 use crate::types::pagination::Pagination;
 use std::collections::HashMap;
@@ -8,7 +8,19 @@ use tracing::{info, instrument};
 use warp::http::StatusCode;
 
 #[instrument]
+#[utoipa::path(
+        get,
+        path = "activity",
+        responses(
+            (status = 200, description = "List activities", body = [Activity]),
+            (status = 404, description = "Rout not found")
+        ),
+        security(
+            ("Authorization" = [])
+        )
+    )]
 pub async fn get_activities(
+    session: Session,
     params: HashMap<String, String>,
     store: Store,
 ) -> Result<impl warp::Reply, warp::Rejection> {
@@ -21,7 +33,7 @@ pub async fn get_activities(
     }
 
     let res: Vec<Activity> = match store
-        .get_activities(pagination.limit, pagination.offset)
+        .get_activities(session.account_id, pagination.limit, pagination.offset)
         .await
     {
         Ok(res) => res,
@@ -31,6 +43,19 @@ pub async fn get_activities(
     Ok(warp::reply::json(&res))
 }
 
+#[utoipa::path(
+        post,
+        path = "activity",
+        request_body = NewActivity,
+        responses(
+            (status = 200, description = "activity added", body = Activity),
+            (status = 409, description = "activity is already exists"),
+            (status = 422, description = "can't add activities", body = Activity)
+        ),
+        security(
+            ("Authorization" = [])
+        )
+    )]
 pub async fn add_activity(
     session: Session,
     store: Store,
@@ -48,14 +73,37 @@ pub async fn add_activity(
     ))
 }
 
+#[utoipa::path(
+        put,
+        path = "activity/{id}",
+        request_body = NewActivity,
+        params(
+            ("id" = i32, Path, description = "Activity unique id")
+        ),
+        responses(
+            (status = 200, description = "activity added", body = Activity),
+            (status = 404, description = "activity not found"),
+            (status = 422, description = "can't add activities", body = Activity)
+        ),
+        security(
+            ("Authorization" = [])
+        )
+    )]
 pub async fn update_activities(
     id: i32,
     session: Session,
     store: Store,
-    activity: Activity,
+    new_activity: NewActivity,
 ) -> Result<impl warp::Reply, warp::Rejection> {
     info!("update activities");
     let account_id = session.account_id;
+    let activity = Activity {
+        id: ActivityId(id),
+        title: new_activity.title,
+        content: new_activity.content,
+        time: new_activity.time,
+    };
+
     if store.is_activity_owner(id, &account_id).await? {
         let res = match store.update_activity(activity, id, account_id).await {
             Ok(res) => res,
@@ -68,6 +116,21 @@ pub async fn update_activities(
     }
 }
 
+#[utoipa::path(
+        delete,
+        path = "activity/{id}",
+        params(
+            ("id" = i32, Path, description = "Activity unique id")
+        ),
+        responses(
+            (status = 200, description = "activity deleted", body = i32),
+            (status = 401, description = "Unauthorized"),
+            (status = 404, description = "activity not found"),
+        ),
+        security(
+            ("Authorization" = [])
+        )
+    )]
 pub async fn deleted_activities(
     id: i32,
     session: Session,
@@ -92,8 +155,8 @@ pub async fn deleted_activities(
 mod test_activities {
     use crate::routes::activities::{add_activity, deleted_activities, update_activities};
     use crate::tests::helpers::{create_postgres, get_session, prepare_store};
+    use crate::types::account::AccountID;
     use crate::types::activities::NewActivity;
-    use crate::types::activities::{Activity, ActivityId};
     use testcontainers_modules::testcontainers::clients::Cli;
     use warp::reply::Reply;
 
@@ -127,7 +190,11 @@ mod test_activities {
         store.clone().add_test_account(account_id).await;
         store.clone().add_test_acctivities().await;
         store.clone().add_test_acctivities().await;
-        let result = store.clone().get_activities(Some(limit), 0).await.unwrap();
+        let result = store
+            .clone()
+            .get_activities(AccountID(account_id), Some(limit), 0)
+            .await
+            .unwrap();
         assert_eq!(result.len() as i32, limit);
     }
 
@@ -143,7 +210,11 @@ mod test_activities {
             store.clone().add_test_acctivities().await;
         }
 
-        let result = store.clone().get_activities(None, 0).await.unwrap();
+        let result = store
+            .clone()
+            .get_activities(AccountID(account_id), None, 0)
+            .await
+            .unwrap();
         assert_eq!(result.len() as i32, num_activities);
     }
 
@@ -161,7 +232,7 @@ mod test_activities {
 
         let result = store
             .clone()
-            .get_activities(None, num_activities - 1)
+            .get_activities(AccountID(account_id), None, num_activities - 1)
             .await
             .unwrap();
         assert_eq!(result.len() as i32, num_activities - (num_activities - 1));
@@ -176,8 +247,7 @@ mod test_activities {
         let activity_id = 1;
         store.clone().add_test_account(account_id).await;
         store.clone().add_test_acctivities().await;
-        let for_update = Activity {
-            id: ActivityId(activity_id),
+        let for_update = NewActivity {
             title: "updated".to_string(),
             content: "full_update".to_string(),
             time: 199999,
@@ -195,8 +265,7 @@ mod test_activities {
         let store = prepare_store(node.get_host_port_ipv4(5432)).await.unwrap();
         let account_id = 1;
         store.clone().add_test_account(account_id).await;
-        let for_update = Activity {
-            id: ActivityId(1),
+        let for_update = NewActivity {
             title: "updated".to_string(),
             content: "full_update".to_string(),
             time: 199999,

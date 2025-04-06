@@ -28,47 +28,51 @@ codegen-units = 16
 rpath = false
 
 [dependencies]
-tokio = { version = "1.37.0", features = ["full"] }
+tokio = { version = "1.44.1", features = ["full"] }
 warp = { version = "0.3.7" }
 # data serilization library
-serde = { version = "1.0.198", features = ["derive"] }
-serde_json = "1.0.116"
-h2 = { version = "^0.4.4" }
+serde = { version = "1.0.219", features = ["derive"] }
+serde_json = "1.0.140"
+h2 = { version = "^0.4.8" }
 
 # uuid 
-uuid = { version = "1.8.0", features = ["v4"] }
+uuid = { version = "1.16.0", features = ["v4"] }
 
 # tracing
-tracing = { version = "0.1.40", features = ["log"] }
-tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
+tracing = { version = "0.1.41", features = ["log"] }
+tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
 
 # local
 handle-errors = { path = "handle-errors" }
 
 # config
-clap = { version = "4.5.4", features = ["derive"] }
-proc-macro2 = "1.0.81"
+clap = { version = "4.5.34", features = ["derive"] }
+proc-macro2 = "1.0.94"
 dotenvy = "0.15.7"
 
 # db
-sqlx = { version = "0.7.4", features = [
+sqlx = { version = "0.8.3", features = [
   "runtime-tokio-rustls",
   "migrate",
   "postgres",
 ] }
 
 # random
-rand = { version = "0.8.5" }
+rand = { version = "0.9.0" }
 
 # encryption
 rust-argon2 = { version = "2.1.0" }
 paseto = { version = "2.0.2" }
-openssl-sys = "0.9.102"
-openssl = { version = "0.10.64", features = ["vendored"] }
-regex = { version = "1.10.4" }
+openssl-sys = "0.9.106"
+openssl = { version = "0.10.71", features = ["vendored"] }
+regex = { version = "1.11.1" }
 
-# time 
-chrono = { version = "0.4.38" }
+# time
+chrono = { version = "0.4.40" }
 
 testcontainers = { version = "0.15.0" }                                 # test
 testcontainers-modules = { version = "0.3.7", features = ["postgres"] }
+
+# utopia
+utoipa = { version = "5.3.1" }
+utoipa-swagger-ui = { version = "9.0.0" }

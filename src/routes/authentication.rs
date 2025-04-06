@@ -1,21 +1,37 @@
 #![allow(dead_code)]
 use argon2::{self, Config};
 use chrono::prelude::*;
-use rand::Rng;
 use regex::Regex;
 use std::{env, future};
 use warp::Filter;
 
 use crate::store::Store;
-use crate::types::account::{Account, AccountID, Session};
+use crate::types::account::{Account, AccountID, PubAccount, Session};
 
+#[derive(Debug)]
+struct PassCriteria {
+    capital: u8,
+    digits: u8,
+    special: u8,
+}
+
+#[utoipa::path(
+        post,
+        path = "registration",
+        request_body = PubAccount,
+        responses(
+            (status = 200, description = "Account added", body = String),
+            (status = 406, description = "Short password or email"),
+        )
+    )]
 pub async fn register(store: Store, account: Account) -> Result<impl warp::Reply, warp::Rejection> {
-    if account.password.len() < 3 || account.email.len() < 3 {
+    if !is_password_valid(&account.password) {
         return Err(warp::reject::custom(handle_errors::Error::PasswordInvalid));
     }
     if !is_email_valid(&account.email) {
         return Err(warp::reject::custom(handle_errors::Error::WrongEmailType));
     }
+
     let hashed_password = hash_password(account.password.as_bytes());
     let account = Account {
         id: account.id,
@@ -29,12 +45,15 @@ pub async fn register(store: Store, account: Account) -> Result<impl warp::Reply
 }
 
 pub fn hash_password(password: &[u8]) -> String {
-    let salt = rand::thread_rng().gen::<[u8; 32]>();
+    let salt = rand::random::<[u8; 32]>();
     let config = Config::default();
     argon2::hash_encoded(password, &salt, &config).unwrap()
 }
 
 pub fn is_email_valid(email: &str) -> bool {
+    if email.len() < 3 {
+        return false;
+    }
     let email_regex = Regex::new(
         r"^([a-zA-Z0-9_+]([a-zA-Z0-9_+.]*[a-zA-Z0-9_+])?)@([a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,6})",
     )
@@ -42,6 +61,78 @@ pub fn is_email_valid(email: &str) -> bool {
     email_regex.is_match(email)
 }
 
+pub fn is_password_valid(pass: &str) -> bool {
+    let mut answer: PassCriteria = PassCriteria {
+        capital: 0,
+        digits: 0,
+        special: 0,
+    };
+    let allowed_special_symbols =
+        env::var("ALLOWED_SPECIAL_SYMBOLS").unwrap_or("!#$%&()*+,-./:;<=>?@[]^_{|}~".to_string());
+
+    let min_len = env::var("MIN_PASS_LEN")
+        .unwrap_or("8".to_string())
+        .parse::<usize>()
+        .expect("Provide number");
+    let max_len = env::var("MAX_PASS_LEN")
+        .unwrap_or("128".to_string())
+        .parse::<usize>()
+        .unwrap();
+    let capital_words = env::var("NUMBER_CAPITAL_WORDS")
+        .unwrap_or("2".to_string())
+        .parse::<u8>()
+        .unwrap();
+    let spec_symbols = env::var("NUMBER_SPECIAL_SYMBOLS")
+        .unwrap_or("2".to_string())
+        .parse::<u8>()
+        .unwrap();
+    let digits = env::var("NUMBER_OF_DIGITS")
+        .unwrap_or("1".to_string())
+        .parse::<u8>()
+        .unwrap();
+
+    if max_len < min_len {
+        panic!("Max len password should more than min");
+    }
+
+    if spec_symbols + digits + capital_words > max_len as u8 {
+        panic!("Password criteria couldn't meet, all sum options greater than max password len");
+    }
+
+    if pass.len() < min_len || pass.len() > max_len {
+        return false;
+    }
+
+    for char in pass.chars() {
+        if char.is_uppercase() {
+            answer.capital += 1;
+        }
+        if char.is_numeric() {
+            answer.digits += 1;
+        }
+        if allowed_special_symbols.contains(char) {
+            answer.special += 1;
+        }
+    }
+
+    if answer.capital >= capital_words && answer.digits >= digits && answer.special >= spec_symbols
+    {
+        return true;
+    }
+
+    false
+}
+
+#[utoipa::path(
+        post,
+        path = "login",
+        request_body = PubAccount,
+        responses(
+            (status = 200, description = "Ok", body = String),
+            (status = 406, description = "Short password or email"),
+            (status = 511, description = "Server error"),
+        )
+    )]
 pub async fn login(store: Store, login: Account) -> Result<impl warp::Reply, warp::Rejection> {
     match store.get_account(login.email).await {
         Ok(account) => match verify_password(&account.password, login.password.as_bytes()) {
@@ -51,7 +142,7 @@ pub async fn login(store: Store, login: Account) -> Result<impl warp::Reply, war
                         account.id.expect("id not found"),
                     )))
                 } else {
-                    Err(warp::reject::custom(handle_errors::Error::WrongPassword))
+                    Err(warp::reject::custom(handle_errors::Error::Unauthorized))
                 }
             }
             Err(e) => Err(warp::reject::custom(
@@ -106,7 +197,7 @@ pub fn auth() -> impl Filter<Extract = (Session,), Error = warp::Rejection> + Cl
 #[cfg(test)]
 mod authentication_tests {
 
-    use crate::routes::authentication::{is_email_valid, login, register};
+    use crate::routes::authentication::{is_email_valid, is_password_valid, login, register};
     use testcontainers::clients::Cli;
     use warp::reply::Reply;
 
@@ -116,6 +207,85 @@ mod authentication_tests {
     };
 
     use super::{auth, env, issue_token, AccountID};
+
+    #[tokio::test]
+    async fn small_test_validation_password_postive_case() {
+        env::set_var("MIN_PASS_LEN", "8");
+        env::set_var("MAX_PASS_LEN", "34");
+        env::set_var("NUMBER_CAPITAL_WORDS", "2");
+        env::set_var("NUMBER_OF_DIGITS", "1");
+        env::set_var("NUMBER_SPECIAL_SYMBOLS", "28");
+        let good_pass = "AbcD1x!#$%&()*+,-./:;<=>?@[]^_{|}~";
+        assert!(is_password_valid(good_pass));
+        env::set_var("NUMBER_SPECIAL_SYMBOLS", "2");
+    }
+
+    #[tokio::test]
+    async fn small_test_len_password_not_meet_min_criteria() {
+        env::set_var("NUMBER_OF_DIGITS", "0");
+        env::set_var("NUMBER_SPECIAL_SYMBOLS", "0");
+        env::set_var("NUMBER_CAPITAL_WORDS", "0");
+        env::set_var("MIN_PASS_LEN", "2");
+        println!("{:?}", is_password_valid("a"));
+        assert!(!is_password_valid("a"));
+    }
+
+    #[tokio::test]
+    async fn small_test_len_password_not_meet_max_criteria() {
+        env::set_var("MAX_PASS_LEN", "2");
+        env::set_var("NUMBER_OF_DIGITS", "0");
+        env::set_var("NUMBER_SPECIAL_SYMBOLS", "0");
+        env::set_var("NUMBER_CAPITAL_WORDS", "0");
+        assert!(!is_password_valid("aaa"));
+    }
+
+    #[tokio::test]
+    async fn small_test_capital_words_in_password_not_meet_critiria() {
+        env::set_var("MIN_PASS_LEN", "2");
+        env::set_var("NUMBER_OF_DIGITS", "0");
+        env::set_var("NUMBER_SPECIAL_SYMBOLS", "0");
+        env::set_var("NUMBER_CAPITAL_WORDS", "1");
+        assert!(!is_password_valid("aa"));
+    }
+    #[tokio::test]
+    async fn small_test_digit_in_password_not_meet_critiria() {
+        env::set_var("MIN_PASS_LEN", "2");
+        env::set_var("NUMBER_CAPITAL_WORDS", "0");
+        env::set_var("NUMBER_SPECIAL_SYMBOLS", "0");
+        env::set_var("NUMBER_OF_DIGITS", "1");
+        assert!(!is_password_valid("aa"));
+    }
+
+    #[tokio::test]
+    async fn small_test_special_symbols_in_password_not_meet_critiria() {
+        env::set_var("MIN_PASS_LEN", "2");
+        env::set_var("MAX_PASS_LEN", "8");
+        env::set_var("NUMBER_CAPITAL_WORDS", "0");
+        env::set_var("NUMBER_OF_DIGITS", "0");
+        env::set_var("NUMBER_SPECIAL_SYMBOLS", "1");
+        assert!(!is_password_valid("aa"));
+    }
+
+    #[tokio::test]
+    #[should_panic(expected = "Max len password should more than min")]
+    async fn small_test_min_should_less_then_max() {
+        env::set_var("MIN_PASS_LEN", "2");
+        env::set_var("MAX_PASS_LEN", "1");
+        is_password_valid("aa");
+    }
+
+    #[tokio::test]
+    #[should_panic(
+        expected = "Password criteria couldn't meet, all sum options greater than max password len"
+    )]
+    async fn small_test_if_options_sum_greater_max_function_should_panic() {
+        env::set_var("MIN_PASS_LEN", "2");
+        env::set_var("MAX_PASS_LEN", "2");
+        env::set_var("NUMBER_CAPITAL_WORDS", "1");
+        env::set_var("NUMBER_OF_DIGITS", "1");
+        env::set_var("NUMBER_SPECIAL_SYMBOLS", "1");
+        is_password_valid("aa");
+    }
 
     #[tokio::test]
     async fn small_test_post_activities_auth() {
@@ -149,13 +319,18 @@ mod authentication_tests {
 
     #[tokio::test]
     async fn medium_test_user_should_have_possibilities_for_registration() {
+        env::set_var("NUMBER_SPECIAL_SYMBOLS", "2");
+        env::set_var("MIN_PASS_LEN", "8");
+        env::set_var("MAX_PASS_LEN", "8");
+        env::set_var("NUMBER_CAPITAL_WORDS", "2");
+        env::set_var("NUMBER_OF_DIGITS", "1");
         let docker = Cli::default();
         let node = docker.run(create_postgres());
         let store = prepare_store(node.get_host_port_ipv4(5432)).await.unwrap();
         let account = Account {
             id: Some(AccountID(1)),
             email: "test@email.iv".to_string(),
-            password: "test".to_string(),
+            password: "AbcD1x!#".to_string(),
         };
         let result = register(store, account).await.unwrap().into_response();
         assert_eq!(result.status(), 200)

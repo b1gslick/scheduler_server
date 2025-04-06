@@ -43,7 +43,7 @@ const baseUrl = `${__ENV.BASE_URL}`;
 export function setup() {
   const userParams = {
     email: "perf@test.iv",
-    password: "somestrongPassword1",
+    password: "SomestrongPassword1$@",
   };
 
   const reg = http.post(`${baseUrl}/registration`, JSON.stringify(userParams));
@@ -71,7 +71,7 @@ export default function (token) {
     time: parseInt(`${exec.vu.iterationInInstance}`),
   };
 
-  let add = http.post(`${baseUrl}/activities`, JSON.stringify(body), params);
+  let add = http.post(`${baseUrl}/activity`, JSON.stringify(body), params);
   check(add, { "status was 200": (r) => r.status === 200 });
   if (add.status !== 200) {
     console.log(add);
@@ -101,7 +101,7 @@ export default function (token) {
   };
 
   let update = http.put(
-    `${baseUrl}/activities/${id}`,
+    `${baseUrl}/activity/${id}`,
     JSON.stringify(update_body),
     params,
   );

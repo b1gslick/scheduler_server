@@ -27,10 +27,12 @@ impl Store {
     }
     pub async fn get_activities(
         self,
+        account_id: AccountID,
         limit: Option<i32>,
         offset: i32,
     ) -> Result<Vec<Activity>, Error> {
-        match sqlx::query(r#"SELECT * from activities LIMIT $1 OFFSET $2"#)
+        match sqlx::query(r#"SELECT * from activities where account_id = $1 LIMIT $2 OFFSET $3"#)
+            .bind(account_id.0)
             .bind(limit)
             .bind(offset)
             .map(|row: PgRow| Activity {

@@ -1,29 +1,7 @@
 services:
-  server:
-    container_name: server
-    hostname: localhost
-    image: t1mon1106/scheduler:${TAG}
-    ports:
-      - "8080:8080"
-    environment:
-      PASETO_KEY: "RANDOM WORDS WINTER MACINTOSH PC"
-      PORT: 8080
-      DATABASE_PASSWORD: scheduler
-      DATABASE_USER: scheduler
-      DATABASE_PORT: 5432
-      DATABASE_DB: schedulerdb
-      DATABASE_HOST: postgres 
-      RUST_LOG: info
-    restart: on-failure
-    networks:
-      - postgres
-    depends_on:
-      - postgres
-
   postgres:
     container_name: postgres_container
     image: postgres:16.2-alpine3.18
-    hostname: localhost
     command:
       - "postgres"
       - "-c"
