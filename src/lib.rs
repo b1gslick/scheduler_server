@@ -2,6 +2,7 @@ use crate::swagger::serve_swagger;
 use crate::swagger::ApiDoc;
 
 use std::sync::Arc;
+use tracing::info;
 
 use tracing_subscriber::fmt::format::FmtSpan;
 use warp::{http::Method, http::StatusCode, Filter, Rejection, Reply};
@@ -120,6 +121,20 @@ async fn build_routes(
         .recover(handle_errors::return_error)
 }
 
+#[utoipa::path(
+        get,
+        path = "healthz",
+        responses(
+            (status = 200, description = "OK"),
+            (status = 404, description = "Not found")
+        ),
+    )]
+pub async fn healthz() -> Result<impl warp::Reply, warp::Rejection> {
+    info!("healthz");
+
+    Ok(warp::reply::with_status("OK", StatusCode::OK))
+}
+
 pub async fn setup_store(config: &config::Config) -> Result<store::Store, handle_errors::Error> {
     let store = store::Store::new(&format!(
         "postgres://{}:{}@{}:{}/{}",
@@ -235,12 +250,9 @@ mod test_scheduler {
             .reply(&filter)
             .await;
 
-        // let token: TokenAnswer = deserialize(&login_req.body()).unwrap();
         let token = convert_to_string(login_req.body()).await.unwrap();
 
-        println!("{:?}", token);
         let t: TokenAnswer = serde_json::from_str(&token).unwrap();
-        println!("{:?}", t);
 
         let path = format!("/{}/activity?limit=1&offset=1", VERSION);
         let res = warp::test::request()

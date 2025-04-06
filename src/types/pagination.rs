@@ -1,5 +1,5 @@
-use utoipa::{IntoParams};
-use serde::{Deserialize};
+use serde::Deserialize;
+use utoipa::IntoParams;
 
 #[derive(Debug, Deserialize, IntoParams)]
 #[into_params(parameter_in = Query)]
