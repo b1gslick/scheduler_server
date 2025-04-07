@@ -5,7 +5,6 @@ use sqlx::Row;
 use crate::types::{
     account::{Account, AccountID},
     activities::{Activity, ActivityId, NewActivity},
-    time_spent::{NewTimeSpent, TimeSpent, TimeSpentId},
 };
 use tracing::error;
 
@@ -51,6 +50,35 @@ impl Store {
             }
         }
     }
+
+    pub async fn get_activity_by_id(
+        self,
+        account_id: AccountID,
+        activity_id: i32,
+    ) -> Result<Activity, Error> {
+        match sqlx::query(r#"SELECT * from activities where account_id = $1 and id = $2"#)
+            .bind(account_id.0)
+            .bind(activity_id)
+            .map(|row: PgRow| Activity {
+                id: ActivityId(row.get("id")),
+                title: row.get("title"),
+                content: row.get("content"),
+                time: row.get("time"),
+            })
+            .fetch_one(&self.connection)
+            .await
+        {
+            Ok(activity) => Ok(activity),
+            Err(e) => {
+                error!(
+                    "Can't get activity with id {:?}, with error: {:?}",
+                    activity_id, e
+                );
+                Err(Error::DatabaseQueryError(e))
+            }
+        }
+    }
+
     pub async fn add_activity(
         self,
         new_activity: NewActivity,
@@ -118,82 +146,20 @@ impl Store {
         activity_id: i32,
         account_id: AccountID,
     ) -> Result<bool, Error> {
-        match ::sqlx::query(r#"DELETE FROM time_spent WHERE account_id = $1"#)
+        match sqlx::query(r#"DELETE FROM activities WHERE id = $1 and account_id = $2"#)
+            .bind(activity_id)
             .bind(account_id.0)
             .execute(&self.connection)
             .await
         {
-            Ok(_) => {
-                match sqlx::query(r#"DELETE FROM activities WHERE id = $1 and account_id = $2"#)
-                    .bind(activity_id)
-                    .bind(account_id.0)
-                    .execute(&self.connection)
-                    .await
-                {
-                    Ok(_) => Ok(true),
-                    Err(e) => {
-                        error!("Can't delete activity with {:?}", e);
-                        Err(Error::DatabaseQueryError(e))
-                    }
-                }
-            }
+            Ok(_) => Ok(true),
             Err(e) => {
                 error!("Can't delete activity with {:?}", e);
                 Err(Error::DatabaseQueryError(e))
             }
         }
     }
-    pub async fn add_time_spent(
-        &self,
-        new_time_spent: NewTimeSpent,
-        account_id: AccountID,
-    ) -> Result<TimeSpent, Error> {
-        match sqlx::query(
-                r#"INSERT INTO time_spent (time, activity_id, account_id) VALUES ($1, $2, $3) RETURNING id, time, activity_id"#,
-            )
-            .bind(new_time_spent.time)
-            .bind(new_time_spent.activity_id.0)
-            .bind(account_id.0)
-            .map(|row: PgRow| TimeSpent {
-                id: TimeSpentId(row.get("id")),
-                time: row.get("time"),
-                activity_id: ActivityId(row.get("activity_id")),
-            })
-            .fetch_one(&self.connection)
-            .await
-            {
-                Ok(time_spent) => Ok(time_spent),
 
-                Err(e) => {
-                    error!("Can't add time spent with {:?}", e);
-                    Err(Error::DatabaseQueryError(e))
-                }
-            }
-    }
-
-    pub async fn get_time_spent_by_id(
-        &self,
-        id: i32,
-        account_id: AccountID,
-    ) -> Result<TimeSpent, Error> {
-        match sqlx::query(r#"SELECT * from time_spent WHERE id = $1 and account_id = $2"#)
-            .bind(id)
-            .bind(account_id.0)
-            .map(|row: PgRow| TimeSpent {
-                id: TimeSpentId(row.get("id")),
-                time: row.get("time"),
-                activity_id: ActivityId(row.get("activity_id")),
-            })
-            .fetch_one(&self.connection)
-            .await
-        {
-            Ok(time_spent) => Ok(time_spent),
-            Err(e) => {
-                error!("Can't get time spent with {:?}", e);
-                Err(Error::DatabaseQueryError(e))
-            }
-        }
-    }
     pub async fn add_account(self, account: Account) -> Result<bool, Error> {
         match sqlx::query(r#"INSERT INTO accounts (email, password) VALUES ($1, $2) RETURNING id, email, password"#)
                 .bind(account.email)

@@ -78,21 +78,6 @@ export default function (token) {
     console.log(add);
   }
 
-  const time_body = {
-    time: parseInt(`${exec.vu.iterationInInstance}`),
-    activity_id: parseInt(`${exec.vu.iterationInInstance}`) + 1,
-  };
-
-  let add_time = http.post(
-    `${baseUrl}/time_spent`,
-    JSON.stringify(time_body),
-    params,
-  );
-  check(add_time, { "status was 201": (r) => r.status === 201 });
-  if (add_time.status !== 201) {
-    console.log(add_time);
-  }
-
   const id = parseInt(`${exec.vu.iterationInInstance}`) + 1;
   const update_body = {
     id: id,

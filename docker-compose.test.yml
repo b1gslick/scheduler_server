@@ -6,7 +6,9 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - RUST_LOG=debug
+      RUST_LOG: debug
+      CACHE_HOST: redis-db
+      CACHE_PORT: 6379
     networks:
       - postgres
     depends_on:
@@ -63,6 +65,14 @@ services:
         limits:
           cpus: "1"
           memory: 2G
+    networks:
+      - postgres
+
+  redis-db:
+    container_name: redis-db
+    image: redis:8.2.1-alpine
+    ports:
+      - "6379:6379"
     networks:
       - postgres
 

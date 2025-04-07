@@ -1,5 +1,5 @@
-use tracing::info;
 use crate::StatusCode;
+use tracing::info;
 
 #[utoipa::path(
         get,
@@ -14,5 +14,3 @@ pub async fn healthz() -> Result<impl warp::Reply, warp::Rejection> {
 
     Ok(warp::reply::with_status("OK", StatusCode::OK))
 }
-
-

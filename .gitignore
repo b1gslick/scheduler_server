@@ -24,3 +24,5 @@ tests/e2e/report.html
 *.info
 vars.env
 
+.pytest_cache/
+__pycache__/

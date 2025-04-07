@@ -19,6 +19,8 @@ services:
       DATABASE_PORT: 5432
       DATABASE_DB: schedulerdb
       DATABASE_HOST: postgres_container
+      CACHE_HOST: redis-db
+      CACHE_PORT: 6379
 
     networks:
       - postgres
@@ -73,6 +75,14 @@ services:
         limits:
           cpus: "1"
           memory: 2G
+    networks:
+      - postgres
+
+  redis-db:
+    container_name: redis-db
+    image: redis:8.2.1-alpine
+    ports:
+      - "6379:6379"
     networks:
       - postgres
 

@@ -71,8 +71,12 @@ regex = { version = "1.11.1" }
 chrono = { version = "0.4.40" }
 
 testcontainers = { version = "0.15.0" }                                 # test
-testcontainers-modules = { version = "0.3.7", features = ["postgres"] }
+testcontainers-modules = { version = "0.3.7", features = ["postgres", "redis"] }
 
 # utopia
 utoipa = { version = "5.3.1" }
 utoipa-swagger-ui = { version = "9.0.0" }
+
+# cashe
+redis = { version = "0.32.5"}
+redis_pool = "0.9.0"

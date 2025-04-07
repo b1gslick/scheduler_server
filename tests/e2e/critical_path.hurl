@@ -88,45 +88,6 @@ HTTP 200
 jsonpath "$..title" contains {{new_title}}
 jsonpath "$..content" contains {{new_content}}
 
-# add time spent
-
-POST {{host}}/{{version}}/time_spent
-Authorization: {{token}}
-
-{
-  "time": {{time}},
-  "activity_id": {{id}}
-}
-
-HTTP 200
-
-[Asserts]
-body contains "{{time}}"
-
-# time spent
-POST {{sql_query_path}}
-
-"select id, activity_id from time_spent where activity_id={{id}};"
-
-
-HTTP 200
-
-[Captures]
-timeSpentID: jsonpath "$[0].id"
-
-[Asserts]
-jsonpath "$[0].activity_id" == {{id}}
-
-# check time spent added
-GET {{host}}/{{version}}/time_spent/{{timeSpentID}}
-Authorization: {{token}}
-
-HTTP 200
-
-[Asserts]
-jsonpath "$.id" toString == "{{timeSpentID}}"
-jsonpath "$.activity_id" toString == "{{id}}"
-
 # update activity second time
 PUT {{host}}/{{version}}/activity/{{id}}
 Authorization: {{token}}
@@ -142,17 +103,6 @@ HTTP 201
 [Asserts]
 jsonpath "$.id" toString == {{id}}
 
-# check time spent exist
-
-GET {{host}}/{{version}}/time_spent/{{timeSpentID}}
-Authorization: {{token}}
-
-HTTP 200
-
-[Asserts]
-jsonpath "$.id" toString == "{{timeSpentID}}"
-jsonpath "$.activity_id" toString == "{{id}}"
-
 # Delete activity
 DELETE {{host}}/{{version}}/activity/{{id}}
 Authorization: {{token}}
@@ -161,37 +111,3 @@ HTTP 200
 
 [Asserts]
 body contains {{id}}
-
-
-# time spent
-POST {{sql_query_path}}
-
-"select title from activities where account_id={{accountID}};"
-
-HTTP 200
-
-[Asserts]
-body == "[]"
-
-POST {{host}}/{{version}}/time_spent
-Authorization: {{token}}
-
-{
-  "time": {{time}},
-  "activity_id": {{id}}
-}
-
-HTTP 404
-
-[Asserts]
-body == "Route not found"
-
-
-
-
-
-
-
-
-
-

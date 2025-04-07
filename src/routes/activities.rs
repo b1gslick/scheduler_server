@@ -38,6 +38,35 @@ pub async fn get_activities(
     Ok(warp::reply::json(&res))
 }
 
+#[instrument]
+#[utoipa::path(
+        get,
+        path = "activity/{id}",
+        responses(
+            (status = 200, description = "get activity by ID", body = Activity),
+            (status = 404, description = "Rout not found")
+        ),
+        params(
+            ("id" = i32, Path, description = "Activity unique id")
+        ),
+        security(
+            ("Authorization" = [])
+        )
+    )]
+pub async fn get_activity_by_id(
+    id: i32,
+    session: Session,
+    store: Store,
+) -> Result<impl warp::Reply, warp::Rejection> {
+    info!("quering activities");
+    let res: Activity = match store.get_activity_by_id(session.account_id, id).await {
+        Ok(res) => res,
+        Err(e) => return Err(warp::reject::custom(e)),
+    };
+
+    Ok(warp::reply::json(&res))
+}
+
 #[utoipa::path(
         post,
         path = "activity",

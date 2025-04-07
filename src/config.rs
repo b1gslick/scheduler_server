@@ -26,7 +26,14 @@ pub struct Config {
     /// Database name
     #[clap(long, default_value = "schedulerdb")]
     pub database_name: String,
+    /// cache host
+    #[clap(long, default_value = "localhost")]
+    pub cache_host: String,
+    /// cache port
+    #[clap(long, default_value = "6379")]
+    pub cache_port: u16,
 }
+
 impl Config {
     pub fn new() -> Result<Config, handle_errors::Error> {
         dotenvy::dotenv().ok();
@@ -46,6 +53,8 @@ impl Config {
         let db_host = env::var("DATABASE_HOST").unwrap_or(config.database_host.to_owned());
         let db_port = env::var("DATABASE_PORT").unwrap_or(config.database_port.to_string());
         let db_name = env::var("DATABASE_DB").unwrap_or(config.database_name.to_owned());
+        let cache_host = env::var("CACHE_HOST").unwrap();
+        let cache_port = env::var("CACHE_PORT").unwrap_or(config.cache_port.to_string());
         Ok(Config {
             log_level: config.log_level,
             port,
@@ -56,6 +65,10 @@ impl Config {
                 .parse::<u16>()
                 .map_err(handle_errors::Error::ParseError)?,
             database_name: db_name,
+            cache_host,
+            cache_port: cache_port
+                .parse::<u16>()
+                .map_err(handle_errors::Error::ParseError)?,
         })
     }
 }
@@ -70,6 +83,7 @@ mod config_tests {
         env::set_var("DATABASE_DB", "userdb");
         env::set_var("DATABASE_HOST", "localhost");
         env::set_var("DATABASE_PORT", "5432");
+        env::set_var("CACHE_HOST", "localhost");
     }
 
     #[test]
@@ -84,6 +98,8 @@ mod config_tests {
             database_host: "localhost".to_string(),
             database_port: 5432,
             database_name: "userdb".to_string(),
+            cache_host: "localhost".to_string(),
+            cache_port: 6379,
         };
         let config = Config::new().unwrap();
         assert_eq!(config, expexted);
