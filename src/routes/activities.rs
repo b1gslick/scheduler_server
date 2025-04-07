@@ -1,11 +1,12 @@
+use std::collections::HashMap;
+
 use crate::store::Store;
 use crate::types::account::Session;
 use crate::types::activities::{Activity, ActivityId, NewActivity};
-use crate::types::pagination::extract_pagination;
 use crate::types::pagination::Pagination;
-use std::collections::HashMap;
 use tracing::{info, instrument};
 use warp::http::StatusCode;
+use warp::reply::json;
 
 #[instrument]
 #[utoipa::path(
@@ -15,25 +16,19 @@ use warp::http::StatusCode;
             (status = 200, description = "List activities", body = [Activity]),
             (status = 404, description = "Rout not found")
         ),
+        params(Pagination),
         security(
             ("Authorization" = [])
         )
     )]
 pub async fn get_activities(
     session: Session,
-    params: HashMap<String, String>,
+    params: Pagination,
     store: Store,
 ) -> Result<impl warp::Reply, warp::Rejection> {
     info!("quering activities");
-    let mut pagination = Pagination::default();
-
-    if !params.is_empty() {
-        info!(pagination = true);
-        pagination = extract_pagination(params)?;
-    }
-
     let res: Vec<Activity> = match store
-        .get_activities(session.account_id, pagination.limit, pagination.offset)
+        .get_activities(session.account_id, params.limit, params.offset)
         .await
     {
         Ok(res) => res,
@@ -48,7 +43,7 @@ pub async fn get_activities(
         path = "activity",
         request_body = NewActivity,
         responses(
-            (status = 200, description = "activity added", body = Activity),
+            (status = 201, description = "activity added", body = Activity),
             (status = 409, description = "activity is already exists"),
             (status = 422, description = "can't add activities", body = Activity)
         ),
@@ -64,12 +59,12 @@ pub async fn add_activity(
     info!("add activity");
     let account_id = session.account_id;
     if let Err(e) = store.add_activity(new_activity.clone(), account_id).await {
-        info!("Add activity not added{:?}", new_activity.clone());
+        info!("Activity not added{:?}", new_activity.clone());
         return Err(warp::reject::custom(e));
     }
     Ok(warp::reply::with_status(
-        format!("Activity added: {:?}", new_activity),
-        StatusCode::OK,
+        json(&new_activity),
+        StatusCode::CREATED,
     ))
 }
 
@@ -81,7 +76,7 @@ pub async fn add_activity(
             ("id" = i32, Path, description = "Activity unique id")
         ),
         responses(
-            (status = 200, description = "activity added", body = Activity),
+            (status = 201, description = "activity updated", body = Activity),
             (status = 404, description = "activity not found"),
             (status = 422, description = "can't add activities", body = Activity)
         ),
@@ -110,9 +105,12 @@ pub async fn update_activities(
             Err(e) => return Err(warp::reject::custom(e)),
         };
         info!("Update completed with {:?}", &res);
-        Ok(warp::reply::json(&res))
+        Ok(warp::reply::with_status(json(&res), StatusCode::CREATED))
     } else {
-        Err(warp::reject::custom(handle_errors::Error::Unauthorized))
+        Ok(warp::reply::with_status(
+            json(&"Activity not found".to_string()),
+            StatusCode::NOT_FOUND,
+        ))
     }
 }
 
@@ -124,7 +122,6 @@ pub async fn update_activities(
         ),
         responses(
             (status = 200, description = "activity deleted", body = i32),
-            (status = 401, description = "Unauthorized"),
             (status = 404, description = "activity not found"),
         ),
         security(
@@ -138,16 +135,19 @@ pub async fn deleted_activities(
 ) -> Result<impl warp::Reply, warp::Rejection> {
     info!("delete activities");
     let account_id = session.account_id;
+
     if store.is_activity_owner(id, &account_id).await? {
         if let Err(e) = store.delete_activity(id, account_id).await {
             return Err(warp::reject::custom(e));
         }
-        Ok(warp::reply::with_status(
-            format!("Activity {} deleted", id),
-            StatusCode::OK,
-        ))
+
+        let answer = HashMap::from([("Activity deleted with id", id)]);
+        Ok(warp::reply::with_status(json(&answer), StatusCode::OK))
     } else {
-        Err(warp::reject::custom(handle_errors::Error::Unauthorized))
+        Ok(warp::reply::with_status(
+            json(&"Activity not found".to_string()),
+            StatusCode::NOT_FOUND,
+        ))
     }
 }
 
@@ -177,7 +177,7 @@ mod test_activities {
             .await
             .unwrap()
             .into_response();
-        assert_eq!(result.status(), 200);
+        assert_eq!(result.status(), 201);
     }
 
     #[tokio::test]
@@ -192,7 +192,7 @@ mod test_activities {
         store.clone().add_test_acctivities().await;
         let result = store
             .clone()
-            .get_activities(AccountID(account_id), Some(limit), 0)
+            .get_activities(AccountID(account_id), Some(limit), None)
             .await
             .unwrap();
         assert_eq!(result.len() as i32, limit);
@@ -212,7 +212,7 @@ mod test_activities {
 
         let result = store
             .clone()
-            .get_activities(AccountID(account_id), None, 0)
+            .get_activities(AccountID(account_id), None, None)
             .await
             .unwrap();
         assert_eq!(result.len() as i32, num_activities);
@@ -232,7 +232,7 @@ mod test_activities {
 
         let result = store
             .clone()
-            .get_activities(AccountID(account_id), None, num_activities - 1)
+            .get_activities(AccountID(account_id), None, Some(num_activities - 1))
             .await
             .unwrap();
         assert_eq!(result.len() as i32, num_activities - (num_activities - 1));
@@ -256,7 +256,7 @@ mod test_activities {
             .await
             .unwrap()
             .into_response();
-        assert_eq!(result.status(), 200);
+        assert_eq!(result.status(), 201);
     }
     #[tokio::test]
     async fn medium_test_update_not_exist_activities() {
@@ -270,8 +270,11 @@ mod test_activities {
             content: "full_update".to_string(),
             time: 199999,
         };
-        let result = update_activities(1, get_session(account_id), store, for_update).await;
-        assert!(result.is_err());
+        let result = update_activities(1, get_session(account_id), store, for_update)
+            .await
+            .unwrap()
+            .into_response();
+        assert_eq!(result.status(), 404);
     }
 
     #[tokio::test]
@@ -295,7 +298,10 @@ mod test_activities {
         let store = prepare_store(node.get_host_port_ipv4(5432)).await.unwrap();
         let account_id = 1;
         store.clone().add_test_account(account_id).await;
-        let result = deleted_activities(1, get_session(account_id), store).await;
-        assert!(result.is_err());
+        let result = deleted_activities(1, get_session(account_id), store)
+            .await
+            .unwrap()
+            .into_response();
+        assert_eq!(result.status(), 404);
     }
 }

@@ -29,7 +29,7 @@ impl Store {
         self,
         account_id: AccountID,
         limit: Option<i32>,
-        offset: i32,
+        offset: Option<i32>,
     ) -> Result<Vec<Activity>, Error> {
         match sqlx::query(r#"SELECT * from activities where account_id = $1 LIMIT $2 OFFSET $3"#)
             .bind(account_id.0)

@@ -1,6 +1,7 @@
 import http from "k6/http";
 import { check } from "k6";
 import exec from "k6/execution";
+import { createRandomString } from "./utils.js";
 
 // test configuration
 export const options = {
@@ -42,7 +43,7 @@ const baseUrl = `${__ENV.BASE_URL}`;
 
 export function setup() {
   const userParams = {
-    email: "perf@test.iv",
+    email: `${createRandomString(10)}@test.iv`,
     password: "SomestrongPassword1$@",
   };
 
@@ -53,7 +54,7 @@ export function setup() {
   }
 
   const login = http.post(`${baseUrl}/login`, JSON.stringify(userParams));
-  const token = login.body.replaceAll(`"`, "");
+  const token = JSON.parse(login.body).token;
   return token;
 }
 
@@ -72,8 +73,8 @@ export default function (token) {
   };
 
   let add = http.post(`${baseUrl}/activity`, JSON.stringify(body), params);
-  check(add, { "status was 200": (r) => r.status === 200 });
-  if (add.status !== 200) {
+  check(add, { "status was 201": (r) => r.status === 201 });
+  if (add.status !== 201) {
     console.log(add);
   }
 
@@ -87,8 +88,8 @@ export default function (token) {
     JSON.stringify(time_body),
     params,
   );
-  check(add_time, { "status was 200": (r) => r.status === 200 });
-  if (add_time.status !== 200) {
+  check(add_time, { "status was 201": (r) => r.status === 201 });
+  if (add_time.status !== 201) {
     console.log(add_time);
   }
 
@@ -105,8 +106,8 @@ export default function (token) {
     JSON.stringify(update_body),
     params,
   );
-  if (update.status !== 200) {
+  if (update.status !== 201) {
     console.log(update);
   }
-  check(update, { "status was 200": (r) => r.status === 200 });
+  check(update, { "status was 201": (r) => r.status === 201 });
 }

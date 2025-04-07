@@ -2,7 +2,7 @@
 POST {{host}}/{{version}}/registration
 {"email": "{{email_1}}","password": "AbcD1x!#"}
 
-HTTP 200
+HTTP 201
 
 # login
 POST {{host}}/{{version}}/login
@@ -11,7 +11,7 @@ POST {{host}}/{{version}}/login
 HTTP 200
 
 [Captures]
-token: regex "\"([^\"]*)\""
+token: jsonpath "$.token"
 
 # check store in db
 POST {{sql_query_path}}
@@ -32,7 +32,12 @@ Authorization: {{token}}
     "time": {{time}}
 }
 
-HTTP 200
+HTTP 201
+
+[Asserts]
+jsonpath "$.title" == {{title}}
+jsonpath "$.content" == {{content}}
+jsonpath "$.time" == {{time}}
 
 # check DB store this
 POST {{sql_query_path}}
@@ -67,7 +72,7 @@ Authorization: {{token}}
     "time": {{new_time}}
 }
 
-HTTP 200
+HTTP 201
 
 [Asserts]
 jsonpath "$.id" toString == {{id}}
@@ -132,7 +137,7 @@ Authorization: {{token}}
     "time": {{time}}
 }
 
-HTTP 200
+HTTP 201
 
 [Asserts]
 jsonpath "$.id" toString == {{id}}
@@ -176,10 +181,10 @@ Authorization: {{token}}
   "activity_id": {{id}}
 }
 
-HTTP 422
+HTTP 404
 
 [Asserts]
-body == "Cannot update data"
+body == "Route not found"
 
 
 
