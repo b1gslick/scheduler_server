@@ -198,8 +198,11 @@ mod test_scheduler {
         build_routes,
         config::Config,
         setup_store,
-        tests::helpers::{create_postgres, prepare_store},
-        types::account::TokenAnswer,
+        tests::helpers::{convert_to_string, create_postgres, prepare_store},
+        types::{
+            account::TokenAnswer,
+            activities::{Activity, NewActivity},
+        },
         VERSION,
     };
 
@@ -222,7 +225,7 @@ mod test_scheduler {
     }
 
     #[tokio::test]
-    async fn medium_test_get_empty_activities() {
+    async fn medium_test_add_activity() {
         env::set_var("PASETO_KEY", "RANDOM WORDS WINTER MACINTOSH PC");
         let docker = Cli::default();
         let node = docker.run(create_postgres());
@@ -254,7 +257,33 @@ mod test_scheduler {
 
         let t: TokenAnswer = serde_json::from_str(&token).unwrap();
 
-        let path = format!("/{}/activity?limit=1&offset=1", VERSION);
+        let add_body = &serde_json::json!(
+        {
+            "title": "awesome title",
+            "content": "awesome content",
+            "time": i32::MAX
+        });
+
+        let add_path = format!("/{}/activity", VERSION);
+
+        let add_req = warp::test::request()
+            .method("POST")
+            .header("Authorization", t.token.clone())
+            .path(&add_path)
+            .json(add_body)
+            .reply(&filter)
+            .await;
+
+        let raw_act = convert_to_string(add_req.body()).await.unwrap();
+        let new_act: NewActivity = serde_json::from_str(&raw_act).unwrap();
+
+        assert_eq!(new_act.time, i32::MAX);
+        assert_eq!(new_act.title, "awesome title");
+        assert_eq!(new_act.content, "awesome content");
+        assert_eq!(add_req.status(), 201);
+
+        let path = format!("/{}/activity?limit=1&offset=0", VERSION);
+
         let res = warp::test::request()
             .method("GET")
             .header("Authorization", t.token)
@@ -262,12 +291,9 @@ mod test_scheduler {
             .reply(&filter)
             .await;
 
-        assert_eq!(res.body().to_vec(), b"[]");
-    }
+        let raw_get = convert_to_string(res.body()).await.unwrap();
+        let new_get: Vec<Activity> = serde_json::from_str(&raw_get).unwrap();
 
-    async fn convert_to_string(
-        bytes: &warp::hyper::body::Bytes,
-    ) -> Result<String, warp::Rejection> {
-        String::from_utf8(bytes.to_vec()).map_err(|_| warp::reject())
+        assert_eq!(new_get[0].id.0, 1);
     }
 }

@@ -90,6 +90,13 @@ impl Store {
 }
 
 #[allow(dead_code)]
+pub async fn convert_to_string(
+    bytes: &warp::hyper::body::Bytes,
+) -> Result<String, warp::Rejection> {
+    String::from_utf8(bytes.to_vec()).map_err(|_| warp::reject())
+}
+
+#[allow(dead_code)]
 pub async fn prepare_store(port: u16) -> Result<Store, sqlx::Error> {
     let store = Store::new(&format!(
         "postgres://postgres:postgres@127.0.0.1:{}/postgres",
