@@ -1,5 +1,5 @@
-import random
 import string
+import random
 
 
 def generate_random_string(

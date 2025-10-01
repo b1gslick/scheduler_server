@@ -4,23 +4,24 @@ import requests
 
 
 class BaseClass:
-    def __init__(self, base_url: str, token: str):
+    def __init__(self, base_url: str, token: str) -> None:
         self.base_url = base_url
         self.token = token
 
-    def get(
+    def _get(
         self,
         path: str,
         params: dict[str, str] | None = None,
         auth: dict[str, str] | None = None,
     ) -> Response:
         auth_header = auth if auth is not None else {"Authorization": self.token}
-
         return requests.get(
-            f"{self.base_url}/{path}", headers=auth_header, params=params
+            f"{self.base_url}/{path}",
+            headers=auth_header,
+            params=params,
         )
 
-    def post(
+    def _post(
         self,
         path: str,
         body: Any,
@@ -29,11 +30,11 @@ class BaseClass:
         auth_header = auth if auth is not None else {"Authorization": self.token}
         return requests.post(
             f"{self.base_url}/{path}",
-            body,
             headers=auth_header,
+            data=body,
         )
 
-    def put(
+    def _put(
         self,
         path: str,
         _id: int,
@@ -41,7 +42,11 @@ class BaseClass:
         auth: dict[str, str] | None = None,
     ) -> Response:
         auth_header = auth if auth is not None else {"Authorization": self.token}
-        return requests.put(f"{self.base_url}/{path}/{_id}", body, headers=auth_header)
+        return requests.put(
+            f"{self.base_url}/{path}/{_id}",
+            data=body,
+            headers=auth_header,
+        )
 
     def _delete(
         self,
@@ -50,4 +55,7 @@ class BaseClass:
         auth: dict[str, str] | None = None,
     ) -> Response:
         auth_header = auth if auth is not None else {"Authorization": self.token}
-        return requests.delete(f"{self.base_url}/{path}/{_id}", headers=auth_header)
+        return requests.delete(
+            f"{self.base_url}/{path}/{_id}",
+            headers=auth_header,
+        )
