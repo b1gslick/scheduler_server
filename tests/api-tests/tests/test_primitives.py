@@ -33,10 +33,21 @@ def test_user_could_update_exist_activity(
     assert activity is not None, f"can't added activity {create_activity.text}"
     assert activity.id is not None
 
-    update = test_client.activity.update(activity.id, title="updated")
+    activity.title = "updated"
+
+    update = test_client.activity.update(activity.id, activity)
     assert update.status_code == 201
 
     updated: ActivityType = ActivityType.model_validate(update.json())
     assert updated.title == "updated", (
         f"activity not updated old value is {updated.title}"
     )
+
+    new_activity = test_client.activity.get_one(activity.id)
+
+    assert new_activity.status_code == 200
+    new: ActivityType = ActivityType.model_validate(new_activity.json())
+
+    assert new.title == "updated"
+    assert new.content == activity.content
+    assert new.time == activity.time

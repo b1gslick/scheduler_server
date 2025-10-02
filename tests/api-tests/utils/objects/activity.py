@@ -57,16 +57,9 @@ class Activity(BaseClass):
     def update(
         self,
         _id: int,
-        title: str = generate_random_string(64),
-        time: int = random.randint(0, 1000),
-        content: str = generate_random_string(500),
+        activity: ActivityType,
         auth_header: dict[str, str] | None = None,
     ) -> Response:
-        activity = ActivityType(
-            title=title,
-            content=content,
-            time=time,
-        )
         return self._put(
             "activity",
             _id=_id,

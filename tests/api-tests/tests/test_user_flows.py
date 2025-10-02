@@ -14,7 +14,9 @@ def test_user_can_add_activity_update_id_then_delete_id_should_return_empty_list
         f"last activity doesn't have id actual is: {activity}"
     )
 
-    update = test_client.activity.update(activity.id)
+    activity.title = "new title"
+
+    update = test_client.activity.update(activity.id, activity)
     assert update.status_code == 201
 
     delete = test_client.activity.delete(activity.id)
