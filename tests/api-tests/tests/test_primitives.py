@@ -21,7 +21,7 @@ def test_create_activity_should_return_body_with_activity_and_201(
     assert response.status_code == 201
     assert activity.title == "test_title"
     assert activity.content == "test_content"
-    assert activity.time == 100
+    assert activity.time == 100 * 60
 
 
 def test_user_could_update_exist_activity(
@@ -50,4 +50,4 @@ def test_user_could_update_exist_activity(
 
     assert new.title == "updated"
     assert new.content == activity.content
-    assert new.time == activity.time
+    assert new.time == activity.time * 60

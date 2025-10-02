@@ -296,7 +296,7 @@ mod test_scheduler {
         {
             "title": "awesome title",
             "content": "awesome content",
-            "time": i32::MAX
+            "time": 60
         });
 
         let add_path = format!("/{}/activity", VERSION);
@@ -312,7 +312,7 @@ mod test_scheduler {
         let raw_act = convert_to_string(add_req.body()).await.unwrap();
         let new_act: NewActivity = serde_json::from_str(&raw_act).unwrap();
 
-        assert_eq!(new_act.time, i32::MAX);
+        assert_eq!(new_act.time, 3600);
         assert_eq!(new_act.title, "awesome title");
         assert_eq!(new_act.content, "awesome content");
         assert_eq!(add_req.status(), 201);
@@ -330,5 +330,6 @@ mod test_scheduler {
         let new_get: Vec<Activity> = serde_json::from_str(&raw_get).unwrap();
 
         assert_eq!(new_get[0].id.0, 1);
+        assert_eq!(new_get[0].time, 3600);
     }
 }
