@@ -37,7 +37,7 @@ HTTP 201
 [Asserts]
 jsonpath "$.title" == {{title}}
 jsonpath "$.content" == {{content}}
-jsonpath "$.time" == {{time}}
+jsonpath "$.time" == {{expected}}
 
 # check DB store this
 POST {{sql_query_path}}

@@ -110,8 +110,13 @@ echo new_title=$(openssl rand -hex 60) >>$envs_path
 echo content=$(openssl rand -hex 120) >>$envs_path
 echo new_content=$(openssl rand -hex 120) >>$envs_path
 
-echo time=$RANDOM >>$envs_path
-echo new_time=$RANDOM >>$envs_path
+time=$RANDOM
+new_time=$RANDOM
+echo time=$time >>$envs_path
+echo new_time=$new_time >>$envs_path
+
+echo expected=$((time * 60)) >>$envs_path
+echo new_expected=$((new_time * 60)) >>$envs_path
 
 echo limit=10000 >>$envs_path
 echo offset=0 >>$envs_path
