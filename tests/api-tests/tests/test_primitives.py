@@ -11,43 +11,45 @@ def test_get_all_activities_with_empty_state_should_return_empty_list(
     assert response.json() == []
 
 
-def test_create_activity_should_return_body_with_activity_and_201(
+def test_create_activity_should_return_201_and_activity_body(
     test_client: Client,
 ) -> None:
+    content = "my new awesome activity"
+    title = "my new awesome title"
+    time = 100
     response = test_client.activity.create(
-        title="test_title", content="test_content", time=100
+        title=title,
+        content=content,
+        time=time,
     )
-    activity: ActivityType = ActivityType.model_validate(response.json())
+    activity_response: ActivityType = ActivityType.model_validate(response.json())
     assert response.status_code == 201
-    assert activity.title == "test_title"
-    assert activity.content == "test_content"
-    assert activity.time == 100 * 60
+    assert activity_response.title == title
+    assert activity_response.content == content
+    assert activity_response.time == time * 60
 
 
-def test_user_could_update_exist_activity(
-    test_client: Client,
-) -> None:
-    create_activity = test_client.activity.create()
+def test_user_could_update_exist_activity(test_client: Client) -> None:
+    created = test_client.activity.create()
+    assert created.status_code == 201
+
     activity = test_client.activity.get_last_added()
 
-    assert activity is not None, f"can't added activity {create_activity.text}"
-    assert activity.id is not None
+    assert activity is not None, "Activity list is empty after added"
+    assert activity.id is not None, "Can't find id in activity"
 
     activity.title = "updated"
 
     update = test_client.activity.update(activity.id, activity)
     assert update.status_code == 201
 
-    updated: ActivityType = ActivityType.model_validate(update.json())
-    assert updated.title == "updated", (
-        f"activity not updated old value is {updated.title}"
+    after_update = test_client.activity.get_one(activity.id)
+
+    updated_activity: ActivityType = ActivityType.model_validate(after_update.json())
+
+    assert updated_activity.title == "updated", (
+        f"activity not updated value is {updated_activity.title}"
     )
 
-    new_activity = test_client.activity.get_one(activity.id)
-
-    assert new_activity.status_code == 200
-    new: ActivityType = ActivityType.model_validate(new_activity.json())
-
-    assert new.title == "updated"
-    assert new.content == activity.content
-    assert new.time == activity.time * 60
+    assert updated_activity.content == activity.content
+    assert updated_activity.time == activity.time * 60

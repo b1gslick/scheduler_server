@@ -1,6 +1,6 @@
 from utils.helpers import generate_random_string
-from utils.objects.auth import AuthClient
 from utils.objects.activity import Activity
+from utils.objects.auth import AuthClient
 from utils.objects.types import Account, LoginResponse
 
 
@@ -21,11 +21,11 @@ class Client:
         )
 
         reg = self.auth.registration(account)
-        assert reg.status_code == 201, f"can't register user with {reg.text}"
+        assert reg.status_code == 201, f"can't registration with {reg.text}"
 
         login = self.auth.login(account)
-        assert login.status_code == 200, f"can't login user with {login.text}"
+        assert login.status_code == 200, f"can't login with {login.text}"
 
-        login_resp: LoginResponse = LoginResponse.model_validate(login.json())
+        login_response: LoginResponse = LoginResponse.model_validate(login.json())
 
-        return login_resp.token
+        return login_response.token

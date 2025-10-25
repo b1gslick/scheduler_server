@@ -1,7 +1,7 @@
 from utils.objects.client import Client
 
 
-def test_user_can_add_activity_update_id_then_delete_id_should_return_empty_list_for_all_activity(
+def test_user_can_add_activity_update_then_delete_it_should_return_empty_list_for_all_activity(
     test_client: Client,
 ) -> None:
     add = test_client.activity.create()
@@ -11,7 +11,7 @@ def test_user_can_add_activity_update_id_then_delete_id_should_return_empty_list
 
     assert activity is not None, "can't get last activity after created"
     assert activity.id is not None, (
-        f"last activity doesn't have id actual is: {activity}"
+        f"last activity doesn't have id actual returned: {activity}"
     )
 
     activity.title = "new title"

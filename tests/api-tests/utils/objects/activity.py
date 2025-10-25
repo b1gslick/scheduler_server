@@ -12,7 +12,7 @@ class Activity(BaseClass):
     def create(
         self,
         title: str = generate_random_string(64),
-        time: int = random.randint(0, 1000),
+        time: int = random.randint(0, 100),
         content: str = generate_random_string(500),
         auth_header: dict[str, str] | None = None,
     ) -> Response:
@@ -39,16 +39,16 @@ class Activity(BaseClass):
 
     def get_all(
         self,
-        params: dict[str, str] | None = None,
         auth_header: dict[str, str] | None = None,
     ) -> Response:
         return self._get(
             "activity",
-            params=params,
             auth=auth_header,
         )
 
-    def get_last_added(self) -> ActivityType | None:
+    def get_last_added(
+        self,
+    ) -> ActivityType | None:
         activities = self.get_all().json()
         if len(activities) < 1:
             return None
@@ -72,4 +72,8 @@ class Activity(BaseClass):
         _id: int,
         auth_header: dict[str, str] | None = None,
     ) -> Response:
-        return self._delete("activity", _id, auth=auth_header)
+        return self._delete(
+            "activity",
+            _id=_id,
+            auth=auth_header,
+        )
