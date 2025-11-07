@@ -1,7 +1,9 @@
+use redis::RedisError;
 use std::{collections::HashMap, fmt::Debug};
 
 use testcontainers::RunnableImage;
 use testcontainers_modules::postgres::Postgres;
+use testcontainers_modules::redis::Redis;
 
 use crate::{
     routes::authentication::hash_password,
@@ -10,6 +12,7 @@ use crate::{
 use chrono::Utc;
 
 use crate::{
+    cache::CacheStore,
     store::Store,
     types::{account::Account, activities::NewActivity},
 };
@@ -68,17 +71,6 @@ impl Store {
                 );"
             .to_string(),
         );
-        tables.insert(
-            "time_spent".to_string(),
-            "CREATE TABLE IF NOT EXISTS time_spent (
-            id serial PRIMARY KEY,
-            time integer NOT NULL,
-            account_id serial NOT NULL,
-            created_on TIMESTAMP NOT NULL DEFAULT NOW(),
-            activity_id integer REFERENCES activities
-            );"
-            .to_string(),
-        );
         match tables.get(name) {
             Some(insert) => sqlx::query(insert)
                 .fetch_all(&self.connection)
@@ -87,6 +79,13 @@ impl Store {
             None => panic!(),
         }
     }
+}
+
+#[allow(dead_code)]
+pub async fn convert_to_string(
+    bytes: &warp::hyper::body::Bytes,
+) -> Result<String, warp::Rejection> {
+    String::from_utf8(bytes.to_vec()).map_err(|_| warp::reject())
 }
 
 #[allow(dead_code)]
@@ -100,13 +99,26 @@ pub async fn prepare_store(port: u16) -> Result<Store, sqlx::Error> {
 
     store.add_tables("accounts").await;
     store.add_tables("activities").await;
-    store.add_tables("time_spent").await;
     Ok(store)
+}
+
+#[allow(dead_code)]
+pub async fn prepare_cache(port: u16) -> Result<CacheStore, RedisError> {
+    let cache = CacheStore::new(&format!("redis://127.0.0.1:{}/0", port))
+        .await
+        .unwrap();
+    Ok(cache)
 }
 
 #[allow(dead_code)]
 pub fn create_postgres() -> RunnableImage<Postgres> {
     RunnableImage::from(Postgres::default()).with_tag("16.2-alpine3.18")
+}
+
+#[allow(dead_code)]
+#[warn(clippy::default_constructed_unit_structs)]
+pub fn create_redis() -> RunnableImage<Redis> {
+    RunnableImage::from(Redis).with_tag("8.2.1-alpine")
 }
 
 #[allow(dead_code)]

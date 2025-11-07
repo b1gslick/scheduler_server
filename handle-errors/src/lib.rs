@@ -31,7 +31,7 @@ impl std::fmt::Display for Error {
             Error::ParseError(ref err) => {
                 write!(f, "Cannot parse parameter: {}", err)
             }
-            Error::Unauthorized => write!(f, "No permission to change the underlying resource"),
+            Error::Unauthorized => write!(f, "Link for restore send to your email"),
             Error::MigrationError(_) => write!(f, "Cannot migrate data"),
             Error::MissingParameters => write!(f, "Missing parameter"),
             Error::TimeSpentNotFound => write!(f, "Time spent not Found"),
@@ -62,32 +62,14 @@ impl std::fmt::Display for Error {
 
 impl Reject for Error {}
 
-const DUPLICATE_KEY: u32 = 23505;
-
 #[instrument]
 pub async fn return_error(r: Rejection) -> Result<impl Reply, Rejection> {
-    if let Some(crate::Error::DatabaseQueryError(e)) = r.find() {
+    if let Some(crate::Error::DatabaseQueryError(_err)) = r.find() {
         event!(Level::ERROR, "Database query error");
-
-        match e {
-            sqlx::Error::Database(err) => {
-                if err.code().unwrap().parse::<u32>().unwrap() == DUPLICATE_KEY {
-                    Ok(warp::reply::with_status(
-                        "Account already exsists".to_string(),
-                        StatusCode::UNPROCESSABLE_ENTITY,
-                    ))
-                } else {
-                    Ok(warp::reply::with_status(
-                        "Cannot update data".to_string(),
-                        StatusCode::UNPROCESSABLE_ENTITY,
-                    ))
-                }
-            }
-            _ => Ok(warp::reply::with_status(
-                "Cannot update data".to_string(),
-                StatusCode::UNPROCESSABLE_ENTITY,
-            )),
-        }
+        Ok(warp::reply::with_status(
+            "Cannot update data".to_string(),
+            StatusCode::UNPROCESSABLE_ENTITY,
+        ))
     } else if let Some(error) = r.find::<CorsForbidden>() {
         Ok(warp::reply::with_status(
             error.to_string(),

@@ -14,6 +14,8 @@ services:
       DATABASE_PORT: 5432
       DATABASE_DB: schedulerdb
       DATABASE_HOST: postgres_container
+      CACHE_HOST: redis-db
+      CACHE_PORT: 6379
     networks:
       - postgres
     depends_on:
@@ -95,6 +97,14 @@ services:
         PGPASSWORD=$POSTGRES_PASSWORD psql -h postgres_container -p 5432 -U ${POSTGRES_USER} -d ${POSTGRES_DB} <<SQL
         insert into activities (title, content, time, account_id) VALUES (gen_random_uuid(), gen_random_uuid(), generate_series(1,100000), 1);
         SQL
+    networks:
+      - postgres
+
+  redis-db:
+    container_name: redis-db
+    image: redis:8.2.1-alpine
+    ports:
+      - "6379:6379"
     networks:
       - postgres
 

@@ -18,3 +18,10 @@ pub struct NewActivity {
     pub content: String,
     pub time: i32,
 }
+
+#[derive(Debug, Serialize, Deserialize, Clone, ToSchema)]
+pub struct PartiaActivity {
+    pub title: Option<String>,
+    pub content: Option<String>,
+    pub time: Option<i32>,
+}

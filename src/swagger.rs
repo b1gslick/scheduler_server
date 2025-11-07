@@ -22,14 +22,16 @@ use crate::VERSION;
 
 #[derive(OpenApi)]
 #[openapi(paths(
+    routes::health::healthz,
     routes::authentication::register,
     routes::authentication::login,
     routes::activities::get_activities,
+    routes::activities::get_activity_by_id,
     routes::activities::add_activity,
     routes::activities::update_activities,
     routes::activities::deleted_activities,
-    routes::time_spent::add_time_spent,
-    routes::time_spent::get_time_spent_by_id,
+    routes::timer::start,
+    routes::timer::stop,
 ))]
 pub struct SchedulerApi;
 
@@ -41,7 +43,7 @@ pub struct SecurityAddon;
             (path = format!("/{}/", VERSION), api = SchedulerApi)
         ),
         modifiers(&SecurityAddon),
-    )]
+)]
 pub struct ApiDoc;
 
 impl Modify for SecurityAddon {
